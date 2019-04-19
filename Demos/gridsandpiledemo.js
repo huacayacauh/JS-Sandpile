@@ -170,7 +170,7 @@ class GridSandpile{
 
 	//ajoute un grain dans la cellule indiqué par
 	//l'index d'un triangle la composant
-	addFromTrinagleIndex(index){
+	addFromTriangleIndex(index){
 		var squareIndex = (index%2 == 0) ? index/2 : (index-1)/2; //1 carré = 2 triangles
 
 		var i = ~~(squareIndex / app.sandpile.column); //division euclidienne en JS
@@ -285,7 +285,7 @@ app.renderer.domElement.addEventListener('click', function( event ) {
 		var face = intersects[0];
 		var triangleIndex = face.faceIndex; 
 
-		app.sandpile.addFromTrinagleIndex(triangleIndex);
+		app.sandpile.addFromTriangleIndex(triangleIndex);
 
 	}
 
