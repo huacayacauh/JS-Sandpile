@@ -7,4 +7,4 @@ Use of english for a slight professional tone
 
 Don't forget to read the update notes
 
-😊
+Emoji of the day : 😊
