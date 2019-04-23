@@ -79,6 +79,15 @@ class Tiling{
 		this.colorTiles();
 	}
 	
+	addRandom(amount){
+		for(var j = 0; j<amount; j++){
+			for(var i = 0; i<this.tiles.length; i++){
+				if(Math.random() > 0.5) this.tiles[i].sand += 1;
+			}
+		}
+		this.colorTiles();
+	}
+	
 	remove(index, amount){
 		this.tiles[index].sand -= amount;
 		if(this.tiles[index].sand < 0) this.tiles[index].sand = 0;

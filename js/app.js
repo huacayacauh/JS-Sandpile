@@ -43,7 +43,9 @@ var cmap = [new THREE.Color(0xffffff),
 var play = false;
 var currentGrid;
 var app = new App();
-var SPEED = 10;
+var SPEED = 1;
+var delay = 20;
+Math.seedrandom(1);
 
 function playPause(){
 	var element = document.getElementById("playButton");
@@ -63,7 +65,7 @@ function complexOperation(){
 	
 	if(currentGrid){
 		var operationType = document.getElementById("complexOperationValue").value;
-		var operationTimes = Number(document.getElementById("complexOperationRepeat").value);
+		var operationTimes = document.getElementById("complexOperationRepeat").valueAsNumber;
 		switch(operationType) {
 			case "addOne":
 				currentGrid.addEverywhere(operationTimes);
@@ -72,8 +74,34 @@ function complexOperation(){
 			case "rmOne":
 				currentGrid.removeEverywhere(operationTimes);
 			break;
+			
+			case "addRand":
+				currentGrid.addRandom(operationTimes);
+			break;
 		}
 	}
+}
+
+function preventNegative(num){
+	if(num.value < 1) num.value = 1;
+	
+}
+
+function changeIPS(val){
+	SPEED = val.value;
+}
+
+function changeDelay(val){
+	delay = val.value;
+}
+
+function changeSeed(val){
+	Math.seedrandom(val.value);
+}
+
+function hideComplex(val){
+	if(val.value == "addRand") document.getElementById("seedMask").style.visibility = "visible";
+	else document.getElementById("seedMask").style.visibility = "hidden";
 }
 
 function drawGrid(){
@@ -89,7 +117,7 @@ function drawGrid(){
 	
 	app.scene.add(currentGrid.mesh);
 	currentGrid.colorTiles();
-	console.log(currentGrid);
+	//console.log(currentGrid);
 	
 	var render = function () {
 		requestAnimationFrame( render );

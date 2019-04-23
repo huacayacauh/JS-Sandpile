@@ -71,6 +71,10 @@
 	<div id="main controls">
 		<button onclick="drawGrid()" class="small button">Make square grid</button>
 		<button onclick="step()" class="small button">Step</button>
+		Delay (ms) :
+		<input type="number" id="delay" maxlength= "3" value="20" oninput="preventNegative(this); changeDelay(this);" style="width: 50px;" />
+		Iterations per frame :
+		<input type="number" id="IPF" maxlength= "3" value="1" oninput="preventNegative(this); changeIPS(this);" style="width: 50px;" />
 		<button id="playButton" onclick="playPause()" class="playbutton"></button>
 		
 	</div>
@@ -83,28 +87,36 @@
 		  <option value="addOne">Add One</option>
 		  <option value="rmOne">Remove One</option>
 		</select>
+		<div id="maskMouseRepeat" style="display:inline; visibility:hidden;">
 		times
-		<input type="number" id="complexOperationRepeat" maxlength= "4" value="1" style="width: 70px;" />
+		<input type="number" id="mouseOperationRepeat" oninput="preventNegative(this)" value="1" maxlength= "4" style="width: 70px;" />
+		</div>
 	</div>
 	
 	<!-- Controles divers -->
 	<div id="secondary controls" style="margin-top:10px;">
-		<select id="complexOperationValue">
+		<select id="complexOperationValue" oninput="hideComplex(this)">
 		  <option value="addOne">Add One Everywhere</option>
 		  <option value="rmOne">Remove One Everywhere</option>
+		  <option value="addRand">Add Randomly</option>
 		</select>
 		times
-		<input type="number" id="complexOperationRepeat" maxlength= "4" value="1" style="width: 70px;" />
+		<input type="number" id="complexOperationRepeat" oninput="preventNegative(this)" maxlength= "4" value="1" style="width: 70px;" /> 
 		
 		<button id="complexOperation" onclick="complexOperation()" class="small button">Apply</button>
+		
+		<div id="seedMask" style="display:inline; visibility:hidden; margin-left:10px;">
+			Seed :
+			<input id="randSeed" value="1" oninput="preventNegative(this); changeSeed(this);" style="width: 100px;" />
+		</div
 	</div>
 	
 	<!-- Controles grille carré uniquement -->
 	<div id="squareParams" style="z-index:100; margin-top:10px; margin-bottom:10px;">
 		Width 
-		<input type="number" id="cW" maxlength= "3" value="100" style="width: 50px;" />
+		<input type="number" id="cW" oninput="preventNegative(this)" maxlength= "3" value="100" style="width: 50px;" />
 		Height
-		<input type="number" id="cH" maxlength= "3" value="100" style="width: 50px;" />
+		<input type="number" id="cH" oninput="preventNegative(this)" maxlength= "3" value="100" style="width: 50px;" />
 		
 	</div>
 	
@@ -113,9 +125,13 @@
 	</div>
 	
 	<!-- JS Sources -->
+	<script src="./js/seedrandom.min.js"></script>
     <script src="./js/three.min.js"></script>
     <script src="./js/OrthographicTrackballControls.js"></script>
 	<script src="./js/Tiling.js"></script>
     <script src="./js/app.js"></script>
+	
+</script> 
+</script>
   </body>
 </html>
