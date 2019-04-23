@@ -167,8 +167,7 @@ app.renderer.domElement.addEventListener('click', function( event ) {
 			var face = intersects[0];
 			var triangleIndex = face.faceIndex; 
 
-			var squareIndex = (triangleIndex%2 == 0) ? triangleIndex/2 : (triangleIndex-1)/2; //1 carré = 2 triangles
-			currentGrid.add(squareIndex, 1);
+			currentGrid.add(currentGrid.indexDict[face.faceIndex*3], 1);
 
 		}
 	}

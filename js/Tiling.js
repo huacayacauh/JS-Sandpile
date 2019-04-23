@@ -1,6 +1,6 @@
 class Tile{
 	constructor(id, neighboors, points){
-		this.id = id; // Id of the tile
+		this.id = id;
 		this.prevSand = 0; // "trick" variable to iterate the sand
 		this.sand = 0;
 		this.neighboors = neighboors; // Ids of adjacent tiles
@@ -9,6 +9,8 @@ class Tile{
 	}
 	
 	static squareTile(x, y, xMax, yMax){
+		// Creates the Tile in position x, y of a square grid
+		
 		var id;
 		var neighboors = [];
 		id = x*yMax + y;
@@ -27,8 +29,9 @@ class Tile{
 class Tiling{
 	// Represents any tiling
 	constructor(points, colors, tiles, toppleMin, colormap){
+		
 		this.tiles = tiles;
-		this.limit = toppleMin;
+		this.limit = toppleMin; // limit until the sand topple to adjacents tiles
 		
 		var geometry = new THREE.BufferGeometry();
 
@@ -41,13 +44,25 @@ class Tiling{
 		var material = new THREE.MeshBasicMaterial( {vertexColors: THREE.VertexColors} );
 
 		this.mesh = new THREE.Mesh( geometry, material );
-		this.colors = this.mesh.geometry.attributes.color;
-		this.points = this.mesh.geometry.attributes.position;
 		
+		this.colors = this.mesh.geometry.attributes.color; // colors of every point of the mesh
+		this.points = this.mesh.geometry.attributes.position; // every point of the mesh
+		
+
+		this.indexDict = {}; // Dict face index <-> tile index
+		
+		for(var i=0; i<tiles.length; i++){
+			for(var j = 0; j<tiles[i].pointsIndexes.length; j+=3 ){
+				// We only need one point on three because the Mesh is made out of triangles
+				this.indexDict[tiles[i].pointsIndexes[j]] = i;
+			}
+		}
 		this.cmap = colormap;
 	}
 	
 	iterate(){
+		// Topple any tile that has more than the limit of sand
+		
 		this.tiles.forEach(function(element) {
 		  element.prevSand = element.sand;
 		});
@@ -56,7 +71,9 @@ class Tiling{
 			if(this.tiles[i].prevSand >= this.limit){
 				this.tiles[i].sand -= this.limit;
 				for(var j = 0; j< this.tiles[i].neighboors.length; j++){
+					
 					if(typeof this.tiles[this.tiles[i].neighboors[j]] === 'undefined'){
+						//useful to identify problems in the grid
 						console.log("Error");
 						console.log(i);
 						console.log(this.tiles[i].neighboors);
@@ -81,6 +98,13 @@ class Tiling{
 	
 	addRandom(amount){
 		for(var j = 0; j<amount; j++){
+			this.add(Math.floor(Math.random() * this.tiles.length), 1);
+			
+		}
+	}
+	
+	addRandomEverywhere(amount){
+		for(var j = 0; j<amount; j++){
 			for(var i = 0; i<this.tiles.length; i++){
 				if(Math.random() > 0.5) this.tiles[i].sand += 1;
 			}
@@ -103,6 +127,7 @@ class Tiling{
 	}
 	
 	colorTile(index){
+		// Colors only one tile
 		for(var j = 0; j<this.tiles[index].pointsIndexes.length; j++){
 			var colorNum = this.tiles[index].sand;
 			if(colorNum > this.limit){
@@ -115,12 +140,14 @@ class Tiling{
 	}
 	
 	colorTiles(){
+		// Colors every tile
 		for(var i = 0; i<this.tiles.length; i++){
 			this.colorTile(i);
 		}
 	}
 	
 	static sqTiling(width, height, cmap){
+		// Creates a Tiling corresponding to a square grid of dimensions width, height
 
 		var pos = [];
 		var col = [];
