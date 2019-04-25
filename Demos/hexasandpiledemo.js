@@ -226,8 +226,8 @@ class HexSandpile{
 			}
 		}
 
-		for(var i = 0; i<this.model.length; i++){
-			for(var j = 0; j<this.model[i].length; j++){
+		for(var i = 0; i<this.line; i++){
+			for(var j = 0; j<this.column; j++){
 
 
 				if(j%2 == 0){
@@ -336,17 +336,17 @@ class App{
 	}
 
 	constructor(){
-		this.WIDTH = 600;
-		this.HEIGHT = 500;
+		this.WIDTH = window.innerWidth;
+		this.HEIGHT = window.innerHeight;
 
 
 		this.scene = new THREE.Scene();
 		this.ratio = this.WIDTH / this.HEIGHT;
 
-		var left = -this.WIDTH / 2.5;
-		var right = this.WIDTH / 2.5;
-		var top_cam = this.HEIGHT / 2.5;
-		var bottom = -this.HEIGHT/ 2.5;
+		var left = -this.WIDTH / 5;
+		var right = this.WIDTH / 5;
+		var top_cam = this.HEIGHT / 5;
+		var bottom = -this.HEIGHT/ 5;
 
 		this.camera = new THREE.OrthographicCamera( left, right, top_cam, bottom, 0, 10 );
 		this.camera.position.z = 5;
@@ -385,6 +385,8 @@ app.sandpile.onesEverywhere();
 app.sandpile.onesEverywhere();
 app.sandpile.onesEverywhere();
 app.sandpile.onesEverywhere();
+//app.sandpile.onesEverywhere();
+//app.sandpile.onesEverywhere();
 
 
 /***********************************/

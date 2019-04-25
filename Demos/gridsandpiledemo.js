@@ -202,17 +202,20 @@ class App{
 	}
 
 	constructor(){
-		this.WIDTH = 600;
-		this.HEIGHT = 500;
+		this.WIDTH = window.innerWidth;
+		this.HEIGHT = window.innerHeight;
+
+		//this.WIDTH = 600;
+		//this.HEIGHT = 500;
 
 
 		this.scene = new THREE.Scene();
 		this.ratio = this.WIDTH / this.HEIGHT;
 
-		var left = -this.WIDTH / 4.5;
-		var right = this.WIDTH / 4.5;
-		var top_cam = this.HEIGHT / 4.5;
-		var bottom = -this.HEIGHT/ 4.5;
+		var left = -this.WIDTH / 8;
+		var right = this.WIDTH / 8;
+		var top_cam = this.HEIGHT / 8;
+		var bottom = -this.HEIGHT/ 8;
 
 		this.camera = new THREE.OrthographicCamera( left, right, top_cam, bottom, 0, 10 );
 		this.camera.position.z = 5;
