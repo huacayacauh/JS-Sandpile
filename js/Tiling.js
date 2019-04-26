@@ -24,6 +24,10 @@ class Tile{
 		}
 		return new Tile(id, neighboors, pointsIds);
 	}
+	
+	static hexTile(){
+		
+	}
 }
 
 class Tiling{
@@ -103,6 +107,13 @@ class Tiling{
 		}
 	}
 	
+	removeRandom(amount){
+		for(var j = 0; j<amount; j++){
+			this.remove(Math.floor(Math.random() * this.tiles.length), 1);
+			
+		}
+	}
+	
 	addRandomEverywhere(amount){
 		for(var j = 0; j<amount; j++){
 			for(var i = 0; i<this.tiles.length; i++){
@@ -124,6 +135,71 @@ class Tiling{
 			if(this.tiles[i].sand < 0) this.tiles[i].sand = 0;
 		}
 		this.colorTiles();
+	}
+	
+	addConfiguration(otherTiling){
+		if(otherTiling.tiles.length != this.tiles.length) alert("Can't add configurations ! Different number of tiles.");
+		for(var i = 0; i<this.tiles.length; i++){
+			this.tiles[i].sand += otherTiling.tiles[i].sand;
+		}
+		this.colorTiles();
+	}
+	
+	removeConfiguration(otherTiling){
+		if(otherTiling.tiles.length != this.tiles.length) alert("Can't add configurations ! Different number of tiles.");
+		for(var i = 0; i<this.tiles.length; i++){
+			this.tiles[i].sand -= otherTiling.tiles[i].sand;
+			if(this.tiles[i].sand < 0) this.tiles[i].sand = 0;
+		}
+		this.colorTiles();
+	}
+	
+	getDual(){
+		var newTiles = [];
+		for(var i = 0; i<this.tiles.length; i++){
+			newTiles.push(new Tile(this.tiles[i].id, Array.from(this.tiles[i].neighboors), Array.from(this.tiles[i].pointsIndexes)));
+		}
+		var newTiling = new Tiling(Array.from(this.points), Array.from(this.colors), newTiles, this.limit, Array.from(this.cmap));
+		for(var i = 0; i<newTiling.tiles.length; i++){
+			newTiling.tiles[i].sand = Math.max(0, this.limit - this.tiles[i].sand);
+		}
+		return newTiling;
+	}
+	
+	copy(){
+		var newTiles = [];
+		for(var i = 0; i<this.tiles.length; i++){
+			newTiles.push(new Tile(this.tiles[i].id, Array.from(this.tiles[i].neighboors), Array.from(this.tiles[i].pointsIndexes)));
+		}
+		var newTiling = new Tiling(Array.from(this.points), Array.from(this.colors), newTiles, this.limit, Array.from(this.cmap));
+		return newTiling;
+	}
+	
+	clear(){
+		for(var i = 0; i<this.tiles.length; i++){
+			this.tiles[i].sand = 0;
+		}
+		this.colorTiles();
+	}
+	
+	stabilize(){
+		var oldTiles = [];
+		for(var i = 0; i<this.tiles.length; i++){
+			oldTiles.push(new Tile(this.tiles[i].id, Array.from(this.tiles[i].neighboors), Array.from(this.tiles[i].pointsIndexes)));
+		}
+		var done = false;
+		while(!done){
+			done = true;
+			for(var i = 0; i<this.tiles.length; i++){
+				if(oldTiles[i].sand != this.tiles[i].sand){
+					oldTiles[i].sand = this.tiles[i].sand;
+					done = false;
+				}
+			}
+			this.iterate();
+		}
+		this.colorTiles();
+		
 	}
 	
 	colorTile(index){
@@ -181,5 +257,7 @@ class Tiling{
 		
 		return new Tiling(pos, col, tils, 4, cmap);
 	}
+	
+	
 }
 

@@ -35,10 +35,12 @@ class App{
 
 
 var cmap = [new THREE.Color(0xffffff),
-              new THREE.Color(0xffff00),
-              new THREE.Color(0xff9900),
-              new THREE.Color(0xff5500),
-              new THREE.Color(0xff0000)];
+              new THREE.Color(0xdddddd),
+              new THREE.Color(0xbbbbbb),
+              new THREE.Color(0x999999),
+              new THREE.Color(0x777777),
+              new THREE.Color(0x555555),
+              new THREE.Color(0xeeee00)];
 
 var play = false;
 var currentGrid;
@@ -60,31 +62,131 @@ function step(){
 	}
 }
 
-function complexOperation(){
+function complexOperationAdd(){
 	// Function applied by the secondary operations
 	
 	if(currentGrid){
 		var operationType = document.getElementById("complexOperationValue").value;
 		var operationTimes = document.getElementById("complexOperationRepeat").valueAsNumber;
 		switch(operationType) {
-			case "addOne":
+			case "OneE":
 				currentGrid.addEverywhere(operationTimes);
 			break;
 			
-			case "rmOne":
-				currentGrid.removeEverywhere(operationTimes);
+			case "MaxS":
+				currentGrid.addEverywhere((currentGrid.limit - 1)*operationTimes);
 			break;
 			
-			case "addRand":
+			case "Rand":
 				currentGrid.addRandom(operationTimes);
+			break;
+			
+			case "Dual":
+				currentGrid.addConfiguration(currentGrid.getDual());
+			break;
+			
+			case "Iden":
+				var identity1 = currentGrid.copy();
+				var identity2 = currentGrid.copy();
+				identity1.clear();
+				identity2.clear();
+				identity1.addEverywhere((identity1.limit - 1) * 2);
+				identity2.addEverywhere((identity2.limit - 1) * 2);
+				identity1.stabilize();
+				identity2.removeConfiguration(identity1);
+				
+				identity2.stabilize();
+				currentGrid.addConfiguration(identity2);
 			break;
 		}
 	}
 }
 
-function preventNegative(num){
-	if(num.value < 1) num.value = 1;
-	
+function complexOperationSet(){
+	if(currentGrid){
+		var operationType = document.getElementById("complexOperationValue").value;
+		var operationTimes = document.getElementById("complexOperationRepeat").valueAsNumber;
+		switch(operationType) {
+			case "OneE":
+				currentGrid.clear();
+				currentGrid.addEverywhere(operationTimes);
+			break;
+			
+			case "MaxS":
+				currentGrid.clear();
+				currentGrid.addEverywhere((currentGrid.limit - 1)*operationTimes);
+			break;
+			
+			case "Rand":
+				currentGrid.clear();
+				currentGrid.addRandom(operationTimes);
+			break;
+			
+			case "Dual":
+				var newGrid = currentGrid.getDual();
+				currentGrid.clear();
+				currentGrid.addConfiguration(newGrid);
+			break;
+			
+			case "Iden":
+				var identity1 = currentGrid.copy();
+				var identity2 = currentGrid.copy();
+				identity1.clear();
+				identity2.clear();
+				identity1.addEverywhere((identity1.limit - 1) * 2);
+				identity2.addEverywhere((identity2.limit - 1) * 2);
+				identity1.stabilize();
+				identity2.removeConfiguration(identity1);
+				
+				identity2.stabilize();
+				currentGrid.clear();
+				currentGrid.addConfiguration(identity2);
+			break;
+		}
+	}
+}
+
+function complexOperationSub(){
+	if(currentGrid){
+		var operationType = document.getElementById("complexOperationValue").value;
+		var operationTimes = document.getElementById("complexOperationRepeat").valueAsNumber;
+		switch(operationType) {
+			case "OneE":
+				currentGrid.removeEverywhere(operationTimes);
+			break;
+			
+			case "MaxS":
+				currentGrid.removeEverywhere((currentGrid.limit - 1)*operationTimes);
+			break;
+			
+			case "Rand":
+				currentGrid.removeRandom(operationTimes);
+			break;
+			
+			case "Dual":
+				currentGrid.removeConfiguration(currentGrid.getDual());
+			break;
+			
+			case "Iden":
+				var identity1 = currentGrid.copy();
+				var identity2 = currentGrid.copy();
+				identity1.clear();
+				identity2.clear();
+				identity1.addEverywhere((identity1.limit - 1) * 2);
+				identity2.addEverywhere((identity2.limit - 1) * 2);
+				identity1.stabilize();
+				identity2.removeConfiguration(identity1);
+				
+				identity2.stabilize();
+				currentGrid.removeConfiguration(identity2);
+			break;
+		}
+	}
+}
+function stabGrid(){
+	if(currentGrid) {
+		currentGrid.stabilize();
+	}
 }
 
 function changeIPS(val){
@@ -100,11 +202,14 @@ function changeSeed(val){
 }
 
 function hideComplex(val){
-	if(val.value == "addRand") document.getElementById("seedMask").style.visibility = "visible";
+	if(val.value == "Rand") document.getElementById("seedMask").style.visibility = "visible";
 	else document.getElementById("seedMask").style.visibility = "hidden";
+	
+	if(val.value == "Dual" || val.value == "MaxS" || val.value == "Iden") document.getElementById("complexTimesMask").style.visibility = "hidden";
+	else document.getElementById("complexTimesMask").style.visibility = "visible";
 }
 
-function drawGrid(){
+function drawGrid(preset){
 	// Draw a square grid - could be splitted in init() and drawSquare()
 	
 	while(app.scene.children.length > 0){ 
@@ -113,7 +218,21 @@ function drawGrid(){
 	cW = document.getElementById("cW").value;
 	cH = document.getElementById("cH").value;
 	
-	currentGrid = Tiling.sqTiling(cW, cH, cmap);
+	switch(preset){
+		case "hex":
+			currentGrid = Tiling.hexTiling(cW, cH, cmap);
+			app.camera.zoom = 0.7;
+		break;
+		
+		default:
+			currentGrid = Tiling.sqTiling(cW, cH, cmap);
+			app.camera.zoom = 1;
+		break;
+		
+	}
+	
+	app.controls.zoomCamera();
+	app.controls.object.updateProjectionMatrix();
 	
 	app.scene.add(currentGrid.mesh);
 	currentGrid.colorTiles();
@@ -178,5 +297,17 @@ app.renderer.domElement.addEventListener('click', function( event ) {
 /*******/
 /* FIN */
 /*******/
+
+// Using JQuerry to prevent breaking the inputs
+$(document).on('keyup', 'input', function () {
+    var _this = $(this);
+    var min = parseInt(_this.attr('min')) || 1; // if min attribute is not defined, 1 is default
+    var max = parseInt(_this.attr('max')) || 100; // if max attribute is not defined, 100 is default
+    var val = parseInt(_this.val()) || (min - 1); // if input char is not a number the value will be (min - 1) so first condition will be true
+    if(val < min)
+        _this.val( min );
+    if(val > max)
+        _this.val( max );
+});
 
 //https://threejs.org/examples/#webgl_interactive_buffergeometry

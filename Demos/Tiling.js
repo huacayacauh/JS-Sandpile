@@ -1,5 +1,6 @@
 class Tile{
-	constructor(id, neighboors, points){
+	constructor(id, neighboors, points, limit){
+		this.limit = limit;
 		this.id = id; // Id of the tile
 		this.prevSand = 0; // "trick" variable to iterate the sand
 		this.sand = 0;
@@ -12,9 +13,9 @@ class Tile{
 
 class Tiling{
 	// Represents any tiling
-	constructor(points, colors, tiles, toppleMin, colormap){
+	constructor(points, colors, tiles, colormap){
 		this.tiles = tiles;
-		this.limit = toppleMin;
+		
 		
 		var geometry = new THREE.BufferGeometry();
 
@@ -31,6 +32,17 @@ class Tiling{
 		this.points = this.mesh.geometry.attributes.position;
 		
 		this.cmap = colormap;
+
+		this.indexTriangleToIndexFace = function(indexTriangle){
+			var counter = 0;
+			for(var i = 0; i < this.tiles.length; i++){
+				counter += this.tiles[i].nbTriangles;
+				if(this.tiles[i].pointsIndexes[0]/3 >= indexTriangle){
+					console.log(i, counter);
+					return i;
+				} 
+			}
+		}
 	}
 	
 	iterate(){
@@ -39,14 +51,14 @@ class Tiling{
 		});
 		
 		for(var i = 0; i<this.tiles.length; i++){
-			if(this.tiles[i].prevSand >= this.limit){
-				this.tiles[i].sand -= this.limit;
+
+			var limit = this.tiles[i].limit;
+
+
+			if(this.tiles[i].prevSand >= limit){
+				this.tiles[i].sand -= limit;
 				for(var j = 0; j< this.tiles[i].neighboors.length; j++){
-					if(typeof this.tiles[this.tiles[i].neighboors[j]] === 'undefined'){
-						console.log("Error");
-						console.log(i);
-						console.log(this.tiles[i].neighboors);
-					}
+					
 					this.tiles[this.tiles[i].neighboors[j]].sand += 1;
 				}
 			}
@@ -94,8 +106,8 @@ class Tiling{
 		//for(var j = 0; j<1; j++){
 			//console.log("AAA");
 			var colorNum = this.tiles[index].sand;
-			if(colorNum > this.limit){
-				colorNum = this.limit;
+			if(colorNum >= this.cmap.length){
+				colorNum = this.cmap.length-1;
 			}
 			//console.log(this.tiles[index].pointsIndexes);
 			this.colors.setXYZ(this.tiles[index].pointsIndexes[j], this.cmap[colorNum].r, this.cmap[colorNum].g, this.cmap[colorNum].b);
