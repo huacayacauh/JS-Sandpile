@@ -1,5 +1,3 @@
-var SPEED = 5;
-
 class App{
 
     constructor(){
@@ -35,17 +33,17 @@ class App{
         this.controls.enableZoom = true;
         this.controls.enableRotate = false;
     
-        this.sandpile = makeHKPenroseSandpile(12);
+        this.sandpile = makePenroseSandpile(triangles);
         
 
         this.scene.add(this.sandpile.mesh);
     }
 }
 
-//generateHKTiling(11);
+generateHKTiling(11);
 
 var app = new App();
-app.sandpile.addEverywhere(2);
+app.sandpile.addEverywhere(3);
 
 var render = function () {
   
@@ -86,7 +84,7 @@ app.renderer.domElement.addEventListener('click', function( event ) {
 
 		var face = intersects[0];
 		var triangleIndex = face.faceIndex; 
-		app.sandpile.add(triangleIndex, 10000);
+		app.sandpile.add(triangleIndex, 1);
 
 	}
 
