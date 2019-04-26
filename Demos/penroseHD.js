@@ -1,3 +1,5 @@
+var SPEED = 10;
+
 class App{
 
     constructor(){
@@ -33,14 +35,12 @@ class App{
         this.controls.enableZoom = true;
         this.controls.enableRotate = false;
     
-        this.sandpile = makePenroseSandpile(triangles);
+        this.sandpile = makeHDPenroseSandpile(11);
         
 
         this.scene.add(this.sandpile.mesh);
     }
 }
-
-generateHDTiling(11);
 
 var app = new App();
 //app.sandpile.addEverywhere(3);
