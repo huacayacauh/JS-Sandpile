@@ -206,8 +206,8 @@ class Tiling{
 		// Colors only one tile
 		for(var j = 0; j<this.tiles[index].pointsIndexes.length; j++){
 			var colorNum = this.tiles[index].sand;
-			if(colorNum > this.limit){
-				colorNum = this.limit;
+			if(colorNum >= this.cmap.length){
+				colorNum = this.cmap.length-1;
 			}
 			this.colors.setXYZ(this.tiles[index].pointsIndexes[j], this.cmap[colorNum].r, this.cmap[colorNum].g, this.cmap[colorNum].b);
 		}
