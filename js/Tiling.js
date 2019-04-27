@@ -161,7 +161,7 @@ class Tiling{
 		}
 		var newTiling = new Tiling(Array.from(this.points), Array.from(this.colors), newTiles, this.limit, Array.from(this.cmap));
 		for(var i = 0; i<newTiling.tiles.length; i++){
-			newTiling.tiles[i].sand = Math.max(0, this.limit - this.tiles[i].sand);
+			newTiling.tiles[i].sand = Math.max(0, this.limit -1 - this.tiles[i].sand);
 		}
 		return newTiling;
 	}
