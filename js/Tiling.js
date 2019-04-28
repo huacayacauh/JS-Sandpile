@@ -45,7 +45,7 @@ class Tiling{
 		geometry.addAttribute( 'position', positionAttribute );
 		geometry.addAttribute( 'color', colorAttribute );
 
-		var material = new THREE.MeshBasicMaterial( {vertexColors: THREE.VertexColors} );
+		var material = new THREE.MeshBasicMaterial( {vertexColors: THREE.VertexColors, side: THREE.DoubleSide} );
 
 		this.mesh = new THREE.Mesh( geometry, material );
 		

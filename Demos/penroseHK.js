@@ -86,7 +86,7 @@ app.renderer.domElement.addEventListener('click', function( event ) {
 
 		var face = intersects[0];
 		var triangleIndex = face.faceIndex; 
-		app.sandpile.add(triangleIndex, 10000);
+		app.sandpile.add(triangleIndex, 1);
 
 	}
 

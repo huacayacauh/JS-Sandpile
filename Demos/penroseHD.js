@@ -66,6 +66,7 @@ var mouse = new THREE.Vector2(); // un Vector2 contient un attribut x et un attr
 var raycaster = new THREE.Raycaster(); // rayon qui va intersecter la pile de sable
 
 app.renderer.domElement.addEventListener('click', function( event ) {
+    console.log("APP SANDPILE LENGTH TILS : ", app.sandpile.tiles.length);
 
 	//on calcule un ration entre -1 et 1 pour chaque coordonées x et y du clique
 	//si mouse.x == -1 alors on a cliqué tout à gauche
@@ -79,6 +80,8 @@ app.renderer.domElement.addEventListener('click', function( event ) {
 	raycaster.setFromCamera(mouse, app.camera);
 	// l'objet intersects est u tableau qui contient toutes les faces intersectés par le rayon
 	var intersects = raycaster.intersectObject(app.sandpile.mesh);
+
+    console.log("CLICSK", intersects.length);
 
 	if(intersects.length > 0){
 

@@ -822,15 +822,15 @@ makePenroseSandpile = function(data){
         
         var s = 0;
 
-        var tile = new Tile(id, neighboors, pointsIds, 3);
+        var tile = new Tile(id, neighboors, pointsIds);
         
         tile.sand = s;
 
         tils.push(tile);
 
     }
-    
-    return new Tiling(pos, col, tils, cmap);
+    console.log("LENGTH TILS : ", tils.length);
+    return new Tiling(pos, col, tils, 3, cmap);
     
 }
 
