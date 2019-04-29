@@ -4,73 +4,22 @@
     <title>Sandpiles</title>
 	<style>
 		@import "./css/buttons.css";
-		.playbutton {
-		  border: 0;
-		  background: transparent;
-		  box-sizing: border-box;
-		  width: 0;
-		  height: 20px;
-		  position:absolute;
-
-		  border-color: transparent transparent transparent #202020;
-		  transition: 100ms all ease;
-		  cursor: pointer;
-		  border-style: solid;
-		  border-width: 12px 0 12px 20px;
-		  margin-left:20px;
-		}
-
-		.playbutton.paused {
-			border-style: double;
-			border-width: 0px 0 0px 20px;
-		  }
-
-		.playbutton:hover {
-			border-color: transparent transparent transparent #404040;
-		  } 
-		*:focus {
-			outline: none;
-		}
-		.tooltip {
-		  position: relative;
-		  display: inline-block;
-		  border-bottom: 1px dotted black;
-		}
-
-		.tooltip .tooltiptext {
-		  visibility: hidden;
-		  width: 120px;
-		  background-color: black;
-		  color: #fff;
-		  text-align: center;
-		  border-radius: 6px;
-		  padding: 5px 0;
-		  position: absolute;
-		  z-index: 1;
-		  top: -5px;
-		  left: 110%;
-		}
-
-		.tooltip .tooltiptext::after {
-		  content: "";
-		  position: absolute;
-		  top: 50%;
-		  right: 100%;
-		  margin-top: -5px;
-		  border-width: 5px;
-		  border-style: solid;
-		  border-color: transparent black transparent transparent;
-		}
-		.tooltip:hover .tooltiptext {
-		  visibility: visible;
-		}
+		@import "./css/modal.css";
 	</style>
   </head>
   <body>
 	<!-- Controles principaux de l'application-->
 	<div id="main controls">
-		<button onclick='drawGrid("sq")' class="small button">Make square grid</button>
-		<button onclick='drawGrid("hex")' class="small button">Make hex grid</button>
+		<select id="gridSelect" oninput="hideParams(this)">
+		  <option value="gridSq">Square Tiling</option>
+		  <option value="gridHex">Hexagonal Tiling</option>
+		  <option value="gridTri">Triangular Tiling</option>
+		  <option value="gridPenHK">Penrose HK</option>
+		  <option value="gridPenHD">Penrose HD</option>
+		  <option value="gridPenSun">Penrose Sun</option>
+		  <option value="gridPenStar">Penrose Star</option>
+		</select>
+		<button onclick='drawGrid()' class="small button">Make grid</button>
 		<button onclick="step()" class="small button">Step</button>
 		Delay (ms) :
 		<input type="number" id="delay" value="20" oninput="changeDelay(this);" style="width: 50px;" min="1" max="10000"/>
@@ -84,11 +33,11 @@
 	<div id="mouse controls" style="margin-top:10px;">
 		Mouse action :
 		<select id="mouseOperation">
-		  <option value="select">Select</option>
 		  <option value="addOne">Add One</option>
 		  <option value="rmOne">Remove One</option>
+		  <option value="select">Select</option>
 		</select>
-		<div id="maskMouseRepeat" style="display:inline; visibility:hidden;">
+		<div id="maskMouseRepeat" style="display:inline; visibility:visible;">
 		times
 		<input type="number" id="mouseOperationRepeat" value="1" min="1" max="1000000" style="width: 70px;" />
 		</div>
@@ -120,29 +69,50 @@
 		<div id="seedMask" style="display:inline; visibility:hidden; margin-left:10px;">
 			Seed :
 			<input id="randSeed" value="1" oninput="changeSeed(this);" style="width: 100px;" />
-		</div
+		</div>
 	</div>
 	
-	<!-- Controles grille carré uniquement -->
+	<!-- Controles grille dimensionables -->
 	<div id="squareParams" style="z-index:100; margin-top:10px; margin-bottom:10px;">
 		Width 
 		<input type="number" id="cW" min="1" max="500" value="100" style="width: 50px;" />
 		Height
 		<input type="number" id="cH" min="1" max="500" value="100" style="width: 50px;" />
-		
 	</div>
 	
+	<!-- Controles grilles penrose -->
+	<div id="penroseParams" style="z-index:100; margin-top:10px; margin-bottom:10px;visibility:hidden;">
+		Iterations 
+		<input type="number" id="penroseIt" min="1" max="15" value="9" style="width: 50px;" />
+	</div>
+	
+	
+	Zoom
+	<input type="number" id="zoomLevel" oninput="set_zoom(this)" max="50" value="1" style="width:90px;" />
+	
+	<!-- Controles Couleurs -->
+	<button id="colorButton" class="blue button">Change colors</button>
+	
+	<div id="colors" class="modal">
+	  <div class="modal-content">
+		<span class="close">&times;</span>
+	  </div>
+	<div>
+	
 	<div class="tooltip" id="canvasHolder">
-	  <span class="tooltiptext">Future tile info :)</span>
+	  <span class="tooltiptext" id="tileInfo">Tile info</span>
 	</div>
 	
 	<!-- JS Sources -->
 	<script src="./js/jquery.min.js"></script>
+	<script src="./js/changeDisplay.js"></script>
 	<script src="./js/seedrandom.min.js"></script>
     <script src="./js/three.min.js"></script>
     <script src="./js/OrthographicTrackballControls.js"></script>
 	<script src="./js/Tiling.js"></script>
 	<script src="./js/HexTiling.js"></script>
+	<script src="./js/TriTiling.js"></script>
+	<script src="./js/penrose.js"></script>
     <script src="./js/app.js"></script>
 	
   </body>

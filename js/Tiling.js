@@ -62,6 +62,8 @@ class Tiling{
 			}
 		}
 		this.cmap = colormap;
+		
+		this.blinking = false;
 	}
 	
 	iterate(){
@@ -202,24 +204,45 @@ class Tiling{
 		
 	}
 	
-	colorTile(index){
+	colorTile(index, color){
 		// Colors only one tile
 		for(var j = 0; j<this.tiles[index].pointsIndexes.length; j++){
 			var colorNum = this.tiles[index].sand;
 			if(colorNum >= this.cmap.length){
 				colorNum = this.cmap.length-1;
 			}
-			this.colors.setXYZ(this.tiles[index].pointsIndexes[j], this.cmap[colorNum].r, this.cmap[colorNum].g, this.cmap[colorNum].b);
+			if(color)
+				this.colors.setXYZ(this.tiles[index].pointsIndexes[j], color.r, color.g, color.b);
+			else 
+				this.colors.setXYZ(this.tiles[index].pointsIndexes[j], this.cmap[colorNum].r, this.cmap[colorNum].g, this.cmap[colorNum].b);
 		}
 		
 		this.mesh.geometry.attributes.color.needsUpdate = true;
 	}
-	
 	colorTiles(){
 		// Colors every tile
 		for(var i = 0; i<this.tiles.length; i++){
 			this.colorTile(i);
 		}
+	}
+	
+	async blink(index){
+		this.colorTile(index, new THREE.Color(0, 1, 1));
+		await sleep(600); // wait until blinking has stopped
+		this.blinking = true;
+		while(this.blinking){
+			this.colorTile(index);
+			await sleep(500);
+			if(!this.blinking) break;
+			this.colorTile(index, new THREE.Color(0, 1, 1));
+			await sleep(500);
+			if(!this.blinking) break;
+		}
+		this.colorTile(index);
+	}
+	
+	stopBlink(){
+		this.blinking = false;
 	}
 	
 	static sqTiling(width, height, cmap){

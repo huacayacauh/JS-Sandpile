@@ -49,16 +49,31 @@ var SPEED = 1;
 var delay = 20;
 Math.seedrandom(1);
 
+var selectedTile;
+var tileInfo = document.getElementById("tileInfo");
+setInterval(refresh_zoom, 200);
+
+
 function playPause(){
 	var element = document.getElementById("playButton");
 	element.classList.toggle("paused");
 	play = !play;
+	if(currentGrid){
+		if(selectedTile){
+			if(play)
+				currentGrid.stopBlink();
+			else
+				currentGrid.blink(selectedTile);
+		}
+	}
 }
 
 function step(){
 	if(currentGrid){
 		currentGrid.iterate();
 		currentGrid.colorTiles();
+		if(selectedTile)
+			tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentGrid.tiles[selectedTile].sand;
 	}
 }
 
@@ -100,6 +115,9 @@ function complexOperationAdd(){
 			break;
 		}
 	}
+	
+	if(selectedTile)
+		tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentGrid.tiles[selectedTile].sand;
 }
 
 function complexOperationSet(){
@@ -144,6 +162,9 @@ function complexOperationSet(){
 			break;
 		}
 	}
+	
+	if(selectedTile)
+		tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentGrid.tiles[selectedTile].sand;
 }
 
 function complexOperationSub(){
@@ -182,45 +203,61 @@ function complexOperationSub(){
 			break;
 		}
 	}
+	
+	if(selectedTile)
+		tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentGrid.tiles[selectedTile].sand;
 }
 function stabGrid(){
 	if(currentGrid) {
 		currentGrid.stabilize();
 	}
-}
-
-function changeIPS(val){
-	SPEED = val.value;
-}
-
-function changeDelay(val){
-	delay = val.value;
-}
-
-function changeSeed(val){
-	Math.seedrandom(val.value);
-}
-
-function hideComplex(val){
-	if(val.value == "Rand") document.getElementById("seedMask").style.visibility = "visible";
-	else document.getElementById("seedMask").style.visibility = "hidden";
 	
-	if(val.value == "Dual" || val.value == "MaxS" || val.value == "Iden") document.getElementById("complexTimesMask").style.visibility = "hidden";
-	else document.getElementById("complexTimesMask").style.visibility = "visible";
+	if(selectedTile)
+		tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentGrid.tiles[selectedTile].sand;
 }
 
-function drawGrid(preset){
+function drawGrid(){
 	// Draw a square grid - could be splitted in init() and drawSquare()
 	
 	while(app.scene.children.length > 0){ 
 		app.scene.remove(app.scene.children[0]); 
+		console.log("cleared");
 	}
 	cW = document.getElementById("cW").value;
 	cH = document.getElementById("cH").value;
 	
+	selectedTile = null;
+	preset = document.getElementById("gridSelect").value;
+	
+	var nbIt = document.getElementById("penroseIt").value;
 	switch(preset){
-		case "hex":
+		case "gridHex":
 			currentGrid = Tiling.hexTiling(cW, cH, cmap);
+			app.camera.zoom = 0.7;
+		break;
+		
+		case "gridTri":
+			currentGrid = Tiling.triTiling(cW, cmap); 
+			app.camera.zoom = 1.2;
+		break;
+		
+		case "gridPenHK":
+			currentGrid = makeHKPenroseSandpile(nbIt, cmap); 
+			app.camera.zoom = 0.7;
+		break;
+		
+		case "gridPenHD":
+			currentGrid = makeHDPenroseSandpile(nbIt, cmap); 
+			app.camera.zoom = 0.7;
+		break;
+		
+		case "gridPenSun":
+			currentGrid = makeSunPenroseSandpile(nbIt, cmap); 
+			app.camera.zoom = 0.7;
+		break;
+		
+		case "gridPenStar":
+			currentGrid = makeStarPenroseSandpile(nbIt, cmap); 
 			app.camera.zoom = 0.7;
 		break;
 		
@@ -238,20 +275,40 @@ function drawGrid(preset){
 	currentGrid.colorTiles();
 	//console.log(currentGrid);
 	
+	playWithDelay();
+	
 	var render = function () {
 		requestAnimationFrame( render );
 		app.controls.update();
-		if(currentGrid){
-			if(play){
-				for(var i = 0; i<SPEED; i++){
-					currentGrid.iterate();
-				}
-				currentGrid.colorTiles();
-			}
-		}
 		app.renderer.render( app.scene, app.camera );
 	};
 	render();
+}
+
+async function playWithDelay() {
+	
+	if(currentGrid){
+	  while(true){
+		  if(play){
+		  iterateGrid ();
+		  }
+		await sleep(delay);
+	  }
+	}
+}
+
+function iterateGrid(){
+	for(var i = 0; i<SPEED; i++){
+		currentGrid.iterate();
+	}
+	currentGrid.colorTiles();
+	if(selectedTile)
+		tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentGrid.tiles[selectedTile].sand;
+		
+}
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 /***********************************/
@@ -285,8 +342,25 @@ app.renderer.domElement.addEventListener('click', function( event ) {
 
 			var face = intersects[0];
 			var triangleIndex = face.faceIndex; 
-
-			currentGrid.add(currentGrid.indexDict[face.faceIndex*3], 1);
+			var nbTimes = document.getElementById("mouseOperationRepeat").valueAsNumber;
+			
+			var mouseTODO = document.getElementById("mouseOperation").value;
+			switch(mouseTODO){
+				case "rmOne":
+					currentGrid.remove(currentGrid.indexDict[face.faceIndex*3], nbTimes);
+					break;
+					
+				case "select":
+					currentGrid.stopBlink();
+					selectedTile = currentGrid.indexDict[face.faceIndex*3];
+					tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentGrid.tiles[selectedTile].sand;
+					currentGrid.blink(currentGrid.indexDict[face.faceIndex*3]);
+					break;
+				
+				default:
+					currentGrid.add(currentGrid.indexDict[face.faceIndex*3], nbTimes);
+					break;
+			}
 
 		}
 	}
@@ -298,16 +372,5 @@ app.renderer.domElement.addEventListener('click', function( event ) {
 /* FIN */
 /*******/
 
-// Using JQuerry to prevent breaking the inputs
-$(document).on('keyup', 'input', function () {
-    var _this = $(this);
-    var min = parseInt(_this.attr('min')) || 1; // if min attribute is not defined, 1 is default
-    var max = parseInt(_this.attr('max')) || 100; // if max attribute is not defined, 100 is default
-    var val = parseInt(_this.val()) || (min - 1); // if input char is not a number the value will be (min - 1) so first condition will be true
-    if(val < min)
-        _this.val( min );
-    if(val > max)
-        _this.val( max );
-});
 
 //https://threejs.org/examples/#webgl_interactive_buffergeometry
