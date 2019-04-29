@@ -127,14 +127,14 @@ class Tiling{
 	
 	remove(index, amount){
 		this.tiles[index].sand -= amount;
-		if(this.tiles[index].sand < 0) this.tiles[index].sand = 0;
+		if(this.tiles[index].sand < 0 && this.tiles[i].sand != -Infinity) this.tiles[index].sand = 0;
 		this.colorTile(index);
 	}
 	
 	removeEverywhere(amount){
 		for(var i = 0; i<this.tiles.length; i++){
 			this.tiles[i].sand -= amount;
-			if(this.tiles[i].sand < 0) this.tiles[i].sand = 0;
+			if(this.tiles[i].sand < 0 && this.tiles[i].sand != -Infinity) this.tiles[i].sand = 0;
 		}
 		this.colorTiles();
 	}
@@ -211,6 +211,9 @@ class Tiling{
 			if(colorNum >= this.cmap.length){
 				colorNum = this.cmap.length-1;
 			}
+			if(colorNum < 0)
+				color = new THREE.Color(0x000000);
+			
 			if(color)
 				this.colors.setXYZ(this.tiles[index].pointsIndexes[j], color.r, color.g, color.b);
 			else 
