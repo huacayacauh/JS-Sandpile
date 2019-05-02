@@ -1,9 +1,11 @@
 class Tile{
-	constructor(id, neighboors, points){
+	constructor(id, neighboors, points, lim){
 		this.id = id;
 		this.prevSand = 0; // "trick" variable to iterate the sand
 		this.sand = 0;
 		this.neighboors = neighboors; // Ids of adjacent tiles
+		
+		this.limit = lim;
 		
 		this.pointsIndexes = points; // Indexes of points representing the tile, in the Tiling array of points
 	}
@@ -22,20 +24,16 @@ class Tile{
 		for(var i=0; i<6; i++){
 			pointsIds.push(id*6 + i);
 		}
-		return new Tile(id, neighboors, pointsIds);
-	}
-	
-	static hexTile(){
-		
+		return new Tile(id, neighboors, pointsIds, 4);
 	}
 }
 
 class Tiling{
 	// Represents any tiling
-	constructor(points, colors, tiles, toppleMin, colormap){
+	constructor(points, colors, tiles, colormap){
 		
 		this.tiles = tiles;
-		this.limit = toppleMin; // limit until the sand topple to adjacents tiles
+		//this.limit = toppleMin; // limit until the sand topple to adjacents tiles
 		
 		var geometry = new THREE.BufferGeometry();
 
@@ -74,16 +72,9 @@ class Tiling{
 		});
 		
 		for(var i = 0; i<this.tiles.length; i++){
-			if(this.tiles[i].prevSand >= this.limit){
-				this.tiles[i].sand -= this.limit;
+			if(this.tiles[i].prevSand >= this.tiles[i].limit){
+				this.tiles[i].sand -= this.tiles[i].limit;
 				for(var j = 0; j< this.tiles[i].neighboors.length; j++){
-					
-					if(typeof this.tiles[this.tiles[i].neighboors[j]] === 'undefined'){
-						//useful to identify problems in the grid
-						console.log("Error");
-						console.log(i);
-						console.log(this.tiles[i].neighboors);
-					}
 					this.tiles[this.tiles[i].neighboors[j]].sand += 1;
 				}
 			}
@@ -127,7 +118,7 @@ class Tiling{
 	
 	remove(index, amount){
 		this.tiles[index].sand -= amount;
-		if(this.tiles[index].sand < 0 && this.tiles[i].sand != -Infinity) this.tiles[index].sand = 0;
+		if(this.tiles[index].sand < 0 && this.tiles[index].sand != -Infinity) this.tiles[index].sand = 0;
 		this.colorTile(index);
 	}
 	
@@ -159,21 +150,29 @@ class Tiling{
 	getDual(){
 		var newTiles = [];
 		for(var i = 0; i<this.tiles.length; i++){
-			newTiles.push(new Tile(this.tiles[i].id, Array.from(this.tiles[i].neighboors), Array.from(this.tiles[i].pointsIndexes)));
+			newTiles.push(new Tile(this.tiles[i].id, Array.from(this.tiles[i].neighboors), Array.from(this.tiles[i].pointsIndexes), this.tiles[i].limit));
 		}
-		var newTiling = new Tiling(Array.from(this.points), Array.from(this.colors), newTiles, this.limit, Array.from(this.cmap));
+		var newTiling = new Tiling(Array.from(this.points), Array.from(this.colors), newTiles, Array.from(this.cmap));
 		for(var i = 0; i<newTiling.tiles.length; i++){
-			newTiling.tiles[i].sand = Math.max(0, this.limit -1 - this.tiles[i].sand);
+			newTiling.tiles[i].sand = Math.max(0, this.tiles[i].limit - 1 - this.tiles[i].sand);
 		}
+		console.log(newTiling);
 		return newTiling;
+	}
+	
+	addMaxStable(){
+		for(var i = 0; i< this.tiles.length; i++){
+			this.add(i, this.tiles[i].limit - 1);
+		}
+		this.colorTiles();
 	}
 	
 	copy(){
 		var newTiles = [];
 		for(var i = 0; i<this.tiles.length; i++){
-			newTiles.push(new Tile(this.tiles[i].id, Array.from(this.tiles[i].neighboors), Array.from(this.tiles[i].pointsIndexes)));
+			newTiles.push(new Tile(this.tiles[i].id, Array.from(this.tiles[i].neighboors), Array.from(this.tiles[i].pointsIndexes), this.tiles[i].limit));
 		}
-		var newTiling = new Tiling(Array.from(this.points), Array.from(this.colors), newTiles, this.limit, Array.from(this.cmap));
+		var newTiling = new Tiling(Array.from(this.points), Array.from(this.colors), newTiles, Array.from(this.cmap));
 		return newTiling;
 	}
 	
@@ -185,6 +184,8 @@ class Tiling{
 	}
 	
 	stabilize(){
+		var t0 = performance.now();
+		
 		var oldTiles = [];
 		for(var i = 0; i<this.tiles.length; i++){
 			oldTiles.push(new Tile(this.tiles[i].id, Array.from(this.tiles[i].neighboors), Array.from(this.tiles[i].pointsIndexes)));
@@ -198,8 +199,11 @@ class Tiling{
 					done = false;
 				}
 			}
-			this.iterate();
+			for(var i = 0; i<20; i++)
+				this.iterate();
 		}
+		
+		console.log("Stabilized in : " + (performance.now() - t0) + " (ms)");
 		this.colorTiles();
 		
 	}
@@ -222,6 +226,7 @@ class Tiling{
 		
 		this.mesh.geometry.attributes.color.needsUpdate = true;
 	}
+	
 	colorTiles(){
 		// Colors every tile
 		for(var i = 0; i<this.tiles.length; i++){
@@ -230,6 +235,8 @@ class Tiling{
 	}
 	
 	async blink(index){
+		// Makes one tile blink
+		
 		this.colorTile(index, new THREE.Color(0, 1, 1));
 		await sleep(600); // wait until blinking has stopped
 		this.blinking = true;
@@ -281,9 +288,8 @@ class Tiling{
 			}
 		}
 		
-		return new Tiling(pos, col, tils, 4, cmap);
+		return new Tiling(pos, col, tils, cmap);
 	}
 	
 	
 }
-

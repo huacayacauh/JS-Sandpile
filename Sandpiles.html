@@ -8,7 +8,7 @@
 	</style>
   </head>
   <body>
-	<!-- Controles principaux de l'application-->
+	<!-- Main controls-->
 	<div id="main controls">
 		<select id="gridSelect" oninput="hideParams(this)">
 		  <option value="gridSq">Square Tiling</option>
@@ -29,7 +29,7 @@
 		
 	</div>
 	
-	<!-- Controles à la souris -->
+	<!-- Mouse controls -->
 	<div id="mouse controls" style="margin-top:10px;">
 		Mouse action :
 		<select id="mouseOperation">
@@ -44,7 +44,7 @@
 		</div>
 	</div>
 	
-	<!-- Controles divers -->
+	<!-- Operations controls -->
 	<div id="secondary controls" style="margin-top:10px;">
 		<select id="complexOperationValue" oninput="hideComplex(this)">
 		  <option value="MaxS">Max stable</option>
@@ -73,7 +73,7 @@
 		</div>
 	</div>
 	
-	<!-- Controles grille dimensionables -->
+	<!-- Grid-specific controls -->
 	<div id="squareParams" style="z-index:100; margin-top:10px; margin-bottom:10px;">
 		Width 
 		<input type="number" id="cW" min="1" max="500" value="100" style="width: 50px;" />
@@ -81,17 +81,15 @@
 		<input type="number" id="cH" min="1" max="500" value="100" style="width: 50px;" />
 	</div>
 	
-	<!-- Controles grilles penrose -->
+	<!-- Penrose controls -->
 	<div id="penroseParams" style="z-index:100; margin-top:10px; margin-bottom:10px;visibility:hidden;">
 		Iterations 
 		<input type="number" id="penroseIt" min="1" max="15" value="9" style="width: 50px;" />
 	</div>
 	
-	
+	<!-- Misc controls -->
 	Zoom
 	<input type="number" id="zoomLevel" oninput="set_zoom(this)" max="50" value="1" style="width:90px;" />
-	
-	<!-- Controles Couleurs -->
 	<button id="colorButton" class="blue button">Change colors</button>
 	
 	<div id="colors" class="modal">

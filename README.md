@@ -1,14 +1,9 @@
-# TER_SandPile
+# JS_SandPile
 
-Drive for sprints and additional development informations :
-https://drive.google.com/open?id=1s_qnqPTR8w8syqSe7tnn9iLQtC1u7AQZgidqRlATJCw
+The JS_Sandpiles app is a simple JavaScript implementation of the [Abelian sandpile model](https://en.wikipedia.org/wiki/Abelian_sandpile_model).
 
-Use of english for a slight professional tone
+The app contains a few tiling presets such as Square tiling, Hexagonal tiling or Penrose tilings, and can extend to any arbitrary graph.
 
-Don't forget to read the update notes
+![Sandpile identity](https://3c1703fe8d.site.internapcdn.net/newman/gfx/news/2019/famoussandpi.jpg)
 
-Emoji of the day : 😊
-
-Drive for edit our latex memory :
-
-https://fr.overleaf.com/5235942749wfmxxjsqgdhk
+Feel free to contact us for any  additional information.
