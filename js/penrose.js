@@ -816,7 +816,7 @@ makePenroseSandpile = function(data, cmap){
         
         var s = 0;
 
-        var tile = new Tile(id, neighboors, pointsIds);
+        var tile = new Tile(id, neighboors, pointsIds, 3);
         
         tile.sand = s;
 
@@ -824,27 +824,27 @@ makePenroseSandpile = function(data, cmap){
 
     }
     console.log("LENGTH TILS : ", tils.length);
-    return new Tiling(pos, col, tils, 3, cmap);
+    return new Tiling(pos, col, tils, cmap);
     
 }
 
-makeHKPenroseSandpile = function(iteration, cmap){
+Tiling.HKPenroseSandpile = function(iteration, cmap){
     generateHKTiling(iteration);
     return makePenroseSandpile(triangles, cmap);
 }
 
 
-makeHDPenroseSandpile = function(iteration, cmap){
+Tiling.HDPenroseSandpile = function(iteration, cmap){
     generateHDTiling(iteration);
     return makePenroseSandpile(triangles, cmap);
 }
 
-makeSunPenroseSandpile = function(iteration, cmap){
+Tiling.SunPenroseSandpile = function(iteration, cmap){
     generateSunTiling(iteration);
     return makePenroseSandpile(triangles, cmap);
 }
 
-makeStarPenroseSandpile = function(iteration, cmap){
+Tiling.StarPenroseSandpile = function(iteration, cmap){
     generateStarTiling(iteration);
     return makePenroseSandpile(triangles, cmap);
 }

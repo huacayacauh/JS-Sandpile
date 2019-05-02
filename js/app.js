@@ -33,6 +33,7 @@ class App{
 }
 
 
+// Application state variables ------------------------------------------------------------
 
 var cmap = [new THREE.Color(0xffffff),
               new THREE.Color(0xdddddd),
@@ -43,15 +44,24 @@ var cmap = [new THREE.Color(0xffffff),
               new THREE.Color(0xeeee00)];
 
 var play = false;
+
 var currentGrid;
+
 var app = new App();
+
 var SPEED = 1;
+
 var delay = 20;
+
 Math.seedrandom(1);
 
 var selectedTile;
+
 var tileInfo = document.getElementById("tileInfo");
+
 setInterval(refresh_zoom, 200);
+
+// ----------------------------------------------------------------------------------------
 
 
 function playPause(){
@@ -78,7 +88,7 @@ function step(){
 }
 
 function complexOperationAdd(){
-	// Function applied by the secondary operations
+	// Apply the selected operation, additively
 	
 	if(currentGrid){
 		var operationType = document.getElementById("complexOperationValue").value;
@@ -89,7 +99,7 @@ function complexOperationAdd(){
 			break;
 			
 			case "MaxS":
-				currentGrid.addEverywhere((currentGrid.limit - 1)*operationTimes);
+				currentGrid.addMaxStable();
 			break;
 			
 			case "Rand":
@@ -105,8 +115,13 @@ function complexOperationAdd(){
 				var identity2 = currentGrid.copy();
 				identity1.clear();
 				identity2.clear();
-				identity1.addEverywhere((identity1.limit - 1) * 2);
-				identity2.addEverywhere((identity2.limit - 1) * 2);
+				var maxLimit = 0;
+				for(var i = 0; i < currentGrid.tiles.length; i++){
+					if(maxLimit < currentGrid.tiles[i].limit)
+						maxLimit = currentGrid.tiles[i].limit;
+				}
+				identity1.addEverywhere((maxLimit - 1) * 2);
+				identity2.addEverywhere((maxLimit - 1) * 2);
 				identity1.stabilize();
 				identity2.removeConfiguration(identity1);
 				
@@ -121,6 +136,8 @@ function complexOperationAdd(){
 }
 
 function complexOperationSet(){
+	// Apply the selected operation, and set the grid accordingly
+	
 	if(currentGrid){
 		var operationType = document.getElementById("complexOperationValue").value;
 		var operationTimes = document.getElementById("complexOperationRepeat").valueAsNumber;
@@ -132,7 +149,7 @@ function complexOperationSet(){
 			
 			case "MaxS":
 				currentGrid.clear();
-				currentGrid.addEverywhere((currentGrid.limit - 1)*operationTimes);
+				currentGrid.addMaxStable();
 			break;
 			
 			case "Rand":
@@ -151,8 +168,15 @@ function complexOperationSet(){
 				var identity2 = currentGrid.copy();
 				identity1.clear();
 				identity2.clear();
-				identity1.addEverywhere((identity1.limit - 1) * 2);
-				identity2.addEverywhere((identity2.limit - 1) * 2);
+				
+				var maxLimit = 0;
+				for(var i = 0; i < currentGrid.tiles.length; i++){
+					if(maxLimit < currentGrid.tiles[i].limit)
+						maxLimit = currentGrid.tiles[i].limit;
+				}
+				identity1.addEverywhere((maxLimit - 1) * 2);
+				identity2.addEverywhere((maxLimit - 1) * 2);
+				
 				identity1.stabilize();
 				identity2.removeConfiguration(identity1);
 				
@@ -168,6 +192,8 @@ function complexOperationSet(){
 }
 
 function complexOperationSub(){
+	// Apply the selected operation, subtractively
+	
 	if(currentGrid){
 		var operationType = document.getElementById("complexOperationValue").value;
 		var operationTimes = document.getElementById("complexOperationRepeat").valueAsNumber;
@@ -177,7 +203,10 @@ function complexOperationSub(){
 			break;
 			
 			case "MaxS":
-				currentGrid.removeEverywhere((currentGrid.limit - 1)*operationTimes);
+				for(var i = 0; i< currentGrid.tiles.length; i++){
+					currentGrid.remove(i, currentGrid.tiles[i].limit - 1);
+				}
+				currentGrid.colorTiles();
 			break;
 			
 			case "Rand":
@@ -193,8 +222,15 @@ function complexOperationSub(){
 				var identity2 = currentGrid.copy();
 				identity1.clear();
 				identity2.clear();
-				identity1.addEverywhere((identity1.limit - 1) * 2);
-				identity2.addEverywhere((identity2.limit - 1) * 2);
+				
+				var maxLimit = 0;
+				for(var i = 0; i < currentGrid.tiles.length; i++){
+					if(maxLimit < currentGrid.tiles[i].limit)
+						maxLimit = currentGrid.tiles[i].limit;
+				}
+				identity1.addEverywhere((maxLimit - 1) * 2);
+				identity2.addEverywhere((maxLimit - 1) * 2);
+				
 				identity1.stabilize();
 				identity2.removeConfiguration(identity1);
 				
@@ -217,7 +253,7 @@ function stabGrid(){
 }
 
 function drawGrid(){
-	// Draw a square grid - could be splitted in init() and drawSquare()
+	// Draws the selected grid
 	
 	while(app.scene.children.length > 0){ 
 		app.scene.remove(app.scene.children[0]); 
@@ -242,22 +278,22 @@ function drawGrid(){
 		break;
 		
 		case "gridPenHK":
-			currentGrid = makeHKPenroseSandpile(nbIt, cmap); 
+			currentGrid = Tiling.HKPenroseSandpile(nbIt, cmap); 
 			app.camera.zoom = 0.7;
 		break;
 		
 		case "gridPenHD":
-			currentGrid = makeHDPenroseSandpile(nbIt, cmap); 
+			currentGrid = Tiling.HDPenroseSandpile(nbIt, cmap); 
 			app.camera.zoom = 0.7;
 		break;
 		
 		case "gridPenSun":
-			currentGrid = makeSunPenroseSandpile(nbIt, cmap); 
+			currentGrid = Tiling.SunPenroseSandpile(nbIt, cmap); 
 			app.camera.zoom = 0.7;
 		break;
 		
 		case "gridPenStar":
-			currentGrid = makeStarPenroseSandpile(nbIt, cmap); 
+			currentGrid = Tiling.StarPenroseSandpile(nbIt, cmap); 
 			app.camera.zoom = 0.7;
 		break;
 		
@@ -286,6 +322,7 @@ function drawGrid(){
 }
 
 async function playWithDelay() {
+	// Apply the selected delay to the iterations
 	
 	if(currentGrid){
 	  while(true){
@@ -308,7 +345,8 @@ function iterateGrid(){
 }
 
 function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+	// JS implementation of sleep
+	return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 /***********************************/

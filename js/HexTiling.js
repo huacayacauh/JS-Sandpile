@@ -19,7 +19,7 @@ Tiling.hexTiling = function (height, width, cmap) {
 	}
 	
 	
-	return new Tiling(pos, col, tils, 6, cmap);
+	return new Tiling(pos, col, tils, cmap);
 }
 
 Tile.hexTile = function(x, y, xMax, yMax){
@@ -57,7 +57,7 @@ Tile.hexTile = function(x, y, xMax, yMax){
 	for(var i=0; i<12; i++){
 		pointsIds.push(id*12 + i);
 	}
-	return new Tile(id, neighboors, pointsIds);
+	return new Tile(id, neighboors, pointsIds, 6);
 }
 
 function makeHexCell(positions, colors, i, j, xCoords, yCoords, xMid, yMid){

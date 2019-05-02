@@ -17,7 +17,7 @@ Tiling.triTiling = function (size, cmap) {
 	}
 	
 	
-	return new Tiling(pos, col, tils, 3, cmap);
+	return new Tiling(pos, col, tils, cmap);
 }
 
 Tile.triTile = function(x, y, size, length){
@@ -44,7 +44,7 @@ Tile.triTile = function(x, y, size, length){
 	for(var i=0; i<3; i++){
 		pointsIds.push(id*3 + i);
 	}
-	return new Tile(id, neighboors, pointsIds);
+	return new Tile(id, neighboors, pointsIds, 3);
 }
 
 function makeTriCell(positions, colors, i, j, xMid, yMid){
