@@ -213,7 +213,7 @@ splitHK = function(t){
     edge2p2.triangleA = t2; edge2p2.typeEA = "01";
     edge2p2.triangleB = t3; edge2p2.typeEB = "01";
     edge2p2.vertexA = v2; 
-    edge2p2.vertexA = p2;
+    edge2p2.vertexB = p2;
 
     triangles.push(t2);
     triangles.push(t3);
@@ -271,7 +271,7 @@ splitHD = function(t){
     edge0p1.triangleA = t; edge0p1.typeEA = "12";
     edge0p1.triangleB = t2; edge0p1.typeEB = "02";
     edge0p1.vertexA = v0; 
-    edge0p1.vertexA = p1;
+    edge0p1.vertexB = p1;
 
     triangles.push(t2);
 

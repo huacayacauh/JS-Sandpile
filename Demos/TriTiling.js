@@ -78,7 +78,7 @@ function makeTriCell(positions, colors, i, j, xMid, yMid){
 /**********************/
 /* PARTIE APPLICATION */
 /**********************/
-var SPEED = 5;
+var SPEED = 10;
 
 class App{
 
