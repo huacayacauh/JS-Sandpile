@@ -1,0 +1,66 @@
+.divUp{
+	position:fixed;
+	background:#33b5e5;
+	padding:5px;
+	color:#ffffff;
+	text-align:center;
+	right:0;
+	left:0;
+	top:0;
+}
+
+.body{
+	margin:0;
+	background-color: #bbbbbb;
+    white-space: nowrap;
+	overflow:auto;
+}
+
+.nav{
+	width: 270px;
+	position: fixed;
+	top: 110px;
+	bottom: 10px;
+	left:10px;
+	margin: 0;
+	overflow-x: hidden;
+	overflow-y: auto;
+	direction:rtl;
+}
+
+.controlGroup{
+	padding: 10px;
+	margin-bottom: 7px;
+	background-color: #33b5e5;
+	color: #ffffff;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+	direction:ltr;
+}
+
+.canvasDiv{
+	position: fixed;
+	top : 110px;
+	left : 290px;
+	bottom:0;
+	right:0;
+}
+
+.groupTitle{
+	margin:0;
+	margin-bottom:5px;
+	text-align:center;
+	font-weight:bold;
+	direction:ltr;
+}
+
+select{
+	color:black;
+	width:110px;
+}
+
+input{
+	color:black;
+	width:50px;
+	text-align:right;
+}
+

@@ -3,14 +3,34 @@
   <head>
     <title>Sandpiles</title>
 	<style>
+		@import "./css/bootstrap.min.css";
 		@import "./css/buttons.css";
 		@import "./css/modal.css";
+		@import "./css/divs.css";
 	</style>
   </head>
-  <body>
+  <body class="body">
+
+	<header class="divUp">
+	<p style="margin:0; font-size:35px; font-weight:bold;">Js-Sandpiles</p>
+	<p style="font-size:20px; font-family:'Arial';"> </p>
+	Delay (ms) :
+		<input type="number" id="delay" style="margin-right:20px" value="20" oninput="changeDelay(this);" min="1" max="10000"/>
+		Iterations per frame :
+		<input type="number" id="IPF" style="margin-right:40px" value="1" oninput="changeIPS(this);" min="1" max="10000"/>
+		<span style="position:relative; margin-right:70px; ">
+		<button id="playButton" onclick="playPause()" class="playbutton"></button>
+		</span>
+		<button onclick="step()" style="margin-right:20px" class="btn btn-default">Step</button>
+		<button id="stabilizeButton"  onclick="stabGrid()" class="btn btn-primary">Stabilize</button>
+	</header>
+
+	<nav class="nav">
+
 	<!-- Main controls-->
-	<div id="main controls">
-		<select id="gridSelect" oninput="hideParams(this)">
+	<div id="main controls" class="controlGroup">
+	<p class="groupTitle">Grid selection</p>
+		<select id="gridSelect">
 		  <option value="gridSq">Square Tiling</option>
 		  <option value="gridHex">Hexagonal Tiling</option>
 		  <option value="gridTri">Triangular Tiling</option>
@@ -19,89 +39,105 @@
 		  <option value="gridPenSun">Penrose Sun</option>
 		  <option value="gridPenStar">Penrose Star</option>
 		</select>
-		<button onclick='drawGrid()' class="small button">Make grid</button>
-		<button onclick="step()" class="small button">Step</button>
-		Delay (ms) :
-		<input type="number" id="delay" value="20" oninput="changeDelay(this);" style="width: 50px;" min="1" max="10000"/>
-		Iterations per frame :
-		<input type="number" id="IPF" value="1" oninput="changeIPS(this);" style="width: 50px;" min="1" max="10000"/>
-		<button id="playButton" onclick="playPause()" class="playbutton"></button>
+		<button onclick='drawGrid()' style="margin-left:38px;" class="btn btn-default ">Make grid</button>
 		
+
 	</div>
 	
+	<!-- Grid-specific controls -->
+	<div id="squareParams" class="controlGroup">
+	<p class="groupTitle">Grid parameters</p>
+		Width : 
+		<input type="number" id="cW" min="1" max="500" value="100" style="width: 50px;" />
+		<span style="right:15px; position:absolute">Height : 
+		<input type="number" id="cH" min="1" max="500" value="100" style="width: 50px;" />
+		</span>
+
+	<!-- Penrose controls -->
+	<div id="penroseParams">
+	<br>
+	Penrose iterations : 
+	<input type="number" style="right:15px; position:absolute" id="penroseIt" min="1" max="15" value="9" style="width: 50px;" />
+	&nbsp;
+	</div>
+	</div>
+
 	<!-- Mouse controls -->
-	<div id="mouse controls" style="margin-top:10px;">
-		Mouse action :
+	<div id="mouse controls" class="controlGroup">
+		<p class="groupTitle">Mouse controls</p>
 		<select id="mouseOperation">
 		  <option value="addOne">Add One</option>
 		  <option value="rmOne">Remove One</option>
 		  <option value="select">Select</option>
 		  <option value="delTile">Delete Tile</option>
 		</select>
-		<div id="maskMouseRepeat" style="display:inline; visibility:visible;">
-		times
+		<div id="maskMouseRepeat" style="display:inline;">
+		&nbsp;&nbsp;times&nbsp;&nbsp;
 		<input type="number" id="mouseOperationRepeat" value="1" min="1" max="1000000" style="width: 70px;" />
 		</div>
 	</div>
-	
+
 	<!-- Operations controls -->
-	<div id="secondary controls" style="margin-top:10px;">
-		<select id="complexOperationValue" oninput="hideComplex(this)">
+	<div id="secondary controls" class="controlGroup">
+		<p class="groupTitle">Tiling operations</p>
+		<select id="complexOperationValue"  >
 		  <option value="MaxS">Max stable</option>
 		  <option value="OneE">One Everywhere</option>
 		  <option value="Dual">Dual</option>
 		  <option value="Iden">Identity</option>
 		  <option value="Rand">Random</option>
 		</select>
-		
-		<div id="complexTimesMask" style="display:inline; visibility:hidden;">
-		times
+		<div id="complexTimesMask" style="display:inline;">
+		&nbsp;&nbsp;times&nbsp;&nbsp;
 		<input type="number" id="complexOperationRepeat" min="1" max="1000000" value="1" style="width: 70px;" />
 		</div>
-		
-		<button id="complexOperationAdd" onclick="complexOperationAdd()" class="small button">Add</button>
-		
-		<button id="complexOperationSub" onclick="complexOperationSub()" class="small button">Substract</button>
-		
-		<button id="complexOperationSet" onclick="complexOperationSet()" class="small button">Set</button>
-		
-		<button id="complexOperationSet" onclick="stabGrid()" class="small button" style="margin-left:150px";>Stabilize</button>
-		
+		<br>
+		<div class="btn-group">
+		<button id="complexOperationAdd" onclick="complexOperationAdd()" style="margin-left:20px; margin-top:10px;" class="btn btn-default">Add</button>
+
+		<button id="complexOperationSub" onclick="complexOperationSub()" style="margin-top:10px;" class="btn btn-default">Substract</button>
+
+		<button id="complexOperationSet" onclick="complexOperationSet()" style="margin-top:10px;"class="btn btn-default">Set</button>
+		</div>
+
+
 		<div id="seedMask" style="display:inline; visibility:hidden; margin-left:10px;">
 			Seed :
 			<input id="randSeed" value="1" oninput="changeSeed(this);" style="width: 100px;" />
 		</div>
 	</div>
-	
-	<!-- Grid-specific controls -->
-	<div id="squareParams" style="z-index:100; margin-top:10px; margin-bottom:10px;">
-		Width 
-		<input type="number" id="cW" min="1" max="500" value="100" style="width: 50px;" />
-		Height
-		<input type="number" id="cH" min="1" max="500" value="100" style="width: 50px;" />
-	</div>
-	
-	<!-- Penrose controls -->
-	<div id="penroseParams" style="z-index:100; margin-top:10px; margin-bottom:10px;visibility:hidden;">
-		Iterations 
-		<input type="number" id="penroseIt" min="1" max="15" value="9" style="width: 50px;" />
-	</div>
-	
+
 	<!-- Misc controls -->
+  <div class="controlGroup">
+  <p class="groupTitle">Misc controls </p>
 	Zoom
-	<input type="number" id="zoomLevel" oninput="set_zoom(this)" max="50" value="1" style="width:90px;" />
-	<button id="colorButton" class="blue button">Change colors</button>
+	<input type="number" id="zoomLevel" oninput="set_zoom(this)" max="50" value="1" />
+	<button id="colorButton"  style="margin-left:25px;" class="btn btn-default">Change colors</button>
+
+
 	
+</div>
+	<div  id="bottomGroup"  class="controlGroup" style="height:200px;">
+	
+	<p class="groupTitle">Informations</p>
+	
+	  <span id="tileInfo">Tile info</span>
+	  
+	  <span style="bottom:-100px;position:absolute;left:10px">2019 Js-Sandpiles, CCBY</span>
+	</div>
+
+    </nav>
+
+
 	<div id="colors" class="modal">
 	  <div class="modal-content">
 		<span class="close">&times;</span>
 	  </div>
-	<div>
-	
-	<div class="tooltip" id="canvasHolder">
-	  <span class="tooltiptext" id="tileInfo">Tile info</span>
 	</div>
-	
+
+	<div class="canvasDiv" id="canvasHolder">
+	</div>
+
 	<!-- JS Sources -->
 	<script src="./js/jquery.min.js"></script>
 	<script src="./js/changeDisplay.js"></script>
@@ -113,6 +149,7 @@
 	<script src="./js/TriTiling.js"></script>
 	<script src="./js/penrose.js"></script>
     <script src="./js/app.js"></script>
-	
+	<script src="./js/bootstrap.min.js"></script>
+
   </body>
 </html>

@@ -2,8 +2,10 @@ class App{
 	// Create the three.js canvas, which contains the grids
 
 	constructor(){
-		this.WIDTH = 600;
-		this.HEIGHT = 500;
+
+		var container = document.getElementById("canvasHolder");
+		this.WIDTH = container.clientWidth- 10;
+		this.HEIGHT = container.clientHeight - 10;
 
 
 		this.scene = new THREE.Scene();
@@ -20,12 +22,10 @@ class App{
 		this.renderer = new THREE.WebGLRenderer( );
 
 		this.renderer.setSize(this.WIDTH, this.HEIGHT);
-		var container = document.getElementById("canvasHolder");
-		document.body.appendChild( container );
 		container.appendChild(this.renderer.domElement);
-	
+
 		this.controls = new THREE.OrthographicTrackballControls( this.camera, this.renderer.domElement ); //OK
-		
+
 		this.controls.enablePan = true;
 		this.controls.enableZoom = true;
 		this.controls.enableRotate = false;
@@ -63,6 +63,19 @@ setInterval(refresh_zoom, 200);
 
 // ----------------------------------------------------------------------------------------
 
+window.addEventListener( 'resize', onWindowResize, false );
+
+function onWindowResize(){
+	var container = document.getElementById("canvasHolder");
+	app.WIDTH = container.clientWidth- 10;
+	app.HEIGHT = container.clientHeight - 10;
+    app.renderer.setSize( app.WIDTH, app.HEIGHT );
+    app.camera.updateProjectionMatrix();
+
+	//document.getElementById("bottomGroup").style.height = document.documentElement.clientHeight - document.getElementById("bottomGroup").offsetTop - 10;
+
+
+}
 
 function playPause(){
 	var element = document.getElementById("playButton");
@@ -89,7 +102,7 @@ function step(){
 
 function complexOperationAdd(){
 	// Apply the selected operation, additively
-	
+
 	if(currentGrid){
 		var operationType = document.getElementById("complexOperationValue").value;
 		var operationTimes = document.getElementById("complexOperationRepeat").valueAsNumber;
@@ -97,19 +110,19 @@ function complexOperationAdd(){
 			case "OneE":
 				currentGrid.addEverywhere(operationTimes);
 			break;
-			
+
 			case "MaxS":
 				currentGrid.addMaxStable();
 			break;
-			
+
 			case "Rand":
 				currentGrid.addRandom(operationTimes);
 			break;
-			
+
 			case "Dual":
 				currentGrid.addConfiguration(currentGrid.getDual());
 			break;
-			
+
 			case "Iden":
 				var identity1 = currentGrid.copy();
 				var identity2 = currentGrid.copy();
@@ -124,20 +137,20 @@ function complexOperationAdd(){
 				identity2.addEverywhere((maxLimit - 1) * 2);
 				identity1.stabilize();
 				identity2.removeConfiguration(identity1);
-				
+
 				identity2.stabilize();
 				currentGrid.addConfiguration(identity2);
 			break;
 		}
 	}
-	
+
 	if(selectedTile)
 		tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentGrid.tiles[selectedTile].sand;
 }
 
 function complexOperationSet(){
 	// Apply the selected operation, and set the grid accordingly
-	
+
 	if(currentGrid){
 		var operationType = document.getElementById("complexOperationValue").value;
 		var operationTimes = document.getElementById("complexOperationRepeat").valueAsNumber;
@@ -146,29 +159,29 @@ function complexOperationSet(){
 				currentGrid.clear();
 				currentGrid.addEverywhere(operationTimes);
 			break;
-			
+
 			case "MaxS":
 				currentGrid.clear();
 				currentGrid.addMaxStable();
 			break;
-			
+
 			case "Rand":
 				currentGrid.clear();
 				currentGrid.addRandom(operationTimes);
 			break;
-			
+
 			case "Dual":
 				var newGrid = currentGrid.getDual();
 				currentGrid.clear();
 				currentGrid.addConfiguration(newGrid);
 			break;
-			
+
 			case "Iden":
 				var identity1 = currentGrid.copy();
 				var identity2 = currentGrid.copy();
 				identity1.clear();
 				identity2.clear();
-				
+
 				var maxLimit = 0;
 				for(var i = 0; i < currentGrid.tiles.length; i++){
 					if(maxLimit < currentGrid.tiles[i].limit)
@@ -176,24 +189,24 @@ function complexOperationSet(){
 				}
 				identity1.addEverywhere((maxLimit - 1) * 2);
 				identity2.addEverywhere((maxLimit - 1) * 2);
-				
+
 				identity1.stabilize();
 				identity2.removeConfiguration(identity1);
-				
+
 				identity2.stabilize();
 				currentGrid.clear();
 				currentGrid.addConfiguration(identity2);
 			break;
 		}
 	}
-	
+
 	if(selectedTile)
 		tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentGrid.tiles[selectedTile].sand;
 }
 
 function complexOperationSub(){
 	// Apply the selected operation, subtractively
-	
+
 	if(currentGrid){
 		var operationType = document.getElementById("complexOperationValue").value;
 		var operationTimes = document.getElementById("complexOperationRepeat").valueAsNumber;
@@ -201,28 +214,28 @@ function complexOperationSub(){
 			case "OneE":
 				currentGrid.removeEverywhere(operationTimes);
 			break;
-			
+
 			case "MaxS":
 				for(var i = 0; i< currentGrid.tiles.length; i++){
 					currentGrid.remove(i, currentGrid.tiles[i].limit - 1);
 				}
 				currentGrid.colorTiles();
 			break;
-			
+
 			case "Rand":
 				currentGrid.removeRandom(operationTimes);
 			break;
-			
+
 			case "Dual":
 				currentGrid.removeConfiguration(currentGrid.getDual());
 			break;
-			
+
 			case "Iden":
 				var identity1 = currentGrid.copy();
 				var identity2 = currentGrid.copy();
 				identity1.clear();
 				identity2.clear();
-				
+
 				var maxLimit = 0;
 				for(var i = 0; i < currentGrid.tiles.length; i++){
 					if(maxLimit < currentGrid.tiles[i].limit)
@@ -230,16 +243,16 @@ function complexOperationSub(){
 				}
 				identity1.addEverywhere((maxLimit - 1) * 2);
 				identity2.addEverywhere((maxLimit - 1) * 2);
-				
+
 				identity1.stabilize();
 				identity2.removeConfiguration(identity1);
-				
+
 				identity2.stabilize();
 				currentGrid.removeConfiguration(identity2);
 			break;
 		}
 	}
-	
+
 	if(selectedTile)
 		tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentGrid.tiles[selectedTile].sand;
 }
@@ -247,72 +260,72 @@ function stabGrid(){
 	if(currentGrid) {
 		currentGrid.stabilize();
 	}
-	
+
 	if(selectedTile)
 		tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentGrid.tiles[selectedTile].sand;
 }
 
 function drawGrid(){
 	// Draws the selected grid
-	
-	while(app.scene.children.length > 0){ 
-		app.scene.remove(app.scene.children[0]); 
+
+	while(app.scene.children.length > 0){
+		app.scene.remove(app.scene.children[0]);
 		console.log("cleared");
 	}
 	cW = document.getElementById("cW").value;
 	cH = document.getElementById("cH").value;
-	
+
 	selectedTile = null;
 	preset = document.getElementById("gridSelect").value;
-	
+
 	var nbIt = document.getElementById("penroseIt").value;
 	switch(preset){
 		case "gridHex":
 			currentGrid = Tiling.hexTiling(cW, cH, cmap);
 			app.camera.zoom = 0.7;
 		break;
-		
+
 		case "gridTri":
-			currentGrid = Tiling.triTiling(cW, cmap); 
+			currentGrid = Tiling.triTiling(cW, cmap);
 			app.camera.zoom = 1.2;
 		break;
-		
+
 		case "gridPenHK":
-			currentGrid = Tiling.HKPenroseSandpile(nbIt, cmap); 
+			currentGrid = Tiling.HKPenroseSandpile(nbIt, cmap);
 			app.camera.zoom = 0.7;
 		break;
-		
+
 		case "gridPenHD":
-			currentGrid = Tiling.HDPenroseSandpile(nbIt, cmap); 
+			currentGrid = Tiling.HDPenroseSandpile(nbIt, cmap);
 			app.camera.zoom = 0.7;
 		break;
-		
+
 		case "gridPenSun":
-			currentGrid = Tiling.SunPenroseSandpile(nbIt, cmap); 
+			currentGrid = Tiling.SunPenroseSandpile(nbIt, cmap);
 			app.camera.zoom = 0.7;
 		break;
-		
+
 		case "gridPenStar":
-			currentGrid = Tiling.StarPenroseSandpile(nbIt, cmap); 
+			currentGrid = Tiling.StarPenroseSandpile(nbIt, cmap);
 			app.camera.zoom = 0.7;
 		break;
-		
+
 		default:
 			currentGrid = Tiling.sqTiling(cW, cH, cmap);
 			app.camera.zoom = 1;
 		break;
-		
+
 	}
-	
+
 	app.controls.zoomCamera();
 	app.controls.object.updateProjectionMatrix();
-	
+
 	app.scene.add(currentGrid.mesh);
 	currentGrid.colorTiles();
 	//console.log(currentGrid);
-	
+
 	playWithDelay();
-	
+
 	var render = function () {
 		requestAnimationFrame( render );
 		app.controls.update();
@@ -323,7 +336,7 @@ function drawGrid(){
 
 async function playWithDelay() {
 	// Apply the selected delay to the iterations
-	
+
 	if(currentGrid){
 	  while(true){
 		  if(play){
@@ -341,7 +354,7 @@ function iterateGrid(){
 	currentGrid.colorTiles();
 	if(selectedTile)
 		tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentGrid.tiles[selectedTile].sand;
-		
+
 }
 
 function sleep(ms) {
@@ -371,30 +384,30 @@ app.renderer.domElement.addEventListener('click', function( event ) {
 	// on paramète le rayon selon les ratios et la camera
 	raycaster.setFromCamera(mouse, app.camera);
 	// l'objet intersects est u tableau qui contient toutes les faces intersectés par le rayon
-	
+
 	if(app.scene.children.length > 0){
-		
+
 		var intersects = raycaster.intersectObject(app.scene.children[0]);
 
 		if(intersects.length > 0){
 
 			var face = intersects[0];
-			var triangleIndex = face.faceIndex; 
+			var triangleIndex = face.faceIndex;
 			var nbTimes = document.getElementById("mouseOperationRepeat").valueAsNumber;
-			
+
 			var mouseTODO = document.getElementById("mouseOperation").value;
 			switch(mouseTODO){
 				case "rmOne":
 					currentGrid.remove(currentGrid.indexDict[face.faceIndex*3], nbTimes);
 					break;
-					
+
 				case "select":
 					currentGrid.stopBlink();
 					selectedTile = currentGrid.indexDict[face.faceIndex*3];
 					tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentGrid.tiles[selectedTile].sand;
 					currentGrid.blink(currentGrid.indexDict[face.faceIndex*3]);
 					break;
-					
+
 				case "delTile":
 					var current = currentGrid.indexDict[face.faceIndex*3];
 					currentGrid.tiles[current].sand = -Infinity;
@@ -402,14 +415,14 @@ app.renderer.domElement.addEventListener('click', function( event ) {
 					var adjacents = currentGrid.tiles[current].neighboors;
 					for(var i = 0; i<adjacents.length; i++){
 						var nextTile = currentGrid.tiles[adjacents[i]];
-						for(var j = 0; j < nextTile.neighboors.length; j++){ 
+						for(var j = 0; j < nextTile.neighboors.length; j++){
 						   if (nextTile.neighboors[j] === current) {
-							 nextTile.neighboors.splice(j, 1); 
+							 nextTile.neighboors.splice(j, 1);
 						   }
 						}
 					}
 					break;
-				
+
 				default:
 					currentGrid.add(currentGrid.indexDict[face.faceIndex*3], nbTimes);
 					break;

@@ -1,3 +1,5 @@
+//document.getElementById("bottomGroup").style.height = document.documentElement.clientHeight - document.getElementById("bottomGroup").offsetTop - 10;
+
 function changeIPS(val){
 	SPEED = val.value;
 }
@@ -21,24 +23,6 @@ function set_zoom(val){
 		app.controls.zoomCamera();
 		app.controls.object.updateProjectionMatrix();
 	}
-}
-
-function hideComplex(val){
-	// Hide elements according to the selected operation
-	
-	if(val.value == "Rand") document.getElementById("seedMask").style.visibility = "visible";
-	else document.getElementById("seedMask").style.visibility = "hidden";
-	
-	if(val.value == "Dual" || val.value == "MaxS" || val.value == "Iden") document.getElementById("complexTimesMask").style.visibility = "hidden";
-	else document.getElementById("complexTimesMask").style.visibility = "visible";
-}
-
-function hideParams(val){
-	// Hide elements according to the selected grid
-	
-	if(val.value == "gridHex" || val.value == "gridSq") document.getElementById("squareParams").style.visibility = "visible";
-	else document.getElementById("squareParams").style.visibility = "hidden";
-	
 }
 
 // Color selection modal
