@@ -480,15 +480,16 @@ THREE.OrthographicTrackballControls = function ( object, domElement ) {
 
 	function mousewheel( event ) {
 
-		return;
 		if ( _this.enabled === false ) return;
 
-		event.preventDefault();
-		event.stopPropagation();
+		// cross-browser wheel delta
+		var e = window.event || e; // old IE support
+		var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
 
-		_zoomStart.y += event.deltaY * 0.01;
-		_this.dispatchEvent( startEvent );
-		_this.dispatchEvent( endEvent );
+		_zoomStart.copy( getMouseOnScreen( 1,1 ) );
+		_zoomEnd.copy( _zoomStart );
+
+		_zoomEnd.copy( getMouseOnScreen( delta*10, delta*10 ) );
 
 	}
 
@@ -608,12 +609,12 @@ THREE.OrthographicTrackballControls = function ( object, domElement ) {
 	this.domElement.addEventListener( 'contextmenu', contextmenu, false );
 	this.domElement.addEventListener( 'mousedown', mousedown, false );
 	this.domElement.addEventListener( 'wheel', mousewheel, false );
-	this.domElement.addEventListener( 'touchstart', touchstart, false );
-	this.domElement.addEventListener( 'touchend', touchend, false );
-	this.domElement.addEventListener( 'touchmove', touchmove, false );
+	//this.domElement.addEventListener( 'touchstart', touchstart, false );
+	//this.domElement.addEventListener( 'touchend', touchend, false );
+	//this.domElement.addEventListener( 'touchmove', touchmove, false );
 
-	window.addEventListener( 'keydown', keydown, false );
-	window.addEventListener( 'keyup', keyup, false );
+	//window.addEventListener( 'keydown', keydown, false );
+	//window.addEventListener( 'keyup', keyup, false );
 
 	this.handleResize();
 
