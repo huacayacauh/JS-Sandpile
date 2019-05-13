@@ -25,6 +25,14 @@ function set_zoom(val){
 	}
 }
 
+function show_stats(){
+	if(currentGrid){
+		var infos = currentGrid.get_stats();
+		var info_disp = document.getElementById("statsInfo");
+		info_disp.innerHTML = "Mean : " + infos["Mean"] + "<br> Std : " + infos["Std"];
+	}
+}
+
 // Color selection modal
 var modal = document.getElementById('colors');
 
@@ -72,7 +80,8 @@ btn.onclick = function() {
 	
 	var addColor = document.createElement("button");
 	addColor.innerHTML = "Add color";
-	addColor.classList.add("button");
+	addColor.classList.add("btn");
+	addColor.classList.add("btn-default");
 	addColor.style = "bottom:20px;right:100px;position:absolute;";
 	addColor.onclick = function() {
 		var para = document.createElement("p");
@@ -91,7 +100,8 @@ btn.onclick = function() {
 	}
 	
 	var validate = document.createElement("button");
-	validate.classList.add("button");
+	validate.classList.add("btn");
+	validate.classList.add("btn-default");
 	validate.innerHTML = "Save";
 	validate.style = "bottom:20px; right:20px;position:absolute;";
 	validate.onclick = function() {
@@ -108,12 +118,13 @@ btn.onclick = function() {
 		}
 		modal.style.display = "none";
 	}
-	
-	var color_preset = document.createElement("button");
-	color_preset.classList.add("button");
-	color_preset.innerHTML = "Use preset";
-	color_preset.style = "top:60px; right:20px;position:absolute;";
-	color_preset.onclick = function() {
+	var preset_span = document.createElement("span");
+	preset_span.innerHTML = "Preset : ";
+	var preset_choice = document.createElement("select");
+	preset_span.style = "top:60px; right:20px;position:absolute;";
+	preset_choice.style = "display:inline";
+	preset_span.appendChild(preset_choice);
+	preset_choice.oninput = function() {
 		var grey_array = ["#ffffff", "#dddddd", "#bbbbbb", "#999999", "#777777", "#555555", "#eeee00"];
 		var lava_array = ["#cccccc", "#888888", "#444444", "#553333", "#772222", "#aa1111", "#ff1100", "#ff8800", "#eeee00"];
 		
@@ -161,8 +172,7 @@ btn.onclick = function() {
 	
 	// Color presets
 	
-	var preset_choice = document.createElement("select");
-	preset_choice.style = "top:65px; right:150px;position:absolute;";
+	
 	
 	var p1 = document.createElement("option");
 	p1.value = "grey";
@@ -189,8 +199,7 @@ btn.onclick = function() {
 	
 	modal.children[0].appendChild(addColor);
 	modal.children[0].appendChild(validate);
-	modal.children[0].appendChild(color_preset);
-	modal.children[0].appendChild(preset_choice);
+	modal.children[0].appendChild(preset_span);
     modal.style.display = "block";
 }
 

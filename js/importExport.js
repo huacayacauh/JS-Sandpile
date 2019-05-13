@@ -12,9 +12,27 @@ jsonToTilling = function(json){
 
 
     currentGrid = new Tiling(points, colors, tiles, cmap);
+	while(app.scene.children.length > 0){
+		app.scene.remove(app.scene.children[0]);
+		console.log("cleared");
+	}
+	
+	selectedTile = null;
+	app.controls.zoomCamera();
+	app.controls.object.updateProjectionMatrix();
 
-    app.scene.remove(app.scene.children[0]); 
-    app.scene.add(currentGrid.mesh);
+	app.scene.add(currentGrid.mesh);
+	currentGrid.colorTiles();
+	//console.log(currentGrid);
+
+	playWithDelay();
+
+	var render = function () {
+		requestAnimationFrame( render );
+		app.controls.update();
+		app.renderer.render( app.scene, app.camera );
+	};
+	render();
 }
 
 
@@ -96,7 +114,8 @@ handleDownload = function(evt){
     if(currentGrid === undefined) return
     var link = document.getElementById('downloadlink');
     link.href = tillingToJson(currentGrid);
-    link.style.display = 'block';
+    //link.style.display = 'block';
+	link.click();
 }
 
 var create = document.getElementById('create')

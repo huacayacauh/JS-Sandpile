@@ -30,6 +30,26 @@ class App{
 		this.controls.enableZoom = true;
 		this.controls.enableRotate = false;
 	}
+	
+	reset_size(){
+		var container = document.getElementById("canvasHolder");
+		this.WIDTH = container.clientWidth- 10;
+		this.HEIGHT = container.clientHeight - 10;
+
+		this.ratio = this.WIDTH / this.HEIGHT;
+
+		var left = -this.WIDTH / 4.5;
+		var right = this.WIDTH / 4.5;
+		var top_cam = this.HEIGHT / 4.5;
+		var bottom = -this.HEIGHT / 4.5;
+		this.camera.left = left;
+		this.camera.right = right;
+		this.camera.top = top_cam;
+		this.camera.bottom = bottom;
+		
+		this.camera.updateProjectionMatrix();
+		this.renderer.setSize(this.WIDTH, this.HEIGHT);
+	}
 }
 
 
@@ -59,36 +79,44 @@ var selectedTile;
 
 var tileInfo = document.getElementById("tileInfo");
 
+var savedConfigs = [];
+
+var selectColor = 0.0;
+
+var color_select = new THREE.Color();
+
 setInterval(refresh_zoom, 200);
+
+setInterval(colorSelected, 100);
 
 // ----------------------------------------------------------------------------------------
 
 window.addEventListener( 'resize', onWindowResize, false );
 
 function onWindowResize(){
-	var container = document.getElementById("canvasHolder");
-	app.WIDTH = container.clientWidth- 10;
-	app.HEIGHT = container.clientHeight - 10;
-    app.renderer.setSize( app.WIDTH, app.HEIGHT );
-    app.camera.updateProjectionMatrix();
+	app.reset_size();
 
 	//document.getElementById("bottomGroup").style.height = document.documentElement.clientHeight - document.getElementById("bottomGroup").offsetTop - 10;
 
 
 }
 
+function saveConfiguration(){
+	if(currentGrid){
+		var config_name = prompt("Enter configuration name : ", "Configuration " + savedConfigs.length);
+		if (config_name == null || config_name == "") {
+			return;
+		}
+		document.getElementById("complexOperationValue").innerHTML += '<option value="CNFG'+ savedConfigs.length +'">' + config_name + '</option>';
+		
+		savedConfigs.push(currentGrid.copy());
+	}
+}
+
 function playPause(){
 	var element = document.getElementById("playButton");
 	element.classList.toggle("paused");
 	play = !play;
-	if(currentGrid){
-		if(selectedTile){
-			if(play)
-				currentGrid.stopBlink();
-			else
-				currentGrid.blink(selectedTile);
-		}
-	}
 }
 
 function step(){
@@ -97,6 +125,19 @@ function step(){
 		currentGrid.colorTiles();
 		if(selectedTile)
 			tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentGrid.tiles[selectedTile].sand;
+	}
+}
+
+
+	
+function colorSelected(){
+	if(currentGrid){
+		selectColor += 0.025;
+		selectColor = selectColor % 1.0;
+		if(currentGrid.selectedIndex >= 0 ){
+			color_select.setHSL( selectColor, 1.0, 0.5 );
+			currentGrid.colorTile(currentGrid.selectedIndex, color_select);
+		}
 	}
 }
 
@@ -141,6 +182,10 @@ function complexOperationAdd(){
 				identity2.stabilize();
 				currentGrid.addConfiguration(identity2);
 			break;
+		}
+		if(operationType.substring(0, 4) == "CNFG"){
+			for(var i = 0; i<operationTimes; i++)
+				currentGrid.addConfiguration(savedConfigs[operationType.substring(4, operationType.length)]);
 		}
 	}
 
@@ -198,6 +243,11 @@ function complexOperationSet(){
 				currentGrid.addConfiguration(identity2);
 			break;
 		}
+		if(operationType.substring(0, 4) == "CNFG"){
+			currentGrid.clear();
+			for(var i = 0; i<operationTimes; i++)
+				currentGrid.addConfiguration(savedConfigs[operationType.substring(4, operationType.length)]);
+		}
 	}
 
 	if(selectedTile)
@@ -250,6 +300,10 @@ function complexOperationSub(){
 				identity2.stabilize();
 				currentGrid.removeConfiguration(identity2);
 			break;
+		}
+		if(operationType.substring(0, 4) == "CNFG"){
+			for(var i = 0; i<operationTimes; i++)
+				currentGrid.removeConfiguration(savedConfigs[operationType.substring(4, operationType.length)]);
 		}
 	}
 
@@ -396,31 +450,16 @@ app.renderer.domElement.addEventListener('click', function( event ) {
 			var nbTimes = document.getElementById("mouseOperationRepeat").valueAsNumber;
 
 			var mouseTODO = document.getElementById("mouseOperation").value;
+			
 			switch(mouseTODO){
 				case "rmOne":
 					currentGrid.remove(currentGrid.indexDict[face.faceIndex*3], nbTimes);
 					break;
 
 				case "select":
-					currentGrid.stopBlink();
 					selectedTile = currentGrid.indexDict[face.faceIndex*3];
 					tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentGrid.tiles[selectedTile].sand;
-					currentGrid.blink(currentGrid.indexDict[face.faceIndex*3]);
-					break;
-
-				case "delTile":
-					var current = currentGrid.indexDict[face.faceIndex*3];
-					currentGrid.tiles[current].sand = -Infinity;
-					currentGrid.colorTile(current, new THREE.Color(0x000000));
-					var adjacents = currentGrid.tiles[current].neighboors;
-					for(var i = 0; i<adjacents.length; i++){
-						var nextTile = currentGrid.tiles[adjacents[i]];
-						for(var j = 0; j < nextTile.neighboors.length; j++){
-						   if (nextTile.neighboors[j] === current) {
-							 nextTile.neighboors.splice(j, 1);
-						   }
-						}
-					}
+					currentGrid.selectedIndex = currentGrid.indexDict[face.faceIndex*3];
 					break;
 
 				default:
@@ -439,4 +478,22 @@ app.renderer.domElement.addEventListener('click', function( event ) {
 /*******/
 
 
+
+function typed_splice(arr, starting, deleteCount, elements) {
+  if (arguments.length === 1) {
+    return arr;
+  }
+  starting = Math.max(starting, 0);
+  deleteCount = Math.max(deleteCount, 0);
+  elements = elements || [];
+
+
+  const newSize = arr.length - deleteCount + elements.length;
+  const splicedArray = new arr.constructor(newSize);
+
+  splicedArray.set(arr.subarray(0, starting));
+  splicedArray.set(elements, starting);
+  splicedArray.set(arr.subarray(starting + deleteCount), starting + elements.length);
+  return splicedArray;
+};
 //https://threejs.org/examples/#webgl_interactive_buffergeometry

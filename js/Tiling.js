@@ -3,6 +3,8 @@ class Tile{
 		this.id = id;
 		this.prevSand = 0; // "trick" variable to iterate the sand
 		this.sand = 0;
+		if(lim < 0)
+			this.sand = -1;
 		this.neighboors = neighboors; // Ids of adjacent tiles
 
 		this.limit = lim;
@@ -60,9 +62,7 @@ class Tiling{
 			}
 		}
 		this.cmap = colormap;
-
-		this.blinking = false;
-		console.log(this);
+		this.selectedIndex = -1;
 	}
 
 	iterate(){
@@ -119,14 +119,14 @@ class Tiling{
 
 	remove(index, amount){
 		this.tiles[index].sand -= amount;
-		if(this.tiles[index].sand < 0 && this.tiles[index].sand != -Infinity) this.tiles[index].sand = 0;
+		if(this.tiles[index].sand < 0) this.tiles[index].sand = 0;
 		this.colorTile(index);
 	}
 
 	removeEverywhere(amount){
 		for(var i = 0; i<this.tiles.length; i++){
 			this.tiles[i].sand -= amount;
-			if(this.tiles[i].sand < 0 && this.tiles[i].sand != -Infinity) this.tiles[i].sand = 0;
+			if(this.tiles[i].sand < 0) this.tiles[i].sand = 0;
 		}
 		this.colorTiles();
 	}
@@ -174,6 +174,9 @@ class Tiling{
 			newTiles.push(new Tile(this.tiles[i].id, Array.from(this.tiles[i].neighboors), Array.from(this.tiles[i].pointsIndexes), this.tiles[i].limit));
 		}
 		var newTiling = new Tiling(Array.from(this.points), Array.from(this.colors), newTiles, Array.from(this.cmap));
+		for(var i = 0; i<this.tiles.length; i++){
+			newTiling.tiles[i].sand = this.tiles[i].sand;
+		}
 		return newTiling;
 	}
 
@@ -234,26 +237,20 @@ class Tiling{
 			this.colorTile(i);
 		}
 	}
-
-	async blink(index){
-		// Makes one tile blink
-
-		this.colorTile(index, new THREE.Color(0, 1, 1));
-		await sleep(600); // wait until blinking has stopped
-		this.blinking = true;
-		while(this.blinking){
-			this.colorTile(index);
-			await sleep(500);
-			if(!this.blinking) break;
-			this.colorTile(index, new THREE.Color(0, 1, 1));
-			await sleep(500);
-			if(!this.blinking) break;
+	
+	get_stats(){
+		var mean = 0;
+		var std = 0;
+		for(var i = 0; i<this.tiles.length; i++){
+			mean += this.tiles[i].sand;
 		}
-		this.colorTile(index);
-	}
-
-	stopBlink(){
-		this.blinking = false;
+		mean = mean / this.tiles.length;
+		for(var i = 0; i<this.tiles.length; i++){
+			std += Math.pow((this.tiles[i].sand - mean), 2);
+		}
+		std = std / this.tiles.length;
+		std = Math.sqrt(std);
+		return {"Mean":mean, "Std":std};
 	}
 
 	static sqTiling(width, height, cmap){

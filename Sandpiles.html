@@ -69,7 +69,6 @@
 		  <option value="addOne">Add One</option>
 		  <option value="rmOne">Remove One</option>
 		  <option value="select">Select</option>
-		  <option value="delTile">Delete Tile</option>
 		</select>
 		<div id="maskMouseRepeat" style="display:inline;">
 		&nbsp;&nbsp;times&nbsp;&nbsp;
@@ -80,7 +79,7 @@
 	<!-- Operations controls -->
 	<div id="secondary controls" class="controlGroup">
 		<p class="groupTitle">Tiling operations</p>
-		<select id="complexOperationValue"  >
+		<select id="complexOperationValue">
 		  <option value="MaxS">Max stable</option>
 		  <option value="OneE">One Everywhere</option>
 		  <option value="Dual">Dual</option>
@@ -92,16 +91,17 @@
 		<input type="number" id="complexOperationRepeat" min="1" max="1000000" value="1" style="width: 70px;" />
 		</div>
 		<br>
-		<div class="btn-group">
-		<button id="complexOperationAdd" onclick="complexOperationAdd()" style="margin-left:20px; margin-top:10px;" class="btn btn-default">Add</button>
+		<div style="margin-left:auto; margin-right:auto; display:grid">
+		<button id="complexOperationAdd" onclick="complexOperationAdd()" style="margin-top:10px;" class="btn btn-default">Add</button>
 
-		<button id="complexOperationSub" onclick="complexOperationSub()" style="margin-top:10px;" class="btn btn-default">Substract</button>
+		<button id="complexOperationSub" onclick="complexOperationSub()" style="margin-top:5px;" class="btn btn-default">Substract</button>
 
-		<button id="complexOperationSet" onclick="complexOperationSet()" style="margin-top:10px;"class="btn btn-default">Set</button>
+		<button id="complexOperationSet" onclick="complexOperationSet()" style="margin-top:5px;"class="btn btn-default">Set</button>
 		</div>
+		<br>
+		<button id="saveConfig" onclick="saveConfiguration()" style="margin-left:auto; margin-right:auto; display:block;"class="btn btn-default">Save Configuration</button>
 
-
-		<div id="seedMask" style="display:inline; visibility:hidden; margin-left:10px;">
+		<div id="seedMask" style="display:none;">
 			Seed :
 			<input id="randSeed" value="1" oninput="changeSeed(this);" style="width: 100px;" />
 		</div>
@@ -113,25 +113,36 @@
 		Zoom
 		<input type="number" id="zoomLevel" oninput="set_zoom(this)" max="50" value="1" />
 		<button id="colorButton"  style="margin-left:25px;" class="btn btn-default">Change colors</button>
+		<br>
+		<br>
+		
+		<div style="margin-left:auto; margin-right:auto; display:grid"">
+		<label for="files" class="btn btn-default">
+			Import grid
+		</label>
+	    <button id="create" style="margin-top:5px;" class="btn btn-default">Export grid</button> 
+		</div>
+		<input type="file" id="files" name="files[]" multiple style="display:none;" />
+	    <output id="list" style="display:none;"></output>
 
-
-		<input type="file" id="files" name="files[]" multiple />
-	    <output id="list"></output>
-
-	    <button id="create">Create file</button> 
 	    <a download="sandpile.json" id="downloadlink" style="display: none">Download</a>
 
 	
 	</div>
 
 
-	<div  id="bottomGroup"  class="controlGroup" style="height:200px;">
+	<div  id="bottomGroup"  class="controlGroup" style="height:200px; position:relative;">
 	
 	<p class="groupTitle">Informations</p>
 	
 	  <span id="tileInfo">Tile info</span>
 	  
-	  <span style="bottom:-100px;position:absolute;left:10px">2019 Js-Sandpiles, CCBY</span>
+	  <br>
+	  <button id="statsButton" style="position:absolute; bottom:10px; right:10px;"onclick="show_stats()" class="btn btn-default"> Get stats </button>
+	  <br>
+	  <p id="statsInfo"></p>
+	  
+	  <span style="bottom:-40px;position:absolute;left:10px">2019 Js-Sandpiles, CCBY</span>
 	</div>
 
     </nav>
