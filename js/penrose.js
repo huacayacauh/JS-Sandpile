@@ -8,12 +8,17 @@ var eCount = 0;
 //liste des traingles générés
 var triangles = [];
 
+var cCount = 0;
+var cells = [];
+
 //remet les variables golbales à zero
 reset = function(){
 	tCount = 0;
 	vCount = 0;
 	eCount = 0;
+    cCount = 0;
 	triangles = []
+    cells = []
 }
 
 //retourne un point entre deux points selon un ratio
@@ -113,7 +118,7 @@ guessEdge = function(v, edges){
 //met à jour l'arête du changement d'un de ses triangles incidents
 updateEdge = function(t, edge, newT, newTypeE){
 
-    if (t.id === edge.triangleA.id){
+    if (edge.triangleA !== null && t.id === edge.triangleA.id){
         edge.triangleA = newT;
         edge.typeEA = newTypeE;
     }
@@ -280,7 +285,7 @@ splitHD = function(t){
 //renvoi le triangle adjacent du triangle d'index tId
 //par rapport à l'une de ses arêtes edge
 getAdjByEdge = function(tId, edge){
-    return (tId === edge.triangleA.id)? edge.triangleB:
+    return (edge.triangleA !== null && tId === edge.triangleA.id)? edge.triangleB:
                                         edge.triangleA;
 }
 
@@ -849,3 +854,182 @@ Tiling.StarPenroseSandpile = function(iteration, cmap){
     return makePenroseSandpile(triangles, cmap);
 }
 
+/**************/
+
+class Cell{
+    constructor(id, type, vertices, edges, t1, t2){
+        this.id = id;
+        this.type = type; //= "kite" ou "dart"
+        this.vertices = vertices;
+
+        
+        this.edges = edges;
+
+        this.t1 = t1;
+        this.t2 = t2;
+    }
+}
+
+updateCellEdges = function(c){
+
+    //console.log("c.t1.id", c.t1.id);
+    //console.log("c.id", c.id);
+    updateEdge(c.t1, c.edges[0], c, "cell");
+    updateEdge(c.t1, c.edges[1], c, "cell");
+    updateEdge(c.t2, c.edges[2], c, "cell");
+    updateEdge(c.t2, c.edges[3], c, "cell");
+}
+
+makeKDCellWith2Triangles = function(t1, t2){
+
+    if (t1.id< t2.id){
+        var first = t1.id; var second = t2.id;
+    }
+    else{
+        var first = t2.id; var second = t1.id;
+    }
+
+    var type = (t1.type === "hk")?"kite":"dart";
+
+    if(t1.type !== t2.type) console.log("ALLLLLERRTE");
+
+    var vertices = [t1.vertices[2], t1.vertices[0], t2.vertices[2], t1.vertices[1]];
+    
+    var edges = [t1.edges02[0], t1.edges12[0], t2.edges02[0], t2.edges12[0]];
+
+    return new Cell(cCount++, type, vertices, edges, t1, t2);
+}
+
+removeTriangleFromEdge = function(t, e){
+    if(e.triangleA !== null && t.id === e.triangleA.id){
+        e.triangleA = null;
+        e.typeEA = null;
+    }
+    else{
+        e.triangleB = null;
+        e.typeEB = null;
+    }
+}
+
+supressIncompleteKD = function(marqueT){
+    for(var i = 0; i < triangles.length; i++){
+        var adjT = getAdjByEdge(triangles[i].id, triangles[i].edges01[0]);
+
+        if(adjT === null){
+
+            marqueT[i] = true;
+            //console.log("BOUGNAdèR");
+            removeTriangleFromEdge (triangles[i], triangles[i].edges01[0])
+            removeTriangleFromEdge (triangles[i], triangles[i].edges02[0])
+            removeTriangleFromEdge (triangles[i], triangles[i].edges12[0])
+        }
+    }
+    
+}
+
+trianglesToKDTiling = function(){
+    var marqueT = []
+    for(var i = 0; i < triangles.length; i++){
+        marqueT.push(false);
+    }
+
+    supressIncompleteKD(marqueT);
+
+    for(var i = 0; i < triangles.length; i++){
+        if(marqueT[i]) continue;
+        var adjT = getAdjByEdge(triangles[i].id, triangles[i].edges01[0]);
+        marqueT[i] = true;
+        marqueT[adjT.id] = true;
+
+        
+        var newCell = makeKDCellWith2Triangles(triangles[i], adjT)
+        updateCellEdges(newCell);
+        cells.push(newCell);
+
+    }
+
+    console.log(cells.length);
+}
+
+getAdjCell = function(c){
+    var adj = []
+    for(var i = 0; i < 4; i++){
+        var adjCell = getAdjByEdge(c.id, c.edges[i])
+        if (adjCell!==null) adj.push(adjCell.id);
+    }
+
+    return adj;
+}
+
+//make KD prenrose tiling abelian sandpile (KD = Kite and Dart)
+//with a list of cells
+makeKDPenroseSandpile = function(data, cmap){
+
+    var pos = [];
+    var col = [];
+    var tils = [];
+    
+    for(var i = 0; i < data.length; i++){ 
+
+
+        var id = i;
+        var neighboors = [];
+        var pointsIds = [];
+
+        for(var j=0; j<6; j++){
+            pointsIds.push(id*6 + j);
+        }
+        
+        pos.push(data[i].vertices[0].x, data[i].vertices[0].y, 0); col.push(0, 0, 0);
+        pos.push(data[i].vertices[1].x, data[i].vertices[1].y, 0); col.push(0, 0, 0);
+        pos.push(data[i].vertices[3].x, data[i].vertices[3].y, 0); col.push(0, 0, 0);
+
+        pos.push(data[i].vertices[1].x, data[i].vertices[1].y, 0); col.push(0, 0, 0);
+        pos.push(data[i].vertices[2].x, data[i].vertices[2].y, 0); col.push(0, 0, 0);
+        pos.push(data[i].vertices[3].x, data[i].vertices[3].y, 0); col.push(0, 0, 0);
+
+        //neighboors = getAdj(data[i]);
+
+        
+        //var s = (data[i].type === "kite")?0:1;
+        //var s = getAdjCell(data[i]).length;
+        var s = 0;
+        neighboors = getAdjCell(data[i]);
+
+        var tile = new Tile(id, neighboors, pointsIds, 4);
+        
+        tile.sand = s;
+
+        tils.push(tile);
+
+    }
+
+    console.log("LENGTH TILS : ", tils.length);
+    return new Tiling(pos, col, tils, cmap);
+    
+}
+
+
+Tiling.HKKDPenroseSandpile = function(iteration, cmap){
+    generateHKTiling(iteration);
+    trianglesToKDTiling();
+    return makeKDPenroseSandpile(cells, cmap);
+}
+
+Tiling.HDKDPenroseSandpile = function(iteration, cmap){
+    generateHDTiling(iteration);
+    trianglesToKDTiling();
+    return makeKDPenroseSandpile(cells, cmap);
+}
+
+Tiling.SunKDPenroseSandpile = function(iteration, cmap){
+    generateSunTiling(iteration);
+    trianglesToKDTiling();
+    return makeKDPenroseSandpile(cells, cmap);
+}
+
+Tiling.StarKDPenroseSandpile = function(iteration, cmap){
+    generateStarTiling(iteration);
+    trianglesToKDTiling();
+    return makeKDPenroseSandpile(cells, cmap);
+}
