@@ -366,23 +366,23 @@ function drawGrid(){
 			app.camera.zoom = 1.2;
 		break;
 
-		case "gridPenHK":
-			currentGrid = Tiling.HKPenroseSandpile(nbIt, cmap);
+		case "gridPenHKKD":
+			currentGrid = Tiling.HKKDPenroseSandpile(nbIt, cmap);
 			app.camera.zoom = 0.7;
 		break;
 
-		case "gridPenHD":
-			currentGrid = Tiling.HDPenroseSandpile(nbIt, cmap);
+		case "gridPenHDKD":
+			currentGrid = Tiling.HDKDPenroseSandpile(nbIt, cmap);
 			app.camera.zoom = 0.7;
 		break;
 
-		case "gridPenSun":
-			currentGrid = Tiling.SunPenroseSandpile(nbIt, cmap);
+		case "gridPenSunKD":
+			currentGrid = Tiling.SunKDPenroseSandpile(nbIt, cmap);
 			app.camera.zoom = 0.7;
 		break;
 
-		case "gridPenStar":
-			currentGrid = Tiling.StarPenroseSandpile(nbIt, cmap);
+		case "gridPenStarKD":
+			currentGrid = Tiling.StarKDPenroseSandpile(nbIt, cmap);
 			app.camera.zoom = 0.7;
 		break;
 

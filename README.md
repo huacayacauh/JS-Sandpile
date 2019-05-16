@@ -1,4 +1,4 @@
-# JS_SandPile
+# JS-SandPile
 
 The JS_Sandpiles app is a simple JavaScript implementation of the [Abelian sandpile model](https://en.wikipedia.org/wiki/Abelian_sandpile_model).
 
