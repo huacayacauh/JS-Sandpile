@@ -1,4 +1,4 @@
-.divUp{
+header{
 	position:fixed;
 	background:#33b5e5;
 	padding:5px;
@@ -9,14 +9,14 @@
 	top:0;
 }
 
-.body{
+body{
 	margin:0;
 	background-color: #bbbbbb;
     white-space: nowrap;
 	overflow:auto;
 }
 
-.nav{
+nav{
 	width: 270px;
 	position: fixed;
 	top: 110px;

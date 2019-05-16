@@ -85,9 +85,15 @@ var selectColor = 0.0;
 
 var color_select = new THREE.Color();
 
+var grid_check_stable;
+
+var check_copy = true;
+
 setInterval(refresh_zoom, 200);
 
 setInterval(colorSelected, 100);
+
+setInterval(check_stable, 500);
 
 // ----------------------------------------------------------------------------------------
 
@@ -113,10 +119,16 @@ function saveConfiguration(){
 	}
 }
 
-function playPause(){
-	var element = document.getElementById("playButton");
-	element.classList.toggle("paused");
-	play = !play;
+function playPause(elem){
+	if(play){
+		play = false;
+		elem.innerHTML = "Play";
+		elem.style.backgroundColor= "#FFFFFF";
+	} else {
+		play = true;
+		elem.innerHTML = "Pause";
+		elem.style.backgroundColor = "#CCCCCC";
+	}
 }
 
 function step(){
@@ -132,11 +144,13 @@ function step(){
 	
 function colorSelected(){
 	if(currentGrid){
-		selectColor += 0.025;
-		selectColor = selectColor % 1.0;
-		if(currentGrid.selectedIndex >= 0 ){
-			color_select.setHSL( selectColor, 1.0, 0.5 );
-			currentGrid.colorTile(currentGrid.selectedIndex, color_select);
+		if(!play){
+			selectColor += 0.025;
+			selectColor = selectColor % 1.0;
+			if(currentGrid.selectedIndex >= 0 ){
+				color_select.setHSL( selectColor, 1.0, 0.5 );
+				currentGrid.colorTile(currentGrid.selectedIndex, color_select);
+			}
 		}
 	}
 }
@@ -326,6 +340,9 @@ function drawGrid(){
 		app.scene.remove(app.scene.children[0]);
 		console.log("cleared");
 	}
+	
+	check_stable = 0;
+	
 	cW = document.getElementById("cW").value;
 	cH = document.getElementById("cH").value;
 
@@ -334,6 +351,11 @@ function drawGrid(){
 
 	var nbIt = document.getElementById("penroseIt").value;
 	switch(preset){
+		case "gridSqMoore":
+			currentGrid = Tiling.sqTiling(cW, cH, cmap, 1);
+			app.camera.zoom = 1;
+		break;
+		
 		case "gridHex":
 			currentGrid = Tiling.hexTiling(cW, cH, cmap);
 			app.camera.zoom = 0.7;
@@ -365,11 +387,13 @@ function drawGrid(){
 		break;
 
 		default:
-			currentGrid = Tiling.sqTiling(cW, cH, cmap);
+			currentGrid = Tiling.sqTiling(cW, cH, cmap, 0);
 			app.camera.zoom = 1;
 		break;
 
 	}
+	
+	grid_check_stable = currentGrid.copy();
 
 	app.controls.zoomCamera();
 	app.controls.object.updateProjectionMatrix();
@@ -409,6 +433,31 @@ function iterateGrid(){
 	if(selectedTile)
 		tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentGrid.tiles[selectedTile].sand;
 
+}
+
+function check_stable(){
+	if(currentGrid){
+		if(play){
+			if(check_copy){
+				for(var j = 0; j<currentGrid.tiles.length; j++){
+					grid_check_stable.tiles[j].sand = new Number(currentGrid.tiles[j].sand);
+				}
+				check_copy = false;
+			} else {
+				var can_pause = true;
+				for(var j = 0; j<currentGrid.tiles.length; j++){
+					if(currentGrid.tiles[j].sand != grid_check_stable.tiles[j].sand){
+						can_pause = false;
+						break;
+					}
+				}
+				if(can_pause){
+					playPause(document.getElementById("playButton"));
+				}
+				check_copy = true;
+			}
+		}
+	}
 }
 
 function sleep(ms) {
@@ -457,6 +506,8 @@ app.renderer.domElement.addEventListener('click', function( event ) {
 					break;
 
 				case "select":
+					if(currentGrid.selectedIndex)
+						currentGrid.colorTile(currentGrid.selectedIndex);
 					selectedTile = currentGrid.indexDict[face.faceIndex*3];
 					tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentGrid.tiles[selectedTile].sand;
 					currentGrid.selectedIndex = currentGrid.indexDict[face.faceIndex*3];

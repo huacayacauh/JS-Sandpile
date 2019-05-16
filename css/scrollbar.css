@@ -1,0 +1,20 @@
+*:focus {
+	outline: none !important;
+}
+
+::-webkit-scrollbar-track {
+-webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+background-color: #F5F5F5;
+border-radius: 10px; }
+
+::-webkit-scrollbar {
+width: 10px;
+background-color: #F5F5F5;
+margin-right:10px;
+z-index:-1; }
+
+::-webkit-scrollbar-thumb {
+border-radius: 10px;
+-webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+background-image: -webkit-linear-gradient(330deg, #a1c4fd 0%, #c2e9fb 100%);
+background-image: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%); }

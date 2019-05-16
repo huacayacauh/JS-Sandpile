@@ -4,28 +4,29 @@
     <title>Sandpiles</title>
 	<style>
 		@import "./css/bootstrap.min.css";
-		@import "./css/buttons.css";
+		@import "./css/scrollbar.css";
 		@import "./css/modal.css";
-		@import "./css/divs.css";
+		@import "./css/elements.css";
 	</style>
   </head>
-  <body class="body">
+  <body>
 
-	<header class="divUp">
+	<header>
 	<p style="margin:0; font-size:35px; font-weight:bold;">Js-Sandpiles</p>
-	<p style="font-size:20px; font-family:'Arial';"> </p>
+	
+	Zoom
+	<input type="number" id="zoomLevel" oninput="set_zoom(this)" max="50" value="1" step="0.1" style="margin-right:20px"/>
 	Delay (ms) :
 		<input type="number" id="delay" style="margin-right:20px" value="20" oninput="changeDelay(this);" min="1" max="10000"/>
 		Iterations per frame :
 		<input type="number" id="IPF" style="margin-right:40px" value="1" oninput="changeIPS(this);" min="1" max="10000"/>
-		<span style="position:relative; margin-right:70px; ">
-		<button id="playButton" onclick="playPause()" class="playbutton"></button>
-		</span>
+		<button id="playButton" onclick="playPause(this)" class="btn btn-default" style="margin-right:40px; font-weight:bold;">Play</button>
 		<button onclick="step()" style="margin-right:20px" class="btn btn-default">Step</button>
-		<button id="stabilizeButton"  onclick="stabGrid()" class="btn btn-primary">Stabilize</button>
+		
+		<!-- <button id="stabilizeButton"  onclick="stabGrid()" class="btn btn-primary">Stabilize</button> -->
 	</header>
 
-	<nav class="nav">
+	<nav>
 
 	<!-- Main controls-->
 	<div id="main controls" class="controlGroup">
@@ -38,15 +39,14 @@
 		  <option value="gridPenHD">Penrose HD</option>
 		  <option value="gridPenSun">Penrose Sun</option>
 		  <option value="gridPenStar">Penrose Star</option>
+		  <option value="gridSqMoore">Moore Square</option>
 		</select>
 		<button onclick='drawGrid()' style="margin-left:38px;" class="btn btn-default ">Make grid</button>
+		<br>
 		
-
-	</div>
 	
 	<!-- Grid-specific controls -->
-	<div id="squareParams" class="controlGroup">
-	<p class="groupTitle">Grid parameters</p>
+	<p class="groupTitle">Parameters</p>
 		Width : 
 		<input type="number" id="cW" min="1" max="500" value="100" style="width: 50px;" />
 		<span style="right:15px; position:absolute">Height : 
@@ -54,10 +54,10 @@
 		</span>
 
 	<!-- Penrose controls -->
-	<div id="penroseParams">
+	<div id="penroseParams" style="position:relative">
 	<br>
 	Penrose iterations : 
-	<input type="number" style="right:15px; position:absolute" id="penroseIt" min="1" max="15" value="9" style="width: 50px;" />
+	<input type="number" style="right:5px; bottom:0px; position:absolute;" id="penroseIt" min="1" max="15" value="9"/>
 	&nbsp;
 	</div>
 	</div>
@@ -109,13 +109,9 @@
 
 	<!-- Misc controls -->
   	<div class="controlGroup">
-	  	<p class="groupTitle">Misc controls </p>
-		Zoom
-		<input type="number" id="zoomLevel" oninput="set_zoom(this)" max="50" value="1" />
-		<button id="colorButton"  style="margin-left:25px;" class="btn btn-default">Change colors</button>
+	  	<p class="groupTitle">Misc controls</p>
+		<button id="colorButton"  style="margin-left:auto;margin-right:auto;display:block;" class="btn btn-default">Change colors</button>
 		<br>
-		<br>
-		
 		<div style="margin-left:auto; margin-right:auto; display:grid"">
 		<label for="files" class="btn btn-default">
 			Import grid
@@ -126,6 +122,19 @@
 	    <output id="list" style="display:none;"></output>
 
 	    <a download="sandpile.json" id="downloadlink" style="display: none">Download</a>
+		<br>
+		<p class="groupTitle">Experimental</p>
+		<select id="harmonicValue" style="width:100px">
+		  <option value="1A">1A</option>
+		  <option value="1B">1B</option>
+		  <option value="2A">2A</option>
+		  <option value="2B">2B</option>
+		  <option value="3A">3A</option>
+		  <option value="3B">3B</option>
+		  <option value="4A">4A</option>
+		  <option value="4B">4B</option>
+		</select>
+		<button onclick='currentGrid.apply_harmonic()' style="margin-left:10px;" class="btn btn-default ">Apply Harmonic</button>
 
 	
 	</div>

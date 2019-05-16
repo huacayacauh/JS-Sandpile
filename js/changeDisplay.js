@@ -29,7 +29,7 @@ function show_stats(){
 	if(currentGrid){
 		var infos = currentGrid.get_stats();
 		var info_disp = document.getElementById("statsInfo");
-		info_disp.innerHTML = "Mean : " + infos["Mean"] + "<br> Std : " + infos["Std"];
+		info_disp.innerHTML = "Mean : " + infos["Mean"] + "<br> Standard deviation : " + infos["Std"];
 	}
 }
 
