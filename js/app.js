@@ -386,6 +386,26 @@ function drawGrid(){
 			app.camera.zoom = 0.7;
 		break;
 
+		case "gridPenHKR":
+			currentGrid = Tiling.HKRPenroseSandpile(nbIt, cmap);
+			app.camera.zoom = 0.7;
+		break;
+
+		case "gridPenHDR":
+			currentGrid = Tiling.HDRPenroseSandpile(nbIt, cmap);
+			app.camera.zoom = 0.7;
+		break;
+
+		case "gridPenSunR":
+			currentGrid = Tiling.SunRPenroseSandpile(nbIt, cmap);
+			app.camera.zoom = 0.7;
+		break;
+
+		case "gridPenStarR":
+			currentGrid = Tiling.StarRPenroseSandpile(nbIt, cmap);
+			app.camera.zoom = 0.7;
+		break;
+
 		default:
 			currentGrid = Tiling.sqTiling(cW, cH, cmap, 0);
 			app.camera.zoom = 1;
