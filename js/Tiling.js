@@ -267,16 +267,27 @@ class Tiling{
 	get_stats(){
 		var mean = 0;
 		var std = 0;
+		
+		var populations = {};
 		for(var i = 0; i<this.tiles.length; i++){
 			mean += this.tiles[i].sand;
+			if(!populations[this.tiles[i].sand])
+				populations[this.tiles[i].sand] = 1;
+			else 
+				populations[this.tiles[i].sand]++ ;
 		}
+		var len = this.tiles.length;
+		Object.keys(populations).forEach(function(key) {
+			populations[key] = populations[key]/len;
+		});
 		mean = mean / this.tiles.length;
 		for(var i = 0; i<this.tiles.length; i++){
 			std += Math.pow((this.tiles[i].sand - mean), 2);
 		}
 		std = std / this.tiles.length;
 		std = Math.sqrt(std);
-		return {"Mean":mean, "Std":Math.round(std * 100000)/100000};
+		
+		return {"Mean":mean, "Std":Math.round(std * 100000)/100000, "Population":populations};
 	}
 	
 	apply_harmonic(){
@@ -396,10 +407,11 @@ class Tiling{
 				col.push( 255, 255, 255 );
 				col.push( 255, 255, 255 );
 				
-				if(type == 0)
+				if(type == 0){
 					tils.push(Tile.squareTile(j, i, width, height));
-				else
+				} else if(type == 1) {
 					tils.push(Tile.squareTile2(j, i, width, height));
+				}
 			}	
 		}
 

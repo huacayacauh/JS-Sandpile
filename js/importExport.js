@@ -111,6 +111,7 @@ handleDownload = function(evt){
     if(currentGrid === undefined) return
     var link = document.getElementById('downloadlink');
     link.href = tillingToJson(currentGrid);
+	link.setAttribute('download', "wow/Sandpile.JSON");
     //link.style.display = 'block';
 	link.click();
 }

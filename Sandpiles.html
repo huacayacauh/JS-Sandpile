@@ -42,6 +42,10 @@
 		  <option value="gridSqMoore">Square Moore</option>
 		  
 		</select>
+		
+		<!--<form id="postCustom" enctype="multipart/form-data" action="/upload/image" method="post">
+			<input type="file" id="inputCustom" accept=".png,.jpg,.jpeg,.bmp" style="display:none;" />
+		</form>-->
 		<button onclick='drawGrid()' style="margin-left:38px;" class="btn btn-default ">Make grid</button>
 		<br>
 		
@@ -113,13 +117,22 @@
 	  	<p class="groupTitle">Misc controls</p>
 		<button id="colorButton"  style="margin-left:auto;margin-right:auto;display:block;" class="btn btn-default">Change colors</button>
 		<br>
-		<div style="margin-left:auto; margin-right:auto; display:grid"">
+		<div style="margin-left:auto; margin-right:auto; display:grid">
 		<label for="files" class="btn btn-default">
 			Import grid
 		</label>
 	    <button id="create" style="margin-top:5px;" class="btn btn-default">Export grid</button> 
+		
+		<label for="filesPIC" class="btn btn-default" style="margin-top:5px;">
+			Square Tiling from image
+		</label>
+		
+	    <button id="create2" style="margin-top:5px;" class="btn btn-default">Make Stats</button> 
+		
+		
 		</div>
-		<input type="file" id="files" name="files[]" multiple style="display:none;" />
+		<input type="file" id="files" name="files[]" accept=".JSON" multiple style="display:none;" />
+		<input type="file" id="filesPIC" name="files2[]" accept=".png,.jpg,.jpeg,.bmp" multiple style="display:none;" />
 	    <output id="list" style="display:none;"></output>
 
 	    <a download="sandpile.json" id="downloadlink" style="display: none">Download</a>
@@ -180,6 +193,9 @@
     <script src="./js/app.js"></script>
 	<script src="./js/bootstrap.min.js"></script>
 	<script src="./js/importExport.js"></script>
+	<script src="./js/customGrid.js"></script>
+	<script src="./js/stats.js"></script>
+
 
   </body>
 </html>

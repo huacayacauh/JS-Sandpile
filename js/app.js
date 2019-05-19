@@ -73,8 +73,6 @@ var SPEED = 1;
 
 var delay = 20;
 
-Math.seedrandom(1);
-
 var selectedTile;
 
 var tileInfo = document.getElementById("tileInfo");
@@ -385,14 +383,13 @@ function drawGrid(){
 			currentGrid = Tiling.StarKDPenroseSandpile(nbIt, cmap);
 			app.camera.zoom = 0.7;
 		break;
-
+		
 		default:
 			currentGrid = Tiling.sqTiling(cW, cH, cmap, 0);
 			app.camera.zoom = 1;
 		break;
 
 	}
-	
 	grid_check_stable = currentGrid.copy();
 
 	app.controls.zoomCamera();
