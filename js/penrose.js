@@ -282,6 +282,172 @@ splitHD = function(t){
 
 }
 
+/*SPLIT RHOMBUS*/
+
+splitHKR = function(t){
+
+
+    var v0 = t.vertices[0];
+    var v1 = t.vertices[1];
+    var v2 = t.vertices[2];
+
+    var p1 = null;
+
+    if(t.edges02.length === 1){
+        p1 = new Vertex(vCount++, interpolatePoints(v0, v2, 1.0 / PHI));
+        splitEdge(t.edges02[0], p1);
+    }
+
+    if (p1 === null){
+        p1 = guessVertex(v0, t.edges02);
+    }
+
+    var edge0p1 = guessEdge(v0, t.edges02);
+    var edge2p1 = guessEdge(v2, t.edges02);
+
+    var edge1p1 = new Edge(eCount++, v1, p1); 
+
+    var edge12 = t.edges12[0];
+    var edge01 = t.edges01[0];
+
+    var t2 = new Triangle(tCount++, "hk", [v1, v2, p1]);
+
+    t.vertices = [p1, v0, v1];
+
+    t.type = "hd"
+
+    
+    t.edges01 = [edge0p1]; 
+    t.edges02 = [edge1p1];
+    t.edges12 = [edge01];
+
+    t2.edges01 = [edge12]; 
+    t2.edges02 = [edge1p1];
+    t2.edges12 = [edge2p1];
+
+    updateEdge(t, edge0p1, t, "01");
+    updateEdge(t, edge01 , t, "12");
+
+    updateEdge(t, edge2p1, t2, "12");
+    updateEdge(t, edge12, t2, "01");
+
+    edge1p1.triangleA = t2; edge1p1.typeEA = "02";
+    edge1p1.triangleB = t; edge1p1.typeEB = "02";
+    edge1p1.vertexA = p1; 
+    edge1p1.vertexB = v1;
+    console.log(p1.id == v1.id);
+
+   
+
+    triangles.push(t2);
+
+}
+
+splitHDR = function(t){
+
+    
+    var v0 = t.vertices[0];
+    var v1 = t.vertices[1];
+    var v2 = t.vertices[2];
+
+    var p1 = null;
+
+    
+
+    if(t.edges12.length === 1){
+
+        p1 = new Vertex(vCount++, interpolatePoints(v2, v1,1.0 / PHI));
+        splitEdge(t.edges12[0], p1);
+       
+    }
+
+    if (p1 === null){
+        p1 = guessVertex(v1, t.edges12);
+    }
+
+    var p2 = null;
+
+    if(t.edges02.length === 1){
+        p2 = new Vertex(vCount++, interpolatePoints(v2, v0,1.0 / PHI));
+
+        splitEdge(t.edges02[0], p2);
+
+    }
+
+    if (p2 === null){
+        p2 = guessVertex(v2, t.edges02);
+    }
+
+    var edge01 = t.edges01[0];
+    
+
+    var edge0p2 = guessEdge(v0, t.edges02);
+
+
+    var edge2p2 = guessEdge(v2, t.edges02);
+
+    var edge1p1 = guessEdge(v1, t.edges12);
+    var edge2p1 = guessEdge(v2, t.edges12);
+
+    var edge0p1 = new Edge(eCount++, v0, p1);
+    var edgep1p2 = new Edge(eCount++, p1, p2);
+
+
+    
+    var t2 = new Triangle(tCount++, "hk", [p1, v0, p2]);
+    var t3 = new Triangle(tCount++, "hd", [p1, v0, v1]);
+
+    t.vertices = [p2, v2, p1];
+    t.type = "hd";
+
+    t.edges01 = [edge2p2];
+    t.edges02 = [edgep1p2];
+    t.edges12 = [edge2p1];
+
+    t2.edges01 = [edge0p1];
+    t2.edges02 = [edgep1p2];
+    t2.edges12 = [edge0p2];
+
+    t3.edges01 = [edge0p1];
+    t3.edges02 = [edge1p1];
+    t3.edges12 = [edge01];
+
+
+    updateEdge(t, edge2p2, t, "01");
+
+    updateEdge(t, edge2p1, t, "12");
+
+    updateEdge(t, edge0p2, t2, "12");
+
+    updateEdge(t, edge01, t3, "12");
+    updateEdge(t, edge1p1, t3, "02");
+
+    edge0p1.triangleA = t2; edge0p1.typeEA = "01";
+    edge0p1.triangleB = t3; edge0p1.typeEB = "01";
+    edge0p1.vertexA = v0; 
+    edge0p1.vertexB = p1;
+
+    edgep1p2.triangleA = t2; edgep1p2.typeEA = "02";
+    edgep1p2.triangleB = t; edgep1p2.typeEB = "02";
+    edgep1p2.vertexA = p1; 
+    edgep1p2.vertexB = p2;
+
+    triangles.push(t2);
+    triangles.push(t3);
+
+    var r = Math.sqrt((p2.x-v0.x)*(p2.x-v0.x) + (p2.y-v0.y)*(p2.y-v0.y)) ;
+    //console.log(r)
+    if (isNaN(r)){
+        console.log("problème");
+        console.log(p2.x);
+        console.log(p2.y);
+        console.log(p2);
+    }
+
+
+}
+
+
 //renvoi le triangle adjacent du triangle d'index tId
 //par rapport à l'une de ses arêtes edge
 getAdjByEdge = function(tId, edge){
@@ -751,6 +917,16 @@ iterate = function(){
 	}
 }
 
+iterateR = function(){
+    var fixedLength = triangles.length;
+    for(var i = 0; i < fixedLength; i++){
+        if(triangles[i].type === "hk")
+            splitHKR(triangles[i]);
+        else if(triangles[i].type === "hd")
+            splitHDR(triangles[i]);
+    }
+}
+
 //créer un pavage de penrose diviser n fois
 //les triangles générés son dans la liste triangles
 //la première itération se fait sur un triangle hk
@@ -761,6 +937,15 @@ generateHKTiling = function(n){
 
 	for(var i = 0; i < n; i++)
 		iterate();
+}
+
+generateHKTilingR = function(n){
+    reset();
+    var size = 300;
+    makeHK(size);
+
+    for(var i = 0; i < n; i++)
+        iterateR();
 }
 
 //créer un pavage de penrose diviser n fois
@@ -775,6 +960,15 @@ generateHDTiling = function(n){
 		iterate();
 }
 
+generateHDTilingR = function(n){
+    reset();
+    var size = 300;
+    makeHD(size);
+
+    for(var i = 0; i < n; i++)
+        iterateR();
+}
+
 generateSunTiling = function(n){
     reset();
     var size = 150;
@@ -784,6 +978,15 @@ generateSunTiling = function(n){
         iterate();
 }
 
+generateSunTilingR = function(n){
+    reset();
+    var size = 150;
+    makeSun(size);
+
+    for(var i = 0; i < n; i++)
+        iterateR();
+}
+
 generateStarTiling = function(n){
     reset();
     var size = 150;
@@ -791,6 +994,15 @@ generateStarTiling = function(n){
 
     for(var i = 0; i < n; i++)
         iterate();
+}
+
+generateStarTilingR = function(n){
+    reset();
+    var size = 150;
+    makeStar(size);
+
+    for(var i = 0; i < n; i++)
+        iterateR();
 }
 
 //créer un tas de sable abélien à partir
@@ -838,9 +1050,19 @@ Tiling.HKPenroseSandpile = function(iteration, cmap){
     return makePenroseSandpile(triangles, cmap);
 }
 
+Tiling.HKPenroseSandpileR = function(iteration, cmap){
+    generateHKTilingR(iteration);
+    return makePenroseSandpile(triangles, cmap);
+}
+
 
 Tiling.HDPenroseSandpile = function(iteration, cmap){
     generateHDTiling(iteration);
+    return makePenroseSandpile(triangles, cmap);
+}
+
+Tiling.HDPenroseSandpileR = function(iteration, cmap){
+    generateHDTilingR(iteration);
     return makePenroseSandpile(triangles, cmap);
 }
 
@@ -849,8 +1071,18 @@ Tiling.SunPenroseSandpile = function(iteration, cmap){
     return makePenroseSandpile(triangles, cmap);
 }
 
+Tiling.SunPenroseSandpileR = function(iteration, cmap){
+    generateSunTilingR(iteration);
+    return makePenroseSandpile(triangles, cmap);
+}
+
 Tiling.StarPenroseSandpile = function(iteration, cmap){
     generateStarTiling(iteration);
+    return makePenroseSandpile(triangles, cmap);
+}
+
+Tiling.StarPenroseSandpileR = function(iteration, cmap){
+    generateStarTilingR(iteration);
     return makePenroseSandpile(triangles, cmap);
 }
 
@@ -900,6 +1132,26 @@ makeKDCellWith2Triangles = function(t1, t2){
     return new Cell(cCount++, type, vertices, edges, t1, t2);
 }
 
+makeRCellWith2Triangles = function(t1, t2){
+
+    if (t1.id< t2.id){
+        var first = t1.id; var second = t2.id;
+    }
+    else{
+        var first = t2.id; var second = t1.id;
+    }
+
+    var type = (t1.type === "hk")?"thin":"thick";
+
+    if(t1.type !== t2.type) console.log("ALLLLLERRTE");
+
+    var vertices = [t1.vertices[0], t1.vertices[1], t2.vertices[0], t1.vertices[2]];
+    
+    var edges = [t1.edges01[0], t1.edges02[0], t2.edges01[0], t2.edges02[0]];
+
+    return new Cell(cCount++, type, vertices, edges, t1, t2);
+}
+
 removeTriangleFromEdge = function(t, e){
     if(e.triangleA !== null && t.id === e.triangleA.id){
         e.triangleA = null;
@@ -914,6 +1166,22 @@ removeTriangleFromEdge = function(t, e){
 supressIncompleteKD = function(marqueT){
     for(var i = 0; i < triangles.length; i++){
         var adjT = getAdjByEdge(triangles[i].id, triangles[i].edges01[0]);
+
+        if(adjT === null){
+
+            marqueT[i] = true;
+            //console.log("BOUGNAdèR");
+            removeTriangleFromEdge (triangles[i], triangles[i].edges01[0])
+            removeTriangleFromEdge (triangles[i], triangles[i].edges02[0])
+            removeTriangleFromEdge (triangles[i], triangles[i].edges12[0])
+        }
+    }
+    
+}
+
+supressIncompleteR = function(marqueT){
+    for(var i = 0; i < triangles.length; i++){
+        var adjT = getAdjByEdge(triangles[i].id, triangles[i].edges12[0]);
 
         if(adjT === null){
 
@@ -943,6 +1211,30 @@ trianglesToKDTiling = function(){
 
         
         var newCell = makeKDCellWith2Triangles(triangles[i], adjT)
+        updateCellEdges(newCell);
+        cells.push(newCell);
+
+    }
+
+    console.log(cells.length);
+}
+
+trianglesToRTiling = function(){
+    var marqueT = []
+    for(var i = 0; i < triangles.length; i++){
+        marqueT.push(false);
+    }
+
+    supressIncompleteR(marqueT);
+
+    for(var i = 0; i < triangles.length; i++){
+        if(marqueT[i]) continue;
+        var adjT = getAdjByEdge(triangles[i].id, triangles[i].edges12[0]);
+        marqueT[i] = true;
+        marqueT[adjT.id] = true;
+
+        
+        var newCell = makeRCellWith2Triangles(triangles[i], adjT)
         updateCellEdges(newCell);
         cells.push(newCell);
 
@@ -1005,7 +1297,9 @@ makeKDPenroseSandpile = function(data, cmap){
     }
 
     console.log("LENGTH TILS : ", tils.length);
-    return new Tiling(pos, col, tils, cmap);
+    var tiling = new Tiling(pos, col, tils, cmap);
+    reset();
+    return tiling;
     
 }
 
@@ -1031,5 +1325,29 @@ Tiling.SunKDPenroseSandpile = function(iteration, cmap){
 Tiling.StarKDPenroseSandpile = function(iteration, cmap){
     generateStarTiling(iteration);
     trianglesToKDTiling();
+    return makeKDPenroseSandpile(cells, cmap);
+}
+
+Tiling.HKRPenroseSandpile = function(iteration, cmap){
+    generateHKTilingR(iteration);
+    trianglesToRTiling();
+    return makeKDPenroseSandpile(cells, cmap);
+}
+
+Tiling.HDRPenroseSandpile = function(iteration, cmap){
+    generateHDTilingR(iteration);
+    trianglesToRTiling();
+    return makeKDPenroseSandpile(cells, cmap);
+}
+
+Tiling.SunRPenroseSandpile = function(iteration, cmap){
+    generateSunTilingR(iteration);
+    trianglesToRTiling();
+    return makeKDPenroseSandpile(cells, cmap);
+}
+
+Tiling.StarRPenroseSandpile = function(iteration, cmap){
+    generateStarTilingR(iteration);
+    trianglesToRTiling();
     return makeKDPenroseSandpile(cells, cmap);
 }
