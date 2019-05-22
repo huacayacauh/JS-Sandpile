@@ -24,6 +24,11 @@
 		<button onclick="step()" style="margin-right:20px" class="btn btn-default">Step</button>
 		
 		<!-- <button id="stabilizeButton"  onclick="stabGrid()" class="btn btn-primary">Stabilize</button> -->
+		<span style="position:absolute; top:10px; right:50px"> Auto-pause : </span>
+		<label class="switch" style="position:absolute; top:12px; right:10px">
+		  <input type="checkbox" id="pauseToggle" checked = "true">
+		  <span class="slider round"></span>
+		</label>
 	</header>
 
 	<nav>
@@ -133,7 +138,6 @@
 			Square Tiling from image
 		</label>
 		
-	    <button id="create2" style="margin-top:5px;" class="btn btn-default">Make Stats</button> 
 		
 		
 		</div>
@@ -160,16 +164,18 @@
 	</div>
 
 
-	<div  id="bottomGroup"  class="controlGroup" style="height:200px; position:relative;">
+	<div  id="bottomGroup"  class="controlGroup" style="height:280px; position:relative;">
 	
 	<p class="groupTitle">Informations</p>
 	
 	  <span id="tileInfo">Tile info</span>
 	  
 	  <br>
-	  <button id="statsButton" style="position:absolute; bottom:10px; right:10px;"onclick="show_stats()" class="btn btn-default"> Get stats </button>
+	  <button id="statsButton" style="position:absolute; bottom:10px; left:10px;"onclick="show_stats()" class="btn btn-default"> Get stats </button>
 	  <br>
 	  <p id="statsInfo"></p>
+	  
+	  <button id="create2" style="position:absolute; bottom:10px; right:10px;" class="btn btn-default">Download full stats</button>
 	  
 	  <span style="bottom:-40px;position:absolute;left:10px">2019 Js-Sandpiles, CCBY</span>
 	</div>

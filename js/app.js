@@ -455,23 +455,25 @@ function iterateGrid(){
 function check_stable(){
 	if(currentGrid){
 		if(play){
-			if(check_copy){
-				for(var j = 0; j<currentGrid.tiles.length; j++){
-					grid_check_stable.tiles[j].sand = new Number(currentGrid.tiles[j].sand);
-				}
-				check_copy = false;
-			} else {
-				var can_pause = true;
-				for(var j = 0; j<currentGrid.tiles.length; j++){
-					if(currentGrid.tiles[j].sand != grid_check_stable.tiles[j].sand){
-						can_pause = false;
-						break;
+			if(document.getElementById("pauseToggle").checked){
+				if(check_copy){
+					for(var j = 0; j<currentGrid.tiles.length; j++){
+						grid_check_stable.tiles[j].sand = new Number(currentGrid.tiles[j].sand);
 					}
+					check_copy = false;
+				} else {
+					var can_pause = true;
+					for(var j = 0; j<currentGrid.tiles.length; j++){
+						if(currentGrid.tiles[j].sand != grid_check_stable.tiles[j].sand){
+							can_pause = false;
+							break;
+						}
+					}
+					if(can_pause){
+						playPause(document.getElementById("playButton"));
+					}
+					check_copy = true;
 				}
-				if(can_pause){
-					playPause(document.getElementById("playButton"));
-				}
-				check_copy = true;
 			}
 		}
 	}

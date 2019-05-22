@@ -29,7 +29,18 @@ function show_stats(){
 	if(currentGrid){
 		var infos = currentGrid.get_stats();
 		var info_disp = document.getElementById("statsInfo");
-		info_disp.innerHTML = "Mean : " + infos["Mean"] + "<br> Standard deviation : " + infos["Std"];
+		
+		var text_stats = "Number of tiles : " + currentGrid.tiles.length + "<br>Mean : " + infos["Mean"] + "<br> Standard deviation : " + infos["Std"] + "<br> Population : <br>";
+		var jump_line = false;
+		Object.keys(infos["Population"]).forEach(function(key) {
+				text_stats += " " + key + " : " + (Math.round(infos["Population"][key]*1000000)/10000).toFixed(2) + " %";
+			if(jump_line)
+				text_stats += "<br>";
+			else
+				text_stats += " - ";
+			jump_line = !jump_line;
+		});
+		info_disp.innerHTML = text_stats ;
 	}
 }
 
