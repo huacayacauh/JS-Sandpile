@@ -452,6 +452,12 @@ function iterateGrid(){
 
 }
 
+function clearGrid(){
+	if(currentGrid){
+		currentGrid.clear();
+	}
+}
+
 function check_stable(){
 	if(currentGrid){
 		if(play){

@@ -34,7 +34,7 @@ async function draw_custom(srcPIC){
 	
 	var index = 0;
 	
-	var neighboorhood = {};
+	var neighbourhood = {};
 	
 	for(var i = 0; i < width; i++){
 		for(var j = 0; j < height; j++){
@@ -57,17 +57,17 @@ async function draw_custom(srcPIC){
 				
 				
 				var id;
-				var neighboors = [];
+				var neighbours = [];
 				id = index;
 				
-				neighboorhood[i*height+j]=index;
+				neighbourhood[i*height+j]=index;
 				
 				var pointsIds = [];
 				for(var k=0; k<6; k++){
 					pointsIds.push(pos.length/3 - 6 + k);
 				}
 				index++;
-				tils.push(new Tile(id, neighboors, pointsIds, 4));
+				tils.push(new Tile(id, neighbours, pointsIds, 4));
 			}
 		}
 	}
@@ -75,10 +75,10 @@ async function draw_custom(srcPIC){
 	for(var i = 0; i < width; i++){
 		for(var j = 0; j < height; j++){
 			if(context.getImageData(i, j, 1, 1).data[0] == 0){
-				if(context.getImageData(i-1, j, 1, 1).data[0] == 0) tils[index].neighboors.push(neighboorhood[(i-1)*height + j]);
-				if(context.getImageData(i+1, j, 1, 1).data[0] == 0) tils[index].neighboors.push(neighboorhood[(i+1)*height + j]);
-				if(context.getImageData(i, j-1, 1, 1).data[0] == 0) tils[index].neighboors.push(neighboorhood[i*height + j-1]);
-				if(context.getImageData(i, j+1, 1, 1).data[0] == 0) tils[index].neighboors.push(neighboorhood[i*height + j+1]);
+				if(context.getImageData(i-1, j, 1, 1).data[0] == 0) tils[index].neighbours.push(neighbourhood[(i-1)*height + j]);
+				if(context.getImageData(i+1, j, 1, 1).data[0] == 0) tils[index].neighbours.push(neighbourhood[(i+1)*height + j]);
+				if(context.getImageData(i, j-1, 1, 1).data[0] == 0) tils[index].neighbours.push(neighbourhood[i*height + j-1]);
+				if(context.getImageData(i, j+1, 1, 1).data[0] == 0) tils[index].neighbours.push(neighbourhood[i*height + j+1]);
 				
 				index++;
 			}
@@ -100,7 +100,7 @@ async function draw_custom(srcPIC){
 
 	app.controls.zoomCamera();
 	app.controls.object.updateProjectionMatrix();
-
+	
 	app.scene.add(currentGrid.mesh);
 	currentGrid.colorTiles();
 	//console.log(currentGrid);

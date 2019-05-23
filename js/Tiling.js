@@ -1,11 +1,11 @@
 class Tile{
-	constructor(id, neighboors, points, lim){
+	constructor(id, neighbours, points, lim){
 		this.id = id;
 		this.prevSand = 0; // "trick" variable to iterate the sand
 		this.sand = 0;
 		if(lim < 0)
 			this.sand = -1;
-		this.neighboors = neighboors; // Ids of adjacent tiles
+		this.neighbours = neighbours; // Ids of adjacent tiles
 
 		this.limit = lim;
 
@@ -16,43 +16,43 @@ class Tile{
 		// Creates the Tile in position x, y of a square grid
 
 		var id;
-		var neighboors = [];
+		var neighbours = [];
 		id = x*yMax + y;
-		if(x > 0) neighboors.push((x-1)*yMax + y);
-		if(x < xMax-1) neighboors.push((x+1)*yMax + y);
-		if(y > 0) neighboors.push(x*yMax + (y-1));
-		if(y < yMax-1) neighboors.push(x*yMax + (y+1));
+		if(x > 0) neighbours.push((x-1)*yMax + y);
+		if(x < xMax-1) neighbours.push((x+1)*yMax + y);
+		if(y > 0) neighbours.push(x*yMax + (y-1));
+		if(y < yMax-1) neighbours.push(x*yMax + (y+1));
 		var pointsIds = [];
 		for(var i=0; i<6; i++){
 			pointsIds.push(id*6 + i);
 		}
-		return new Tile(id, neighboors, pointsIds, 4);
+		return new Tile(id, neighbours, pointsIds, 4);
 	}
 	
 	static squareTile2(x, y, xMax, yMax){
 		// Creates the Tile in position x, y of a square grid
 
 		var id;
-		var neighboors = [];
+		var neighbours = [];
 		id = x*yMax + y;
-		if(x > 0) neighboors.push((x-1)*yMax + y);
-		if(x < xMax-1) neighboors.push((x+1)*yMax + y);
-		if(y > 0) neighboors.push(x*yMax + (y-1));
-		if(y < yMax-1) neighboors.push(x*yMax + (y+1));
+		if(x > 0) neighbours.push((x-1)*yMax + y);
+		if(x < xMax-1) neighbours.push((x+1)*yMax + y);
+		if(y > 0) neighbours.push(x*yMax + (y-1));
+		if(y < yMax-1) neighbours.push(x*yMax + (y+1));
 		
 		
-		if(y < yMax-1 && x < xMax-1) neighboors.push((x+1)*yMax + (y+1));
+		if(y < yMax-1 && x < xMax-1) neighbours.push((x+1)*yMax + (y+1));
 		
-		if(y < yMax-1 && x > 0) neighboors.push((x-1)*yMax + (y+1));
+		if(y < yMax-1 && x > 0) neighbours.push((x-1)*yMax + (y+1));
 		
-		if(y > 0 && x < xMax - 1) neighboors.push((x+1)*yMax + (y-1));
+		if(y > 0 && x < xMax - 1) neighbours.push((x+1)*yMax + (y-1));
 		
-		if(y > 0 && x > 0) neighboors.push((x-1)*yMax + (y-1));
+		if(y > 0 && x > 0) neighbours.push((x-1)*yMax + (y-1));
 		var pointsIds = [];
 		for(var i=0; i<6; i++){
 			pointsIds.push(id*6 + i);
 		}
-		return new Tile(id, neighboors, pointsIds, 8);
+		return new Tile(id, neighbours, pointsIds, 8);
 	}
 }
 
@@ -101,8 +101,8 @@ class Tiling{
 		for(var i = 0; i<this.tiles.length; i++){
 			if(this.tiles[i].prevSand >= this.tiles[i].limit){
 				this.tiles[i].sand -= this.tiles[i].limit;
-				for(var j = 0; j< this.tiles[i].neighboors.length; j++){
-					this.tiles[this.tiles[i].neighboors[j]].sand += 1;
+				for(var j = 0; j< this.tiles[i].neighbours.length; j++){
+					this.tiles[this.tiles[i].neighbours[j]].sand += 1;
 				}
 			}
 		}
@@ -177,7 +177,7 @@ class Tiling{
 	getDual(){
 		var newTiles = [];
 		for(var i = 0; i<this.tiles.length; i++){
-			newTiles.push(new Tile(this.tiles[i].id, Array.from(this.tiles[i].neighboors), Array.from(this.tiles[i].pointsIndexes), this.tiles[i].limit));
+			newTiles.push(new Tile(this.tiles[i].id, Array.from(this.tiles[i].neighbours), Array.from(this.tiles[i].pointsIndexes), this.tiles[i].limit));
 		}
 		var newTiling = new Tiling(Array.from(this.points), Array.from(this.colors), newTiles, Array.from(this.cmap));
 		for(var i = 0; i<newTiling.tiles.length; i++){
@@ -197,7 +197,7 @@ class Tiling{
 	copy(){
 		var newTiles = [];
 		for(var i = 0; i<this.tiles.length; i++){
-			newTiles.push(new Tile(this.tiles[i].id, Array.from(this.tiles[i].neighboors), Array.from(this.tiles[i].pointsIndexes), this.tiles[i].limit));
+			newTiles.push(new Tile(this.tiles[i].id, Array.from(this.tiles[i].neighbours), Array.from(this.tiles[i].pointsIndexes), this.tiles[i].limit));
 		}
 		var newTiling = new Tiling(Array.from(this.points), Array.from(this.colors), newTiles, Array.from(this.cmap));
 		for(var i = 0; i<this.tiles.length; i++){
@@ -218,7 +218,7 @@ class Tiling{
 
 		var oldTiles = [];
 		for(var i = 0; i<this.tiles.length; i++){
-			oldTiles.push(new Tile(this.tiles[i].id, Array.from(this.tiles[i].neighboors), Array.from(this.tiles[i].pointsIndexes)));
+			oldTiles.push(new Tile(this.tiles[i].id, Array.from(this.tiles[i].neighbours), Array.from(this.tiles[i].pointsIndexes)));
 		}
 		var done = false;
 		while(!done){

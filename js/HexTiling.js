@@ -24,40 +24,40 @@ Tiling.hexTiling = function (height, width, cmap) {
 
 Tile.hexTile = function(x, y, xMax, yMax){
 	var id;
-	var neighboors = [];
+	var neighbours = [];
 	id = x*yMax + y;
 	
 	if(y%2 == 0){
-		if(x < xMax - 1) neighboors.push((x+1)*yMax + y);
+		if(x < xMax - 1) neighbours.push((x+1)*yMax + y);
 
-		if(x > 0) neighboors.push((x-1)*yMax + y);
+		if(x > 0) neighbours.push((x-1)*yMax + y);
 
-		if(y > 0) neighboors.push(x*yMax + y-1);
+		if(y > 0) neighbours.push(x*yMax + y-1);
 
-		if(x > 0 && y > 0) neighboors.push((x-1)*yMax + y-1);
+		if(x > 0 && y > 0) neighbours.push((x-1)*yMax + y-1);
 
-		if(y < yMax - 1)  neighboors.push(x*yMax + y+1);
+		if(y < yMax - 1)  neighbours.push(x*yMax + y+1);
 
-		if(y < yMax - 1 && x > 0) neighboors.push((x-1)*yMax + y+1);
+		if(y < yMax - 1 && x > 0) neighbours.push((x-1)*yMax + y+1);
 	} else{
-		if(x < xMax - 1) neighboors.push((x+1)*yMax + y);
+		if(x < xMax - 1) neighbours.push((x+1)*yMax + y);
 
-		if(x > 0) neighboors.push((x-1)*yMax + y);
+		if(x > 0) neighbours.push((x-1)*yMax + y);
 		
-		if(y > 0) neighboors.push(x*yMax + y-1);
+		if(y > 0) neighbours.push(x*yMax + y-1);
 
-		if(y > 0 && x < xMax - 1)  neighboors.push((x+1)*yMax + y-1);
+		if(y > 0 && x < xMax - 1)  neighbours.push((x+1)*yMax + y-1);
 
-		if(y < yMax - 1) neighboors.push(x*yMax + y+1);
+		if(y < yMax - 1) neighbours.push(x*yMax + y+1);
 
-		if(y < yMax - 1 && x < xMax - 1) neighboors.push((x+1)*yMax + y+1);
+		if(y < yMax - 1 && x < xMax - 1) neighbours.push((x+1)*yMax + y+1);
 	}
 	
 	var pointsIds = [];
 	for(var i=0; i<12; i++){
 		pointsIds.push(id*12 + i);
 	}
-	return new Tile(id, neighboors, pointsIds, 6);
+	return new Tile(id, neighbours, pointsIds, 6);
 }
 
 function makeHexCell(positions, colors, i, j, xCoords, yCoords, xMid, yMid){

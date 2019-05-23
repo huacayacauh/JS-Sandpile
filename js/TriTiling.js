@@ -22,7 +22,7 @@ Tiling.triTiling = function (size, cmap) {
 
 Tile.triTile = function(x, y, size, length){
 	var id;
-	var neighboors = [];
+	var neighbours = [];
 
 	id = 0;
 	for(var i = 0; i < x; i++){
@@ -30,21 +30,21 @@ Tile.triTile = function(x, y, size, length){
 	}
 	id += y;
 	
-	if (y > 0) neighboors.push(id-1);
-	if (y < length-1) neighboors.push(id+1);
+	if (y > 0) neighbours.push(id-1);
+	if (y < length-1) neighbours.push(id+1);
 
 
 	if(y%2 == 0){
-		if (i > 0) neighboors.push(id - (length+1));
+		if (i > 0) neighbours.push(id - (length+1));
 	} else{
-		if (i < size-1) neighboors.push(id + (length-1));
+		if (i < size-1) neighbours.push(id + (length-1));
 	}
 	
 	var pointsIds = [];
 	for(var i=0; i<3; i++){
 		pointsIds.push(id*3 + i);
 	}
-	return new Tile(id, neighboors, pointsIds, 3);
+	return new Tile(id, neighbours, pointsIds, 3);
 }
 
 function makeTriCell(positions, colors, i, j, xMid, yMid){

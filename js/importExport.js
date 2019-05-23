@@ -5,7 +5,7 @@ jsonToTilling = function(json){
 
     for(var i = 0; i < json.tiles.length; i++){
         var tileJson = json.tiles[i]
-		var til = new Tile(tileJson.id, tileJson.neighboors, tileJson.points, tileJson.lim);
+		var til = new Tile(tileJson.id, tileJson.neighbours, tileJson.points, tileJson.lim);
 		til.sand = tileJson.sand;
         tiles.push(til);
     }
@@ -58,7 +58,7 @@ tillingToJson = function(sandpile){
 
     for(var i = 0; i < sandpile.tiles.length; i++){
         var tile = sandpile.tiles[i];
-        tiles.push({id: tile.id, neighboors: tile.neighboors, points: tile.pointsIndexes, lim: tile.limit, sand:tile.sand});
+        tiles.push({id: tile.id, neighbours: tile.neighbours, points: tile.pointsIndexes, lim: tile.limit, sand:tile.sand});
         
     }
 
