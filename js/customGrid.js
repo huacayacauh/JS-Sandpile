@@ -75,6 +75,12 @@ async function draw_custom(srcPIC){
 	for(var i = 0; i < width; i++){
 		for(var j = 0; j < height; j++){
 			if(context.getImageData(i, j, 1, 1).data[0] == 0){
+				if(context.getImageData(i, j, 1, 1).data[1] == 255){
+				tils[index].sand = 2;
+				}
+				if(context.getImageData(i, j, 1, 1).data[2] == 255){
+					tils[index].sand = 3;
+				}
 				if(context.getImageData(i-1, j, 1, 1).data[0] == 0) tils[index].neighbours.push(neighbourhood[(i-1)*height + j]);
 				if(context.getImageData(i+1, j, 1, 1).data[0] == 0) tils[index].neighbours.push(neighbourhood[(i+1)*height + j]);
 				if(context.getImageData(i, j-1, 1, 1).data[0] == 0) tils[index].neighbours.push(neighbourhood[i*height + j-1]);
@@ -82,6 +88,7 @@ async function draw_custom(srcPIC){
 				
 				index++;
 			}
+			
 		}
 	}
 	
