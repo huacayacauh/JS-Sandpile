@@ -71,7 +71,7 @@ var app = new App();
 
 var SPEED = 1;
 
-var delay = 20;
+var delay = 100;
 
 var selectedTile;
 
