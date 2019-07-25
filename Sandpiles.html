@@ -17,7 +17,7 @@
 	Zoom
 	<input type="number" id="zoomLevel" oninput="set_zoom(this)" max="50" value="1" step="0.1" style="margin-right:20px"/>
 	Delay (ms) :
-		<input type="number" id="delay" style="margin-right:20px" value="20" oninput="changeDelay(this);" min="1" max="10000"/>
+		<input type="number" id="delay" style="margin-right:20px" value="100" oninput="changeDelay(this);" min="0" max="10000"/>
 		Iterations per frame :
 		<input type="number" id="IPF" style="margin-right:40px" value="1" oninput="changeIPS(this);" min="1" max="10000"/>
 		<button id="playButton" onclick="playPause(this)" class="btn btn-default" style="margin-right:40px; font-weight:bold;">Play</button>
@@ -37,9 +37,9 @@
 	<div id="main controls" class="controlGroup">
 	<p class="groupTitle">Grid selection</p>
 		<select id="gridSelect">
-		  <option value="gridSq">Square Tiling</option>
-		  <option value="gridHex">Hexagonal Tiling</option>
-		  <option value="gridTri">Triangular Tiling</option>
+		  <option value="gridSq">Square grid</option>
+		  <option value="gridHex">Hexagonal grid</option>
+		  <option value="gridTri">Triangular grid</option>
 		  <option value="gridPenHKKD">Penrose HK</option>
 		  <option value="gridPenHDKD">Penrose HD</option>
 		  <option value="gridPenSunKD">Penrose Sun</option>
