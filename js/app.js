@@ -1,5 +1,5 @@
 class App{
-	// Create the three.js canvas, which contains the grids
+	// Create the three.js canvas, which contains the tilings.
 
 	constructor(){
 
@@ -32,6 +32,7 @@ class App{
 	}
 	
 	reset_size(){
+		// Automatic rescaling of the canvas
 		var container = document.getElementById("canvasHolder");
 		this.WIDTH = container.clientWidth- 10;
 		this.HEIGHT = container.clientHeight - 10;
@@ -67,6 +68,7 @@ var play = false;
 
 var currentGrid;
 
+
 var app = new App();
 
 var SPEED = 1;
@@ -75,17 +77,21 @@ var delay = 100;
 
 var selectedTile;
 
-var tileInfo = document.getElementById("tileInfo");
-
 var savedConfigs = [];
 
-var selectColor = 0.0;
+// ---------------------- Second hand variables
 
-var color_select = new THREE.Color();
+var selectColor = 0.0; // Animation of selected tile color
+
+var color_select = new THREE.Color(); // Animation of selected tile color
+
+var tileInfo = document.getElementById("tileInfo"); 
 
 var grid_check_stable;
 
 var check_copy = true;
+
+// ---------------------- Routines
 
 setInterval(refresh_zoom, 200);
 
@@ -165,7 +171,8 @@ function complexOperationAdd(){
 			break;
 
 			case "MaxS":
-				currentGrid.addMaxStable();
+				for(var i = 0; i<operationTimes;i++)
+					currentGrid.addMaxStable();
 			break;
 
 			case "Rand":
@@ -350,7 +357,7 @@ function drawGrid(){
 	var nbIt = document.getElementById("penroseIt").value;
 	switch(preset){
 		case "gridSqMoore":
-			currentGrid = Tiling.sqTiling(cW, cH, cmap, 1);
+			currentGrid = Tiling.sqTiling(cW, cH, cmap, "Moore");
 			app.camera.zoom = 1;
 		break;
 		
@@ -405,7 +412,7 @@ function drawGrid(){
 		break;
 
 		default:
-			currentGrid = Tiling.sqTiling(cW, cH, cmap, 0);
+			currentGrid = Tiling.sqTiling(cW, cH, cmap, "Neumann");
 			app.camera.zoom = 1;
 		break;
 

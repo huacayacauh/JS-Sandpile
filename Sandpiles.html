@@ -14,12 +14,13 @@
 	<header>
 	<p style="margin:0; font-size:35px; font-weight:bold;">JS-Sandpiles</p>
 	
-	Zoom
-	<input type="number" id="zoomLevel" oninput="set_zoom(this)" value="1" step="0.1" style="margin-right:20px"/>
+	Zoom : 
+	<input type="number" id="zoomLevel" oninput="set_zoom(this)" value="100" step="0.1"/>
+	%&emsp;
 	Delay (ms) :
 		<input type="number" id="delay" style="margin-right:20px" value="100" oninput="changeDelay(this);" min="0"/>
 		Iterations per frame :
-		<input type="number" id="IPF" style="margin-right:40px" value="1" oninput="changeIPS(this);" min="1"/>
+		<input type="number" id="IPF" style="margin-right:40px" value="1" oninput="changeIPS(this);" min="1" max="99"/>
 		<button id="playButton" onclick="playPause(this)" class="btn btn-default" style="margin-right:40px; font-weight:bold;">Play</button>
 		<button onclick="step()" style="margin-right:20px" class="btn btn-default">Step</button>
 		
@@ -64,9 +65,9 @@
 	<!-- Grid-specific controls -->
 	<p class="groupTitle">Parameters</p>
 		Width: 
-		<input type="number" id="cW" min="0" value="100" style="width: 50px;" />
+		<input type="number" id="cW" min="1" value="100" style="width: 50px;" />
 		<span style="right:15px; position:absolute">Height: 
-		<input type="number" id="cH" min="0" value="100" style="width: 50px;" />
+		<input type="number" id="cH" min="1" value="100" style="width: 50px;" />
 		</span>
 
 	<!-- Penrose controls -->
@@ -88,7 +89,7 @@
 		</select>
 		<div id="maskMouseRepeat" style="display:inline;">
 		&nbsp;&nbsp;times&nbsp;&nbsp;
-		<input type="number" id="mouseOperationRepeat" value="1" min="0" style="width: 70px;" />
+		<input type="number" id="mouseOperationRepeat" value="1" min="1" style="width: 70px;" />
 		</div>
 	</div>
 
@@ -104,7 +105,7 @@
 		</select>
 		<div id="complexTimesMask" style="display:inline;">
 		&nbsp;&nbsp;times&nbsp;&nbsp;
-		<input type="number" id="complexOperationRepeat" min="0" value="1" style="width: 70px;" />
+		<input type="number" id="complexOperationRepeat" min="1" value="1" style="width: 70px;" />
 		</div>
 		<br>
 		<div style="margin-left:auto; margin-right:auto; display:table; margin-top:10px;" class="btn-group">
@@ -193,20 +194,26 @@
 	</div>
 
 	<!-- JS Sources -->
-	<script src="./js/jquery.min.js"></script>
-	<script src="./js/changeDisplay.js"></script>
-    <script src="./js/three.min.js"></script>
-    <script src="./js/OrthographicTrackballControls.js"></script>
+	<script src="./js/Utils/jquery.min.js"></script>
+    <script src="./js/Utils/three.min.js"></script>
+    <script src="./js/Utils/OrthographicTrackballControls.js"></script>
+	<script src="./js/Utils/bootstrap.min.js"></script>
+	
+	
 	<script src="./js/Tiling.js"></script>
-	<script src="./js/HexTiling.js"></script>
-	<script src="./js/TriTiling.js"></script>
-	<script src="./js/penrose.js"></script>
-    <script src="./js/app.js"></script>
-	<script src="./js/bootstrap.min.js"></script>
-	<script src="./js/importExport.js"></script>
-	<script src="./js/customGrid.js"></script>
-	<script src="./js/stats.js"></script>
-
+	
+	<script src="./js/TilingPresets/HexTiling.js"></script>
+	<script src="./js/TilingPresets/TriTiling.js"></script>
+	<script src="./js/TilingPresets/PenroseTiling.js"></script>
+	<script src="./js/TilingPresets/CustomSquareTiling.js"></script>
+	<script src="./js/TilingPresets/SquareTiling.js"></script>
+	
+	<script src="./js/Features/ChangeDisplay.js"></script>
+	<script src="./js/Features/ImportExport.js"></script>
+	<script src="./js/Features/Stats.js"></script>
+	<script src="./js/Features/Harmonics.js"></script>
+	
+    <script src="./js/App.js"></script>
 
   </body>
 </html>
