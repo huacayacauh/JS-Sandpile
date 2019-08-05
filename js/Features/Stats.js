@@ -1,4 +1,4 @@
-Tiling.get_stats = function(){
+Tiling.prototype.get_stats = function(){
 	var mean = 0;
 	var std = 0;
 	

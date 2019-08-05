@@ -68,6 +68,7 @@ var play = false;
 
 var currentGrid;
 
+var currentIdentity;
 
 var app = new App();
 
@@ -159,6 +160,26 @@ function colorSelected(){
 	}
 }
 
+function findIdentity(){
+	var identity1 = currentGrid.copy();
+	var identity2 = currentGrid.copy();
+	identity1.clear();
+	identity2.clear();
+	var maxLimit = 0;
+	for(var i = 0; i < currentGrid.tiles.length; i++){
+		if(maxLimit < currentGrid.tiles[i].limit)
+			maxLimit = currentGrid.tiles[i].limit;
+	}
+	identity1.addEverywhere((maxLimit - 1) * 2);
+	identity2.addEverywhere((maxLimit - 1) * 2);
+	identity1.stabilize();
+	identity2.removeConfiguration(identity1);
+
+	identity2.stabilize();
+	
+	currentIdentity = identity2;
+}
+
 function complexOperationAdd(){
 	// Apply the selected operation, additively
 
@@ -184,22 +205,10 @@ function complexOperationAdd(){
 			break;
 
 			case "Iden":
-				var identity1 = currentGrid.copy();
-				var identity2 = currentGrid.copy();
-				identity1.clear();
-				identity2.clear();
-				var maxLimit = 0;
-				for(var i = 0; i < currentGrid.tiles.length; i++){
-					if(maxLimit < currentGrid.tiles[i].limit)
-						maxLimit = currentGrid.tiles[i].limit;
-				}
-				identity1.addEverywhere((maxLimit - 1) * 2);
-				identity2.addEverywhere((maxLimit - 1) * 2);
-				identity1.stabilize();
-				identity2.removeConfiguration(identity1);
-
-				identity2.stabilize();
-				currentGrid.addConfiguration(identity2);
+				if(!currentIdentity)
+					findIdentity();
+				for(var i = 0; i< operationTimes; i++)
+					currentGrid.addConfiguration(currentIdentity);
 			break;
 		}
 		if(operationType.substring(0, 4) == "CNFG"){
@@ -226,7 +235,8 @@ function complexOperationSet(){
 
 			case "MaxS":
 				currentGrid.clear();
-				currentGrid.addMaxStable();
+				for(var i = 0; i< operationTimes; i++)
+					currentGrid.addMaxStable();
 			break;
 
 			case "Rand":
@@ -241,25 +251,11 @@ function complexOperationSet(){
 			break;
 
 			case "Iden":
-				var identity1 = currentGrid.copy();
-				var identity2 = currentGrid.copy();
-				identity1.clear();
-				identity2.clear();
-
-				var maxLimit = 0;
-				for(var i = 0; i < currentGrid.tiles.length; i++){
-					if(maxLimit < currentGrid.tiles[i].limit)
-						maxLimit = currentGrid.tiles[i].limit;
-				}
-				identity1.addEverywhere((maxLimit - 1) * 2);
-				identity2.addEverywhere((maxLimit - 1) * 2);
-
-				identity1.stabilize();
-				identity2.removeConfiguration(identity1);
-
-				identity2.stabilize();
 				currentGrid.clear();
-				currentGrid.addConfiguration(identity2);
+				if(!currentIdentity)
+					findIdentity();
+				for(var i = 0; i< operationTimes; i++)
+					currentGrid.addConfiguration(currentIdentity);
 			break;
 		}
 		if(operationType.substring(0, 4) == "CNFG"){
@@ -286,7 +282,7 @@ function complexOperationSub(){
 
 			case "MaxS":
 				for(var i = 0; i< currentGrid.tiles.length; i++){
-					currentGrid.remove(i, currentGrid.tiles[i].limit - 1);
+					currentGrid.remove(i, (currentGrid.tiles[i].limit - 1)* operationTimes);
 				}
 				currentGrid.colorTiles();
 			break;
@@ -300,24 +296,10 @@ function complexOperationSub(){
 			break;
 
 			case "Iden":
-				var identity1 = currentGrid.copy();
-				var identity2 = currentGrid.copy();
-				identity1.clear();
-				identity2.clear();
-
-				var maxLimit = 0;
-				for(var i = 0; i < currentGrid.tiles.length; i++){
-					if(maxLimit < currentGrid.tiles[i].limit)
-						maxLimit = currentGrid.tiles[i].limit;
-				}
-				identity1.addEverywhere((maxLimit - 1) * 2);
-				identity2.addEverywhere((maxLimit - 1) * 2);
-
-				identity1.stabilize();
-				identity2.removeConfiguration(identity1);
-
-				identity2.stabilize();
-				currentGrid.removeConfiguration(identity2);
+				if(!currentIdentity)
+					findIdentity();
+				for(var i = 0; i< operationTimes; i++)
+					currentGrid.removeConfiguration(currentIdentity);
 			break;
 		}
 		if(operationType.substring(0, 4) == "CNFG"){
@@ -352,6 +334,9 @@ function drawGrid(){
 	cH = document.getElementById("cH").value;
 
 	selectedTile = null;
+	
+	currentIdentity = null;
+	
 	preset = document.getElementById("gridSelect").value;
 
 	var nbIt = document.getElementById("penroseIt").value;

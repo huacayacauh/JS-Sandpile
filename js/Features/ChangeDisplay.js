@@ -43,6 +43,22 @@ function show_stats(){
 	}
 }
 
+var paramshown = true;
+
+function hideParams(){
+	if(paramshown){
+		document.getElementById("paramTitle").innerHTML ="Parameters ▼";
+		paramshown = false;
+		document.getElementById("paramHide").style="display:none";
+	} else {
+		
+		document.getElementById("paramTitle").innerHTML ="Parameters ▲";
+		paramshown = true;
+		document.getElementById("paramHide").style="display:inherit";
+	}
+		
+}
+
 // Color selection modal
 var modal = document.getElementById('colors');
 
