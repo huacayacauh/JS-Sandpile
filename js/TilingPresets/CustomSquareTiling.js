@@ -99,8 +99,9 @@ async function draw_custom(srcPIC){
 	selectedTile = null;
 	
 	
-	currentGrid = new Tiling(pos, col, tils, cmap);
+	currentGrid = new Tiling(pos, col, tils, cmap, pos);
 	
+	enableWireFrame(document.getElementById("wireFrameToggle"));
 	app.camera.zoom = 1.0;
 	
 	grid_check_stable = currentGrid.copy();

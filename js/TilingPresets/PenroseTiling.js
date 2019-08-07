@@ -1297,7 +1297,7 @@ makeKDPenroseSandpile = function(data, cmap){
     }
 
     console.log("LENGTH TILS : ", tils.length);
-    var tiling = new Tiling(pos, col, tils, cmap);
+    var tiling = new Tiling(pos, col, tils, cmap, pos);
     reset();
     return tiling;
     

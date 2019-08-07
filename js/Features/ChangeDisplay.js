@@ -18,7 +18,7 @@ function refresh_zoom(){
 
 function set_zoom(val){
 	if(app){
-		app.camera.zoom = val.value;
+		app.camera.zoom = val.value / 100;
 		app.controls.zoomCamera();
 		app.controls.object.updateProjectionMatrix();
 	}
@@ -235,6 +235,8 @@ window.onclick = function(event) {
     modal.style.display = "none";
   }
 }
+
+$('input[id="wireFrameToggle"]').removeAttr('checked');
 
 
 // Using JQuerry to prevent breaking the inputs

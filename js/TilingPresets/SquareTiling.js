@@ -35,7 +35,7 @@ Tiling.sqTiling = function(width, height, cmap, type){
 			}	
 		}
 
-		return new Tiling(pos, col, tils, cmap);
+		return new Tiling(pos, col, tils, cmap, pos);
 }
 
 Tile.squareTile = function(x, y, xMax, yMax){

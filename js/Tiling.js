@@ -15,7 +15,7 @@ class Tile{
 
 class Tiling{
 	// Represents any tiling
-	constructor(points, colors, tiles, colormap){
+	constructor(points, colors, tiles, colormap, wireFrame){
 
 		this.tiles = tiles;
 		//this.limit = toppleMin; // limit until the sand topple to adjacents tiles
@@ -34,6 +34,17 @@ class Tiling{
 
 		this.colors = this.mesh.geometry.attributes.color; // colors of every point of the mesh
 		this.points = this.mesh.geometry.attributes.position; // every point of the mesh
+		
+		// WireFrame -----------------------------------------------------
+		var wireFrameGeometry = new THREE.BufferGeometry();
+
+		var wirePosition = new THREE.Float32BufferAttribute( wireFrame, 3 );
+		wireFrameGeometry.addAttribute( 'position', wirePosition );
+		
+		var mat = new THREE.LineBasicMaterial( { color: 0x000000, linewidth: 1 } );
+		this.wireFrame = new THREE.LineSegments( wireFrameGeometry, mat );
+		
+		// ---------------------------------------------------------------
 
 
 		this.indexDict = {}; // Dict face index <-> tile index

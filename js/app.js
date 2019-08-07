@@ -6,7 +6,8 @@ class App{
 		var container = document.getElementById("canvasHolder");
 		this.WIDTH = container.clientWidth- 10;
 		this.HEIGHT = container.clientHeight - 10;
-
+		
+		
 
 		this.scene = new THREE.Scene();
 		this.ratio = this.WIDTH / this.HEIGHT;
@@ -79,6 +80,8 @@ var delay = 100;
 var selectedTile;
 
 var savedConfigs = [];
+
+var wireFrameEnabled = false;
 
 // ---------------------- Second hand variables
 
@@ -403,13 +406,15 @@ function drawGrid(){
 
 	}
 	grid_check_stable = currentGrid.copy();
-
+	
 	app.controls.zoomCamera();
 	app.controls.object.updateProjectionMatrix();
 
 	app.scene.add(currentGrid.mesh);
 	currentGrid.colorTiles();
 	//console.log(currentGrid);
+	
+	enableWireFrame(document.getElementById("wireFrameToggle"));
 
 	playWithDelay();
 
@@ -419,6 +424,18 @@ function drawGrid(){
 		app.renderer.render( app.scene, app.camera );
 	};
 	render();
+}
+
+function enableWireFrame(elem){
+	if(currentGrid){
+		if(currentGrid.wireFrame){
+			if(elem.checked)
+				app.scene.add(currentGrid.wireFrame);
+			else
+				app.scene.remove(currentGrid.wireFrame);
+		}
+	}
+		
 }
 
 async function playWithDelay() {
