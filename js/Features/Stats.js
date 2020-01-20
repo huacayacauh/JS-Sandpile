@@ -31,7 +31,7 @@ function makeStatsFile(grid){
 	
 	var oldTiles = [];
 	for(var i = 0; i<grid.tiles.length; i++){
-		oldTiles.push(new Tile(grid.tiles[i].id, Array.from(grid.tiles[i].neighbours), Array.from(grid.tiles[i].pointsIndexes)));
+		oldTiles.push(new Tile(grid.tiles[i].id, Array.from(grid.tiles[i].neighbors), Array.from(grid.tiles[i].pointsIndexes)));
 	}
 	var done = false;
 	while(!done){

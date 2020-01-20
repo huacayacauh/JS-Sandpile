@@ -1017,7 +1017,7 @@ makePenroseSandpile = function(data, cmap){
 
 
         var id = i;
-        var neighbours = [];
+        var neighbors = [];
         var pointsIds = [];
 
         for(var j=0; j<3; j++){
@@ -1028,12 +1028,12 @@ makePenroseSandpile = function(data, cmap){
         pos.push(data[i].vertices[1].x, data[i].vertices[1].y, 0); col.push(0, 0, 0);
         pos.push(data[i].vertices[2].x, data[i].vertices[2].y, 0); col.push(0, 0, 0);
 
-        neighbours = getAdj(data[i]);
+        neighbors = getAdj(data[i]);
 
         
         var s = 0;
 
-        var tile = new Tile(id, neighbours, pointsIds, 3);
+        var tile = new Tile(id, neighbors, pointsIds, 3);
         
         tile.sand = s;
 
@@ -1265,7 +1265,7 @@ makeKDPenroseSandpile = function(data, cmap){
 
 
         var id = i;
-        var neighbours = [];
+        var neighbors = [];
         var pointsIds = [];
 
         for(var j=0; j<6; j++){
@@ -1280,15 +1280,15 @@ makeKDPenroseSandpile = function(data, cmap){
         pos.push(data[i].vertices[2].x, data[i].vertices[2].y, 0); col.push(0, 0, 0);
         pos.push(data[i].vertices[3].x, data[i].vertices[3].y, 0); col.push(0, 0, 0);
 
-        //neighbours = getAdj(data[i]);
+        //neighbors = getAdj(data[i]);
 
         
         //var s = (data[i].type === "kite")?0:1;
         //var s = getAdjCell(data[i]).length;
         var s = 0;
-        neighbours = getAdjCell(data[i]);
+        neighbors = getAdjCell(data[i]);
 
-        var tile = new Tile(id, neighbours, pointsIds, 4);
+        var tile = new Tile(id, neighbors, pointsIds, 4);
         
         tile.sand = s;
 

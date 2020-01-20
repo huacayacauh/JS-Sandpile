@@ -42,41 +42,41 @@ Tile.squareTile = function(x, y, xMax, yMax){
 		// Creates the Tile in position x, y of a square grid
 
 		var id;
-		var neighbours = [];
+		var neighbors = [];
 		id = x*yMax + y;
-		if(x > 0) neighbours.push((x-1)*yMax + y);
-		if(x < xMax-1) neighbours.push((x+1)*yMax + y);
-		if(y > 0) neighbours.push(x*yMax + (y-1));
-		if(y < yMax-1) neighbours.push(x*yMax + (y+1));
+		if(x > 0) neighbors.push((x-1)*yMax + y);
+		if(x < xMax-1) neighbors.push((x+1)*yMax + y);
+		if(y > 0) neighbors.push(x*yMax + (y-1));
+		if(y < yMax-1) neighbors.push(x*yMax + (y+1));
 		var pointsIds = [];
 		for(var i=0; i<6; i++){
 			pointsIds.push(id*6 + i);
 		}
-		return new Tile(id, neighbours, pointsIds, 4);
+		return new Tile(id, neighbors, pointsIds, 4);
 	}
 	
 Tile.squareTileMoore = function(x, y, xMax, yMax){
 		// Creates the Tile in position x, y of a square grid
 
 		var id;
-		var neighbours = [];
+		var neighbors = [];
 		id = x*yMax + y;
-		if(x > 0) neighbours.push((x-1)*yMax + y);
-		if(x < xMax-1) neighbours.push((x+1)*yMax + y);
-		if(y > 0) neighbours.push(x*yMax + (y-1));
-		if(y < yMax-1) neighbours.push(x*yMax + (y+1));
+		if(x > 0) neighbors.push((x-1)*yMax + y);
+		if(x < xMax-1) neighbors.push((x+1)*yMax + y);
+		if(y > 0) neighbors.push(x*yMax + (y-1));
+		if(y < yMax-1) neighbors.push(x*yMax + (y+1));
 		
 		
-		if(y < yMax-1 && x < xMax-1) neighbours.push((x+1)*yMax + (y+1));
+		if(y < yMax-1 && x < xMax-1) neighbors.push((x+1)*yMax + (y+1));
 		
-		if(y < yMax-1 && x > 0) neighbours.push((x-1)*yMax + (y+1));
+		if(y < yMax-1 && x > 0) neighbors.push((x-1)*yMax + (y+1));
 		
-		if(y > 0 && x < xMax - 1) neighbours.push((x+1)*yMax + (y-1));
+		if(y > 0 && x < xMax - 1) neighbors.push((x+1)*yMax + (y-1));
 		
-		if(y > 0 && x > 0) neighbours.push((x-1)*yMax + (y-1));
+		if(y > 0 && x > 0) neighbors.push((x-1)*yMax + (y-1));
 		var pointsIds = [];
 		for(var i=0; i<6; i++){
 			pointsIds.push(id*6 + i);
 		}
-		return new Tile(id, neighbours, pointsIds, 8);
+		return new Tile(id, neighbors, pointsIds, 8);
 	}

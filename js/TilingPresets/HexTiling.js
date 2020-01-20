@@ -31,40 +31,40 @@ function hexHeightFromWidth(width, hexLength){
 }
 
 Tile.hexTile = function(x, y, id, yMax, width){
-	var neighbours = [];
+	var neighbors = [];
 
 	if(y > 0)
-		neighbours.push(id - 1);
+		neighbors.push(id - 1);
 	if(y < yMax - 1)
-		neighbours.push(id + 1);
+		neighbors.push(id + 1);
 	if(x < width - 1){
 		if(x>0){
 			if(y > 0)
-				neighbours.push(id - yMax);
+				neighbors.push(id - yMax);
 			if(y < yMax - 1)
-				neighbours.push(id - yMax +1);
+				neighbors.push(id - yMax +1);
 		}
-		neighbours.push(id + yMax);
-		neighbours.push(id + yMax +1);
+		neighbors.push(id + yMax);
+		neighbors.push(id + yMax +1);
 	} else if(x == width -1){
 		if(y > 0)
-			neighbours.push(id - yMax);
+			neighbors.push(id - yMax);
 		if(y < yMax - 1)
-			neighbours.push(id - yMax +1);
+			neighbors.push(id - yMax +1);
 		if(y < yMax - 1)
-			neighbours.push(id + yMax);
+			neighbors.push(id + yMax);
 		if(y > 0)
-			neighbours.push(id + yMax -1);
+			neighbors.push(id + yMax -1);
 		
 	} else {
 		
-		neighbours.push(id - yMax);
-		neighbours.push(id - yMax -1);
+		neighbors.push(id - yMax);
+		neighbors.push(id - yMax -1);
 		if(x < width * 2 -2){
 			if(y < yMax - 1)
-				neighbours.push(id + yMax);
+				neighbors.push(id + yMax);
 			if(y > 0)
-				neighbours.push(id + yMax -1);
+				neighbors.push(id + yMax -1);
 		}
 	}
 	
@@ -72,7 +72,7 @@ Tile.hexTile = function(x, y, id, yMax, width){
 	for(var i=0; i<12; i++){
 		pointsIds.push(id*12 + i);
 	}
-	return new Tile(id, neighbours, pointsIds, 6);
+	return new Tile(id, neighbors, pointsIds, 6);
 }
 
 function makeHexCell(positions, colors, i, j, xMid, yMid, xMax){

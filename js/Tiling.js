@@ -1,11 +1,11 @@
 class Tile{
-	constructor(id, neighbours, points, lim){
+	constructor(id, neighbors, points, lim){
 		this.id = id;
 		this.prevSand = 0; // "trick" variable to iterate the sand
 		this.sand = 0;
 		if(lim < 0)
 			this.sand = -1;
-		this.neighbours = neighbours; // Ids of adjacent tiles
+		this.neighbors = neighbors; // Ids of adjacent tiles
 
 		this.limit = lim;
 
@@ -61,7 +61,6 @@ class Tiling{
 
 	iterate(){
 		// Topple any tile that has more than the limit of sand
-
 		this.tiles.forEach(function(element) {
 		  element.prevSand = element.sand;
 		});
@@ -69,8 +68,8 @@ class Tiling{
 		for(var i = 0; i<this.tiles.length; i++){
 			if(this.tiles[i].prevSand >= this.tiles[i].limit){
 				this.tiles[i].sand -= this.tiles[i].limit;
-				for(var j = 0; j< this.tiles[i].neighbours.length; j++){
-					this.tiles[this.tiles[i].neighbours[j]].sand += 1;
+				for(var j = 0; j< this.tiles[i].neighbors.length; j++){
+					this.tiles[this.tiles[i].neighbors[j]].sand += 1;
 				}
 			}
 		}
@@ -145,13 +144,12 @@ class Tiling{
 	getDual(){
 		var newTiles = [];
 		for(var i = 0; i<this.tiles.length; i++){
-			newTiles.push(new Tile(this.tiles[i].id, Array.from(this.tiles[i].neighbours), Array.from(this.tiles[i].pointsIndexes), this.tiles[i].limit));
+			newTiles.push(new Tile(this.tiles[i].id, Array.from(this.tiles[i].neighbors), Array.from(this.tiles[i].pointsIndexes), this.tiles[i].limit));
 		}
 		var newTiling = new Tiling(Array.from(this.points), Array.from(this.colors), newTiles, Array.from(this.cmap));
 		for(var i = 0; i<newTiling.tiles.length; i++){
 			newTiling.tiles[i].sand = Math.max(0, this.tiles[i].limit - 1 - this.tiles[i].sand);
 		}
-		console.log(newTiling);
 		return newTiling;
 	}
 
@@ -165,7 +163,7 @@ class Tiling{
 	copy(){
 		var newTiles = [];
 		for(var i = 0; i<this.tiles.length; i++){
-			newTiles.push(new Tile(this.tiles[i].id, Array.from(this.tiles[i].neighbours), Array.from(this.tiles[i].pointsIndexes), this.tiles[i].limit));
+			newTiles.push(new Tile(this.tiles[i].id, Array.from(this.tiles[i].neighbors), Array.from(this.tiles[i].pointsIndexes), this.tiles[i].limit));
 		}
 		var newTiling = new Tiling(Array.from(this.points), Array.from(this.colors), newTiles, Array.from(this.cmap));
 		for(var i = 0; i<this.tiles.length; i++){
@@ -186,7 +184,7 @@ class Tiling{
 
 		var oldTiles = [];
 		for(var i = 0; i<this.tiles.length; i++){
-			oldTiles.push(new Tile(this.tiles[i].id, Array.from(this.tiles[i].neighbours), Array.from(this.tiles[i].pointsIndexes)));
+			oldTiles.push(new Tile(this.tiles[i].id, Array.from(this.tiles[i].neighbors), Array.from(this.tiles[i].pointsIndexes)));
 		}
 		var done = false;
 		while(!done){
