@@ -1,4 +1,4 @@
-Tiling.hexTiling = function (width, height, cmap) {
+Tiling.hexTiling = function (cmap, {size}={}) {
 	
 	var pos = [];
 	var col = [];
@@ -6,38 +6,38 @@ Tiling.hexTiling = function (width, height, cmap) {
 	
 	var wirePos = []
 
-	var xMid = width*1.5;
-	var yMid = width*1.5;
+	var xMid = size*1.5;
+	var yMid = size*1.5;
 
 	var count = 0;
-	for(var i = 0; i < width*2 -1; i++){
-		for(var j = 0; j< hexHeightFromWidth(i, width); j++){
-			hexWireFrame(wirePos, i, j, xMid, yMid, width);
-			makeHexCell(pos, col, i, j, xMid, yMid, width);
-			tils.push(Tile.hexTile(i, j, count, hexHeightFromWidth(i, width), width));
+	for(var i = 0; i < size*2 -1; i++){
+		for(var j = 0; j< hexHeightFromWidth(i, size); j++){
+			hexWireFrame(wirePos, i, j, xMid, yMid, size);
+			makeHexCell(pos, col, i, j, xMid, yMid, size);
+			tils.push(Tile.hexTile(i, j, count, hexHeightFromWidth(i, size), size));
 			count++;
 		}
 	}
 	return new Tiling(pos, col, tils, cmap, wirePos);
 }
 
-function hexHeightFromWidth(width, hexLength){
+function hexHeightFromWidth(size, hexLength){
 	var hex = Number(hexLength);
-	if(width < hex){
-		return width + hex;	
+	if(size < hex){
+		return size + hex;	
 	} else {
-		return 2*hex - (width-hex +2);
+		return 2*hex - (size-hex +2);
 	}
 }
 
-Tile.hexTile = function(x, y, id, yMax, width){
+Tile.hexTile = function(x, y, id, yMax, size){
 	var neighbors = [];
 
 	if(y > 0)
 		neighbors.push(id - 1);
 	if(y < yMax - 1)
 		neighbors.push(id + 1);
-	if(x < width - 1){
+	if(x < size - 1){
 		if(x>0){
 			if(y > 0)
 				neighbors.push(id - yMax);
@@ -46,7 +46,7 @@ Tile.hexTile = function(x, y, id, yMax, width){
 		}
 		neighbors.push(id + yMax);
 		neighbors.push(id + yMax +1);
-	} else if(x == width -1){
+	} else if(x == size -1){
 		if(y > 0)
 			neighbors.push(id - yMax);
 		if(y < yMax - 1)
@@ -60,7 +60,7 @@ Tile.hexTile = function(x, y, id, yMax, width){
 		
 		neighbors.push(id - yMax);
 		neighbors.push(id - yMax -1);
-		if(x < width * 2 -2){
+		if(x < size * 2 -2){
 			if(y < yMax - 1)
 				neighbors.push(id + yMax);
 			if(y > 0)

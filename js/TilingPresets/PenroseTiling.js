@@ -1,3 +1,41 @@
+// 	#############  PENROSETILING.JS  ###############
+//	 		Authors : 	DARRGIGO Valentin
+// 	################################################
+// 
+// 	To help you dig into this code, the main parts
+// 	in this file are indexed via comments.	
+//
+//		Ex:  [ 2.4 ] - Something
+//
+//	References to other parts of the app are linked
+//	via indexes.
+//
+//		### indexes a section
+//		--- indexes a sub-section
+//
+//	---
+//
+//	All relations between indexing in files can be
+// 	found on our GitHub :
+//
+// 		https://github.com/huacayacauh/JS-Sandpile
+//
+// 	---
+//
+//  This file is under CC-BY.
+//
+//	Feel free to edit it as long as you provide 
+// 	a link to its original source.
+//
+// 	################################################
+
+
+// ################################################
+//
+// 	[ 1.0 ] 	Penrose generation main variables
+//
+// ################################################
+
 var PHI = (1.0 + Math.sqrt(5)) / 2.0;
 
 //compteur des faces/ arêtes / sommets
@@ -5,11 +43,17 @@ var tCount = 0;
 var vCount = 0;
 var eCount = 0;
 
-//liste des traingles générés
+//liste des triangles générés
 var triangles = [];
 
 var cCount = 0;
 var cells = [];
+
+// ################################################
+//
+// 	[ 2.0 ] 	Penrose generation main functions
+//
+// ################################################
 
 //remet les variables golbales à zero
 reset = function(){
@@ -137,6 +181,38 @@ guessVertex = function(v, edges){
 	                                       (v.id === edges[1].vertexA.id) ? edges[1].vertexB : 
 	                                                                        edges[1].vertexA;
 }
+
+
+//renvoi le triangle adjacent du triangle d'index tId
+//par rapport à l'une de ses arêtes edge
+getAdjByEdge = function(tId, edge){
+    return (edge.triangleA !== null && tId === edge.triangleA.id)? edge.triangleB:
+                                        edge.triangleA;
+}
+
+//renvoi une liste d'index des triangles adjacents au triangle t
+getAdj = function(t){
+    var adj = []
+
+    var t1 = getAdjByEdge(t.id, t.edges01[0]);
+    if (t1 !== null) adj.push(t1.id)
+
+    var t2 = getAdjByEdge(t.id, t.edges02[0]);
+    if (t2 !== null) adj.push(t2.id)
+
+    var t3 = getAdjByEdge(t.id, t.edges12[0]);
+    if (t3 !== null) adj.push(t3.id)
+
+    return adj;
+
+}
+
+
+// ################################################
+//
+// 	[ 3.0 ] 	Penrose generation split functions
+//
+// ################################################
 
 //divise un triangle de type "hk"
 // en 3 triangles
@@ -448,36 +524,13 @@ splitHDR = function(t){
 }
 
 
-//renvoi le triangle adjacent du triangle d'index tId
-//par rapport à l'une de ses arêtes edge
-getAdjByEdge = function(tId, edge){
-    return (edge.triangleA !== null && tId === edge.triangleA.id)? edge.triangleB:
-                                        edge.triangleA;
-}
-
-//renvoi une liste d'index des triangles adjacents au triangle t
-getAdj = function(t){
-    var adj = []
-
-    var t1 = getAdjByEdge(t.id, t.edges01[0]);
-    if (t1 !== null) adj.push(t1.id)
-
-    var t2 = getAdjByEdge(t.id, t.edges02[0]);
-    if (t2 !== null) adj.push(t2.id)
-
-    var t3 = getAdjByEdge(t.id, t.edges12[0]);
-    if (t3 !== null) adj.push(t3.id)
-
-    return adj;
-
-}
 
 //créer un gros triangle hk et le met dan la liste traingles
 makeHK = function(size){
 
-	//var xMid = ( (size+1) * Math.cos(Math.PI / 5.0))/3
-	var yMid = (size * Math.sin(Math.PI / 5.0))/2;
-
+	var xMid = (size * Math.cos(Math.PI / 5.0))/3;
+	console.log(xMid);
+	var yMid = (size * Math.sin(Math.PI / 5.0))/4;
     var v0 = new Vertex(vCount++, {x: 0 - size/2, y: 0 + yMid});
     var v1 = new Vertex(vCount++, {x: size - size/2, y: 0+ yMid});
     var v2 = new Vertex(vCount++, {x: size * Math.cos(Math.PI / 5.0) - size/2, y: -size * Math.sin(Math.PI / 5.0)+ yMid});
@@ -906,7 +959,7 @@ makeStar = function(size){
 
 }
 
-//divise tous les traingles contenus dans la liste traingles
+//divise tous les triangles contenus dans la liste triangles
 iterate = function(){
 	var fixedLength = triangles.length;
 	for(var i = 0; i < fixedLength; i++){
@@ -926,6 +979,12 @@ iterateR = function(){
             splitHDR(triangles[i]);
     }
 }
+
+// ################################################
+//
+// 	[ 4.0 ] 	Penrose generation functions
+//
+// ################################################
 
 //créer un pavage de penrose diviser n fois
 //les triangles générés son dans la liste triangles
@@ -1005,6 +1064,14 @@ generateStarTilingR = function(n){
         iterateR();
 }
 
+
+// ################################################
+//
+// 	[ 5.0 ] 	Convert Penrose tilings to
+//				Tiling objects.
+//
+// ################################################
+
 //créer un tas de sable abélien à partir
 //d'une liste de triangles
 makePenroseSandpile = function(data, cmap){
@@ -1045,44 +1112,44 @@ makePenroseSandpile = function(data, cmap){
     
 }
 
-Tiling.HKPenroseSandpile = function(iteration, cmap){
-    generateHKTiling(iteration);
+Tiling.HKPenroseSandpile = function(iterations, cmap){
+    generateHKTiling(iterations);
     return makePenroseSandpile(triangles, cmap);
 }
 
-Tiling.HKPenroseSandpileR = function(iteration, cmap){
-    generateHKTilingR(iteration);
+Tiling.HKPenroseSandpileR = function(iterations, cmap){
+    generateHKTilingR(iterations);
     return makePenroseSandpile(triangles, cmap);
 }
 
 
-Tiling.HDPenroseSandpile = function(iteration, cmap){
-    generateHDTiling(iteration);
+Tiling.HDPenroseSandpile = function(iterations, cmap){
+    generateHDTiling(iterations);
     return makePenroseSandpile(triangles, cmap);
 }
 
-Tiling.HDPenroseSandpileR = function(iteration, cmap){
-    generateHDTilingR(iteration);
+Tiling.HDPenroseSandpileR = function(iterations, cmap){
+    generateHDTilingR(iterations);
     return makePenroseSandpile(triangles, cmap);
 }
 
-Tiling.SunPenroseSandpile = function(iteration, cmap){
-    generateSunTiling(iteration);
+Tiling.SunPenroseSandpile = function(iterations, cmap){
+    generateSunTiling(iterations);
     return makePenroseSandpile(triangles, cmap);
 }
 
-Tiling.SunPenroseSandpileR = function(iteration, cmap){
-    generateSunTilingR(iteration);
+Tiling.SunPenroseSandpileR = function(iterations, cmap){
+    generateSunTilingR(iterations);
     return makePenroseSandpile(triangles, cmap);
 }
 
-Tiling.StarPenroseSandpile = function(iteration, cmap){
-    generateStarTiling(iteration);
+Tiling.StarPenroseSandpile = function(iterations, cmap){
+    generateStarTiling(iterations);
     return makePenroseSandpile(triangles, cmap);
 }
 
-Tiling.StarPenroseSandpileR = function(iteration, cmap){
-    generateStarTilingR(iteration);
+Tiling.StarPenroseSandpileR = function(iterations, cmap){
+    generateStarTilingR(iterations);
     return makePenroseSandpile(triangles, cmap);
 }
 
@@ -1304,50 +1371,57 @@ makeKDPenroseSandpile = function(data, cmap){
 }
 
 
-Tiling.HKKDPenroseSandpile = function(iteration, cmap){
-    generateHKTiling(iteration);
+Tiling.HKKDPenrose = function(cmap, {iterations}={}){
+    generateHKTiling(iterations);
     trianglesToKDTiling();
     return makeKDPenroseSandpile(cells, cmap);
 }
 
-Tiling.HDKDPenroseSandpile = function(iteration, cmap){
-    generateHDTiling(iteration);
+Tiling.HDKDPenrose = function(cmap, {iterations}={}){
+    generateHDTiling(iterations);
     trianglesToKDTiling();
     return makeKDPenroseSandpile(cells, cmap);
 }
 
-Tiling.SunKDPenroseSandpile = function(iteration, cmap){
-    generateSunTiling(iteration);
+Tiling.SunKDPenrose = function(cmap, {iterations}={}){
+    generateSunTiling(iterations);
     trianglesToKDTiling();
     return makeKDPenroseSandpile(cells, cmap);
 }
 
-Tiling.StarKDPenroseSandpile = function(iteration, cmap){
-    generateStarTiling(iteration);
+Tiling.StarKDPenrose = function(cmap, {iterations}={}){
+    generateStarTiling(iterations);
     trianglesToKDTiling();
     return makeKDPenroseSandpile(cells, cmap);
 }
 
-Tiling.HKRPenroseSandpile = function(iteration, cmap){
-    generateHKTilingR(iteration);
+Tiling.HKRPenrose = function(cmap, {iterations}={}){
+    generateHKTilingR(iterations);
     trianglesToRTiling();
     return makeKDPenroseSandpile(cells, cmap);
 }
 
-Tiling.HDRPenroseSandpile = function(iteration, cmap){
-    generateHDTilingR(iteration);
+Tiling.HDRPenrose = function(cmap, {iterations}={}){
+    generateHDTilingR(iterations);
     trianglesToRTiling();
     return makeKDPenroseSandpile(cells, cmap);
 }
 
-Tiling.SunRPenroseSandpile = function(iteration, cmap){
-    generateSunTilingR(iteration);
+Tiling.SunRPenrose = function(cmap, {iterations}={}){
+    generateSunTilingR(iterations);
     trianglesToRTiling();
     return makeKDPenroseSandpile(cells, cmap);
 }
 
-Tiling.StarRPenroseSandpile = function(iteration, cmap){
-    generateStarTilingR(iteration);
+Tiling.StarRPenrose = function(cmap, {iterations}={}){
+    generateStarTilingR(iterations);
     trianglesToRTiling();
     return makeKDPenroseSandpile(cells, cmap);
 }
+
+// ################################################
+//
+// 	EOF
+//
+// ################################################
+

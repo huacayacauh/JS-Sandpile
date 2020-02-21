@@ -1,3 +1,43 @@
+// 	#################  STATS.JS  ###################
+//	 		Authors : 	FERSULA Jérémy
+// 	################################################
+// 
+// 	To help you dig into this code, the main parts
+// 	in this file are indexed via comments.	
+//
+//		Ex:  [ 2.4 ] - Something
+//
+//	References to other parts of the app are linked
+//	via indexes.
+//
+//		### indexes a section
+//		--- indexes a sub-section
+//
+//	---
+//
+//	All relations between indexing in files can be
+// 	found on our GitHub :
+//
+// 		https://github.com/huacayacauh/JS-Sandpile
+//
+// 	---
+//
+//  This file is under CC-BY.
+//
+//	Feel free to edit it as long as you provide 
+// 	a link to its original source.
+//
+//  ################################################
+//
+//		This file could be improved.
+
+
+// ################################################
+//
+// 	[ 1.0 ]		Produces various measure of the
+//				toppling of the Tiling.
+//
+// ################################################
 Tiling.prototype.get_stats = function(){
 	var mean = 0;
 	var std = 0;
@@ -24,33 +64,33 @@ Tiling.prototype.get_stats = function(){
 	return {"Mean":mean, "Std":Math.round(std * 100000)/100000, "Population":populations};
 }
 
-function makeStatsFile(grid){
+function makeStatsFile(Tiling){
 	var arr_mean = [];
 	var arr_std = [];
 	var arr_populations = [];
 	
 	var oldTiles = [];
-	for(var i = 0; i<grid.tiles.length; i++){
-		oldTiles.push(new Tile(grid.tiles[i].id, Array.from(grid.tiles[i].neighbors), Array.from(grid.tiles[i].pointsIndexes)));
+	for(var i = 0; i<Tiling.tiles.length; i++){
+		oldTiles.push(new Tile(Tiling.tiles[i].id, Array.from(Tiling.tiles[i].neighbors), Array.from(Tiling.tiles[i].pointsIndexes)));
 	}
 	var done = false;
 	while(!done){
 		done = true;
-		for(var i = 0; i<grid.tiles.length; i++){
-			if(oldTiles[i].sand != grid.tiles[i].sand){
-				oldTiles[i].sand = grid.tiles[i].sand;
+		for(var i = 0; i<Tiling.tiles.length; i++){
+			if(oldTiles[i].sand != Tiling.tiles[i].sand){
+				oldTiles[i].sand = Tiling.tiles[i].sand;
 				done = false;
 			}
 		}
 		for(var i = 0; i<50; i++){
-			var stat = grid.get_stats();
+			var stat = Tiling.get_stats();
 			arr_mean.push(stat["Mean"]);
 			arr_std.push(stat["Std"]);
 			arr_populations.push(stat["Population"]);
-			grid.iterate();
+			Tiling.iterate();
 		}
 	}
-	grid.colorTiles();
+	Tiling.colorTiles();
 	
 	var text1 = "";
 	for(var i = 0; i<arr_mean.length; i++){
@@ -88,12 +128,19 @@ function makeStatsFile(grid){
 	return [textFile1, textFile2, textFile3]; 
 }
 
+// ################################################
+//
+// 	[ 2.0 ] 	Stats file download
+//
+//		Same as ImportExport.js [ 2.0 ]
+//
+// ################################################
 handleDownloadStats = function(evt){
 
-    if(currentGrid === undefined) return
+    if(currentTiling === undefined) return
     var link = document.getElementById('downloadlink');
 	
-	var textFiles = makeStatsFile(currentGrid);
+	var textFiles = makeStatsFile(currentTiling);
 	
 	link.setAttribute('download', "Sandpile_means.txt");
     link.href = textFiles[0];
@@ -124,3 +171,10 @@ function download(filename, text) {
 
 var create2 = document.getElementById('create2')
 create2.addEventListener('click', handleDownloadStats, false);
+
+// ################################################
+//
+// 	EOF
+//
+// ################################################
+

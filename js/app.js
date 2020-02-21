@@ -1,17 +1,61 @@
+// 	###################  APP.JS  ###################
+//	 		Authors : 	FERSULA Jérémy
+//						DARRGIGO Valentin
+// 	################################################
+// 
+// 	To help you dig into this code, the main parts
+// 	in this file are indexed via comments.	
+//
+//		Ex:  [ 2.4 ] - Something
+//
+//	References to other parts of the app are linked
+//	via indexes.
+//
+//		### indexes a section
+//		--- indexes a sub-section
+//
+//	---
+//
+//	All relations between indexing in files can be
+// 	found on our GitHub :
+//
+// 		https://github.com/huacayacauh/JS-Sandpile
+//
+// 	---
+//
+//  This file is under CC-BY.
+//
+//	Feel free to edit it as long as you provide 
+// 	a link to its original source.
+//
+// 	################################################
+
+
+// ################################################
+//
+// 	[ 1.0 ] 	Main class of the application
+//			
+//		Creates the THREE.js canvas containing
+//		the interesting part of the app.
+//
+// ################################################
 class App{
-	// Create the three.js canvas, which contains the tilings.
 
 	constructor(){
 
+		// Display
 		var container = document.getElementById("canvasHolder");
 		this.WIDTH = container.clientWidth- 10;
 		this.HEIGHT = container.clientHeight - 10;
 		
-		
-
 		this.scene = new THREE.Scene();
 		this.ratio = this.WIDTH / this.HEIGHT;
+		
+		this.renderer = new THREE.WebGLRenderer( );
+		this.renderer.setSize(this.WIDTH, this.HEIGHT);
+		container.appendChild(this.renderer.domElement);
 
+		// Controls
 		var left = -this.WIDTH / 4.5;
 		var right = this.WIDTH / 4.5;
 		var top_cam = this.HEIGHT / 4.5;
@@ -20,11 +64,6 @@ class App{
 		this.camera = new THREE.OrthographicCamera( left, right, top_cam, bottom, 0, 10 );
 		this.camera.position.z = 5;
 
-		this.renderer = new THREE.WebGLRenderer( );
-
-		this.renderer.setSize(this.WIDTH, this.HEIGHT);
-		container.appendChild(this.renderer.domElement);
-
 		this.controls = new THREE.OrthographicTrackballControls( this.camera, this.renderer.domElement ); //OK
 
 		this.controls.enablePan = true;
@@ -32,8 +71,11 @@ class App{
 		this.controls.enableRotate = false;
 	}
 	
+	// ------------------------------------------------
+	// 	[ 1.1 ] 	Re-sizing of the Canvas
+	// ------------------------------------------------
+	
 	reset_size(){
-		// Automatic rescaling of the canvas
 		var container = document.getElementById("canvasHolder");
 		this.WIDTH = container.clientWidth- 10;
 		this.HEIGHT = container.clientHeight - 10;
@@ -55,7 +97,13 @@ class App{
 }
 
 
-// Application state variables ------------------------------------------------------------
+// ################################################
+//
+// 	[ 2.0 ]		Application state variables
+//			
+//		Shared and used between many files
+//
+// ################################################
 
 var cmap = [new THREE.Color(0xffffff),
               new THREE.Color(0xdddddd),
@@ -67,13 +115,13 @@ var cmap = [new THREE.Color(0xffffff),
 
 var play = false;
 
-var currentGrid;
+var currentTiling;
 
 var currentIdentity;
 
 var app = new App();
 
-var SPEED = 1;
+var it_per_frame = 1;
 
 var delay = 100;
 
@@ -83,50 +131,286 @@ var savedConfigs = [];
 
 var wireFrameEnabled = false;
 
-// ---------------------- Second hand variables
+// ---------------------- Less important variables
 
-var selectColor = 0.0; // Animation of selected tile color
+var color_hue_shift = 0.0; // Animation of selected tile color
 
 var color_select = new THREE.Color(); // Animation of selected tile color
 
 var tileInfo = document.getElementById("tileInfo"); 
 
-var grid_check_stable;
+var tiling_check_stable;
 
-var check_copy = true;
+var check_copy = true; // Copy the tiling once in a while to see if it is stable
 
 // ---------------------- Routines
 
-setInterval(refresh_zoom, 200);
+setInterval(colorSelected, 100); //		[ 4.2 ]
 
-setInterval(colorSelected, 100);
+setInterval(refresh_zoom, 200); // 		[ 5.2 ]
 
-setInterval(check_stable, 500);
+setInterval(check_stable, 500); // 		[ 5.4 ]
 
-// ----------------------------------------------------------------------------------------
+// ---------------------- Events
 
 window.addEventListener( 'resize', onWindowResize, false );
 
 function onWindowResize(){
 	app.reset_size();
-
-	//document.getElementById("bottomGroup").style.height = document.documentElement.clientHeight - document.getElementById("bottomGroup").offsetTop - 10;
-
-
 }
 
-function saveConfiguration(){
-	if(currentGrid){
-		var config_name = prompt("Enter configuration name : ", "Configuration " + savedConfigs.length);
-		if (config_name == null || config_name == "") {
-			return;
-		}
-		document.getElementById("complexOperationValue").innerHTML += '<option value="CNFG'+ savedConfigs.length +'">' + config_name + '</option>';
-		
-		savedConfigs.push(currentGrid.copy());
+// ################################################
+//
+// 	[ 3.0 ]		Tiling manipulation controls
+//			
+//		See Tiling.js [ 2.0 ]
+//
+// ################################################
+
+// ------------------------------------------------
+// 	[ 3.1 ] 	Apply one sandpile step
+//		Tiling.js [ 2.2 ] [ 2.6 ]
+// ------------------------------------------------
+function step(){
+	if(currentTiling){
+		currentTiling.iterate();
+		currentTiling.colorTiles();
+		if(selectedTile)
+			tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentTiling.tiles[selectedTile].sand;
 	}
 }
 
+
+// ------------------------------------------------
+// 	[ 3.2 ] 	Apply multiple steps and color
+//		Tiling.js [ 2.2 ] [ 2.6 ]
+// ------------------------------------------------
+function iterateTiling(){
+	for(var i = 0; i<it_per_frame; i++){
+		currentTiling.iterate();
+	}
+	currentTiling.colorTiles();
+	if(selectedTile)
+		tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentTiling.tiles[selectedTile].sand;
+
+}
+
+// ------------------------------------------------
+// 	[ 3.3 ] 	Assign sandpile identity to
+//				the currentIdentity variable.
+//		Tiling.js [ 2.4 ] [ 2.5 ]
+// ------------------------------------------------
+function findIdentity(){
+	var identity1 = currentTiling.copy();
+	var identity2 = currentTiling.copy();
+	identity1.clear();
+	identity2.clear();
+	var maxLimit = 0;
+	for(var i = 0; i < currentTiling.tiles.length; i++){
+		if(maxLimit < currentTiling.tiles[i].limit)
+			maxLimit = currentTiling.tiles[i].limit;
+	}
+	identity1.addEverywhere((maxLimit - 1) * 2);
+	identity2.addEverywhere((maxLimit - 1) * 2);
+	identity1.stabilize();
+	identity2.removeConfiguration(identity1);
+
+	identity2.stabilize();
+	
+	currentIdentity = identity2;
+}
+
+// ------------------------------------------------
+// 	[ 3.4 ] 	Stabilize the current Tiling
+//		Tiling.js [ 2.5 ]
+// ------------------------------------------------
+function stabTiling(){
+	if(currentTiling) {
+		currentTiling.stabilize();
+	}
+
+	if(selectedTile)
+		tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentTiling.tiles[selectedTile].sand;
+}
+
+
+// ------------------------------------------------
+// 	[ 3.5 ] 	Empty the Tiling
+//		Tiling.js [ 2.4 ]
+// ------------------------------------------------
+function clearTiling(){
+	if(currentTiling){
+		currentTiling.clear();
+	}
+}
+
+// ------------------------------------------------
+// 	[ 3.6 ] 	Adding, Subtracting and setting
+//				complex operations over the
+//				current Tiling.
+//		
+//		This section could be improved ...
+//
+//		Tiling.js [ 2.3 ] [ 2.4 ] [ 2.5 ]
+//
+// ------------------------------------------------
+function complexOperationAdd(){
+	// Apply the selected operation, additively
+
+	if(currentTiling){
+		var operationType = document.getElementById("complexOperationValue").value;
+		var operationTimes = document.getElementById("complexOperationRepeat").valueAsNumber;
+		switch(operationType) {
+			case "OneE":
+				currentTiling.addEverywhere(operationTimes);
+			break;
+
+			case "MaxS":
+				for(var i = 0; i<operationTimes;i++)
+					currentTiling.addMaxStable();
+			break;
+
+			case "Rand":
+				currentTiling.addRandom(operationTimes);
+			break;
+
+			case "Dual":
+				currentTiling.addConfiguration(currentTiling.getDual());
+			break;
+
+			case "Iden":
+				if(!currentIdentity)
+					findIdentity();
+				for(var i = 0; i< operationTimes; i++)
+					currentTiling.addConfiguration(currentIdentity);
+			break;
+		}
+		if(operationType.substring(0, 4) == "CNFG"){
+			for(var i = 0; i<operationTimes; i++)
+				currentTiling.addConfiguration(savedConfigs[operationType.substring(4, operationType.length)]);
+		}
+	}
+
+	if(selectedTile)
+		tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentTiling.tiles[selectedTile].sand;
+}
+
+function complexOperationSet(){
+	// Apply the selected operation, and set the Tiling accordingly
+
+	if(currentTiling){
+		var operationType = document.getElementById("complexOperationValue").value;
+		var operationTimes = document.getElementById("complexOperationRepeat").valueAsNumber;
+		switch(operationType) {
+			case "OneE":
+				currentTiling.clear();
+				currentTiling.addEverywhere(operationTimes);
+			break;
+
+			case "MaxS":
+				currentTiling.clear();
+				for(var i = 0; i< operationTimes; i++)
+					currentTiling.addMaxStable();
+			break;
+
+			case "Rand":
+				currentTiling.clear();
+				currentTiling.addRandom(operationTimes);
+			break;
+
+			case "Dual":
+				var newTiling = currentTiling.getDual();
+				currentTiling.clear();
+				currentTiling.addConfiguration(newTiling);
+			break;
+
+			case "Iden":
+				currentTiling.clear();
+				if(!currentIdentity)
+					findIdentity();
+				for(var i = 0; i< operationTimes; i++)
+					currentTiling.addConfiguration(currentIdentity);
+			break;
+		}
+		if(operationType.substring(0, 4) == "CNFG"){
+			currentTiling.clear();
+			for(var i = 0; i<operationTimes; i++)
+				currentTiling.addConfiguration(savedConfigs[operationType.substring(4, operationType.length)]);
+		}
+	}
+
+	if(selectedTile)
+		tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentTiling.tiles[selectedTile].sand;
+}
+
+function complexOperationSub(){
+	// Apply the selected operation, subtractively
+
+	if(currentTiling){
+		var operationType = document.getElementById("complexOperationValue").value;
+		var operationTimes = document.getElementById("complexOperationRepeat").valueAsNumber;
+		switch(operationType) {
+			case "OneE":
+				currentTiling.removeEverywhere(operationTimes);
+			break;
+
+			case "MaxS":
+				for(var i = 0; i< currentTiling.tiles.length; i++){
+					currentTiling.remove(i, (currentTiling.tiles[i].limit - 1)* operationTimes);
+				}
+				currentTiling.colorTiles();
+			break;
+
+			case "Rand":
+				currentTiling.removeRandom(operationTimes);
+			break;
+
+			case "Dual":
+				currentTiling.removeConfiguration(currentTiling.getDual());
+			break;
+
+			case "Iden":
+				if(!currentIdentity)
+					findIdentity();
+				for(var i = 0; i< operationTimes; i++)
+					currentTiling.removeConfiguration(currentIdentity);
+			break;
+		}
+		if(operationType.substring(0, 4) == "CNFG"){
+			for(var i = 0; i<operationTimes; i++)
+				currentTiling.removeConfiguration(savedConfigs[operationType.substring(4, operationType.length)]);
+		}
+	}
+
+	if(selectedTile)
+		tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentTiling.tiles[selectedTile].sand;
+}
+
+// ################################################
+//
+// 	[ 4.0 ]		Tiling display controls
+//			
+//		See Tiling [ 2.0 ]
+//
+// ################################################
+
+// ------------------------------------------------
+// 	[ 4.1 ] 	Main play function
+// ------------------------------------------------
+async function playWithDelay() {
+	if(currentTiling){
+	  while(true){
+		  if(play){
+		  iterateTiling ();
+		  }
+		await sleep(delay);
+	  }
+	}
+}
+
+// ------------------------------------------------
+// 	[ 4.1 ] 	Either play, or pause
+// ------------------------------------------------
 function playPause(elem){
 	if(play){
 		play = false;
@@ -139,192 +423,46 @@ function playPause(elem){
 	}
 }
 
-function step(){
-	if(currentGrid){
-		currentGrid.iterate();
-		currentGrid.colorTiles();
-		if(selectedTile)
-			tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentGrid.tiles[selectedTile].sand;
-	}
-}
-
-
-	
+// ------------------------------------------------
+// 	[ 4.2 ] 	Shift hue of selected tile
+//			
+//			Called by a routine.
+// ------------------------------------------------
 function colorSelected(){
-	if(currentGrid){
+	if(currentTiling){
 		if(!play){
-			selectColor += 0.025;
-			selectColor = selectColor % 1.0;
-			if(currentGrid.selectedIndex >= 0 ){
-				color_select.setHSL( selectColor, 1.0, 0.5 );
-				currentGrid.colorTile(currentGrid.selectedIndex, color_select);
+			color_hue_shift += 0.025;
+			color_hue_shift = color_hue_shift % 1.0;
+			if(currentTiling.selectedIndex >= 0 ){
+				color_select.setHSL( color_hue_shift, 1.0, 0.5 );
+				currentTiling.colorTile(currentTiling.selectedIndex, color_select);
 			}
 		}
 	}
 }
 
-function findIdentity(){
-	var identity1 = currentGrid.copy();
-	var identity2 = currentGrid.copy();
-	identity1.clear();
-	identity2.clear();
-	var maxLimit = 0;
-	for(var i = 0; i < currentGrid.tiles.length; i++){
-		if(maxLimit < currentGrid.tiles[i].limit)
-			maxLimit = currentGrid.tiles[i].limit;
-	}
-	identity1.addEverywhere((maxLimit - 1) * 2);
-	identity2.addEverywhere((maxLimit - 1) * 2);
-	identity1.stabilize();
-	identity2.removeConfiguration(identity1);
-
-	identity2.stabilize();
-	
-	currentIdentity = identity2;
-}
-
-function complexOperationAdd(){
-	// Apply the selected operation, additively
-
-	if(currentGrid){
-		var operationType = document.getElementById("complexOperationValue").value;
-		var operationTimes = document.getElementById("complexOperationRepeat").valueAsNumber;
-		switch(operationType) {
-			case "OneE":
-				currentGrid.addEverywhere(operationTimes);
-			break;
-
-			case "MaxS":
-				for(var i = 0; i<operationTimes;i++)
-					currentGrid.addMaxStable();
-			break;
-
-			case "Rand":
-				currentGrid.addRandom(operationTimes);
-			break;
-
-			case "Dual":
-				currentGrid.addConfiguration(currentGrid.getDual());
-			break;
-
-			case "Iden":
-				if(!currentIdentity)
-					findIdentity();
-				for(var i = 0; i< operationTimes; i++)
-					currentGrid.addConfiguration(currentIdentity);
-			break;
-		}
-		if(operationType.substring(0, 4) == "CNFG"){
-			for(var i = 0; i<operationTimes; i++)
-				currentGrid.addConfiguration(savedConfigs[operationType.substring(4, operationType.length)]);
+// ------------------------------------------------
+// 	[ 4.3 ] 	Display border of tiles.
+// ------------------------------------------------
+function enableWireFrame(elem){
+	if(currentTiling){
+		if(currentTiling.wireFrame){
+			if(elem.checked)
+				app.scene.add(currentTiling.wireFrame);
+			else
+				app.scene.remove(currentTiling.wireFrame);
 		}
 	}
-
-	if(selectedTile)
-		tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentGrid.tiles[selectedTile].sand;
+		
 }
 
-function complexOperationSet(){
-	// Apply the selected operation, and set the grid accordingly
-
-	if(currentGrid){
-		var operationType = document.getElementById("complexOperationValue").value;
-		var operationTimes = document.getElementById("complexOperationRepeat").valueAsNumber;
-		switch(operationType) {
-			case "OneE":
-				currentGrid.clear();
-				currentGrid.addEverywhere(operationTimes);
-			break;
-
-			case "MaxS":
-				currentGrid.clear();
-				for(var i = 0; i< operationTimes; i++)
-					currentGrid.addMaxStable();
-			break;
-
-			case "Rand":
-				currentGrid.clear();
-				currentGrid.addRandom(operationTimes);
-			break;
-
-			case "Dual":
-				var newGrid = currentGrid.getDual();
-				currentGrid.clear();
-				currentGrid.addConfiguration(newGrid);
-			break;
-
-			case "Iden":
-				currentGrid.clear();
-				if(!currentIdentity)
-					findIdentity();
-				for(var i = 0; i< operationTimes; i++)
-					currentGrid.addConfiguration(currentIdentity);
-			break;
-		}
-		if(operationType.substring(0, 4) == "CNFG"){
-			currentGrid.clear();
-			for(var i = 0; i<operationTimes; i++)
-				currentGrid.addConfiguration(savedConfigs[operationType.substring(4, operationType.length)]);
-		}
-	}
-
-	if(selectedTile)
-		tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentGrid.tiles[selectedTile].sand;
-}
-
-function complexOperationSub(){
-	// Apply the selected operation, subtractively
-
-	if(currentGrid){
-		var operationType = document.getElementById("complexOperationValue").value;
-		var operationTimes = document.getElementById("complexOperationRepeat").valueAsNumber;
-		switch(operationType) {
-			case "OneE":
-				currentGrid.removeEverywhere(operationTimes);
-			break;
-
-			case "MaxS":
-				for(var i = 0; i< currentGrid.tiles.length; i++){
-					currentGrid.remove(i, (currentGrid.tiles[i].limit - 1)* operationTimes);
-				}
-				currentGrid.colorTiles();
-			break;
-
-			case "Rand":
-				currentGrid.removeRandom(operationTimes);
-			break;
-
-			case "Dual":
-				currentGrid.removeConfiguration(currentGrid.getDual());
-			break;
-
-			case "Iden":
-				if(!currentIdentity)
-					findIdentity();
-				for(var i = 0; i< operationTimes; i++)
-					currentGrid.removeConfiguration(currentIdentity);
-			break;
-		}
-		if(operationType.substring(0, 4) == "CNFG"){
-			for(var i = 0; i<operationTimes; i++)
-				currentGrid.removeConfiguration(savedConfigs[operationType.substring(4, operationType.length)]);
-		}
-	}
-
-	if(selectedTile)
-		tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentGrid.tiles[selectedTile].sand;
-}
-function stabGrid(){
-	if(currentGrid) {
-		currentGrid.stabilize();
-	}
-
-	if(selectedTile)
-		tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentGrid.tiles[selectedTile].sand;
-}
-
-function drawGrid(){
-	// Draws the selected grid
+// ------------------------------------------------
+// 	[ 4.4 ] 	Draws currentTiling on
+//				the THREE.js Canvas.
+//
+//		App.js [ 1.0 ]
+// ------------------------------------------------
+function drawTiling(){
 
 	while(app.scene.children.length > 0){
 		app.scene.remove(app.scene.children[0]);
@@ -335,84 +473,29 @@ function drawGrid(){
 	
 	cW = document.getElementById("cW").value;
 	cH = document.getElementById("cH").value;
+	
+	var size = document.getElementById("size").value;
 
 	selectedTile = null;
 	
 	currentIdentity = null;
 	
-	preset = document.getElementById("gridSelect").value;
+	preset = document.getElementById("TilingSelect").value;
 
 	var nbIt = document.getElementById("penroseIt").value;
-	switch(preset){
-		case "gridSqMoore":
-			currentGrid = Tiling.sqTiling(cW, cH, cmap, "Moore");
-			app.camera.zoom = 1;
-		break;
-		
-		case "gridHex":
-			currentGrid = Tiling.hexTiling(cW, cH, cmap);
-			app.camera.zoom = 0.7;
-		break;
-
-		case "gridTri":
-			currentGrid = Tiling.triTiling(cW, cmap);
-			app.camera.zoom = 1.2;
-		break;
-
-		case "gridPenHKKD":
-			currentGrid = Tiling.HKKDPenroseSandpile(nbIt, cmap);
-			app.camera.zoom = 0.7;
-		break;
-
-		case "gridPenHDKD":
-			currentGrid = Tiling.HDKDPenroseSandpile(nbIt, cmap);
-			app.camera.zoom = 0.7;
-		break;
-
-		case "gridPenSunKD":
-			currentGrid = Tiling.SunKDPenroseSandpile(nbIt, cmap);
-			app.camera.zoom = 0.7;
-		break;
-
-		case "gridPenStarKD":
-			currentGrid = Tiling.StarKDPenroseSandpile(nbIt, cmap);
-			app.camera.zoom = 0.7;
-		break;
-
-		case "gridPenHKR":
-			currentGrid = Tiling.HKRPenroseSandpile(nbIt, cmap);
-			app.camera.zoom = 0.7;
-		break;
-
-		case "gridPenHDR":
-			currentGrid = Tiling.HDRPenroseSandpile(nbIt, cmap);
-			app.camera.zoom = 0.7;
-		break;
-
-		case "gridPenSunR":
-			currentGrid = Tiling.SunRPenroseSandpile(nbIt, cmap);
-			app.camera.zoom = 0.7;
-		break;
-
-		case "gridPenStarR":
-			currentGrid = Tiling.StarRPenroseSandpile(nbIt, cmap);
-			app.camera.zoom = 0.7;
-		break;
-
-		default:
-			currentGrid = Tiling.sqTiling(cW, cH, cmap, "Neumann");
-			app.camera.zoom = 1;
-		break;
-
-	}
-	grid_check_stable = currentGrid.copy();
+	
+	var command = "currentTiling = Tiling." + preset + "(cmap, {height:cH, width:cW, iterations:nbIt, size:size})";
+	
+	eval(command);
+	
+	tiling_check_stable = currentTiling.copy();
 	
 	app.controls.zoomCamera();
 	app.controls.object.updateProjectionMatrix();
 
-	app.scene.add(currentGrid.mesh);
-	currentGrid.colorTiles();
-	//console.log(currentGrid);
+	app.scene.add(currentTiling.mesh);
+	currentTiling.colorTiles();
+	//console.log(currentTiling);
 	
 	enableWireFrame(document.getElementById("wireFrameToggle"));
 
@@ -426,60 +509,64 @@ function drawGrid(){
 	render();
 }
 
-function enableWireFrame(elem){
-	if(currentGrid){
-		if(currentGrid.wireFrame){
-			if(elem.checked)
-				app.scene.add(currentGrid.wireFrame);
-			else
-				app.scene.remove(currentGrid.wireFrame);
+// ################################################
+//
+// 	[ 5.0 ]		Misc Functions
+//
+// ################################################
+
+// ------------------------------------------------
+// 	[ 5.1 ] 	JS implementation of sleep
+// ------------------------------------------------
+function sleep(ms) {
+	return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// ------------------------------------------------
+// 	[ 5.2 ] 	Refresh the zoom according to
+//				the html element.
+//
+//			Called by a routine.
+// ------------------------------------------------
+function refresh_zoom(){
+	if(app)
+		document.getElementById("zoomLevel").value = Math.round(app.camera.zoom * 100);
+}
+
+// ------------------------------------------------
+// 	[ 5.3 ] 	Locally saves tiling
+// ------------------------------------------------
+function saveConfiguration(){
+	if(currentTiling){
+		var config_name = prompt("Enter configuration name : ", "Configuration " + savedConfigs.length);
+		if (config_name == null || config_name == "") {
+			return;
 		}
-	}
+		document.getElementById("complexOperationValue").innerHTML += '<option value="CNFG'+ savedConfigs.length +'">' + config_name + '</option>';
 		
-}
-
-async function playWithDelay() {
-	// Apply the selected delay to the iterations
-
-	if(currentGrid){
-	  while(true){
-		  if(play){
-		  iterateGrid ();
-		  }
-		await sleep(delay);
-	  }
+		savedConfigs.push(currentTiling.copy());
 	}
 }
 
-function iterateGrid(){
-	for(var i = 0; i<SPEED; i++){
-		currentGrid.iterate();
-	}
-	currentGrid.colorTiles();
-	if(selectedTile)
-		tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentGrid.tiles[selectedTile].sand;
-
-}
-
-function clearGrid(){
-	if(currentGrid){
-		currentGrid.clear();
-	}
-}
-
+// ------------------------------------------------
+// 	[ 5.4 ] 	Check stability by alternatively
+//				copying and comparing iterations.
+//
+//			Called by a routine.
+// ------------------------------------------------
 function check_stable(){
-	if(currentGrid){
+	if(currentTiling){
 		if(play){
 			if(document.getElementById("pauseToggle").checked){
 				if(check_copy){
-					for(var j = 0; j<currentGrid.tiles.length; j++){
-						grid_check_stable.tiles[j].sand = new Number(currentGrid.tiles[j].sand);
+					for(var j = 0; j<currentTiling.tiles.length; j++){
+						tiling_check_stable.tiles[j].sand = new Number(currentTiling.tiles[j].sand);
 					}
 					check_copy = false;
 				} else {
 					var can_pause = true;
-					for(var j = 0; j<currentGrid.tiles.length; j++){
-						if(currentGrid.tiles[j].sand != grid_check_stable.tiles[j].sand){
+					for(var j = 0; j<currentTiling.tiles.length; j++){
+						if(currentTiling.tiles[j].sand != tiling_check_stable.tiles[j].sand){
 							can_pause = false;
 							break;
 						}
@@ -494,14 +581,16 @@ function check_stable(){
 	}
 }
 
-function sleep(ms) {
-	// JS implementation of sleep
-	return new Promise(resolve => setTimeout(resolve, ms));
-}
 
-/***********************************/
-/* PARTIE IMPLEMENTATION DU CLIQUE */
-/***********************************/
+
+// ################################################
+//
+// 	[ 6.0 ]		Mouse Click
+//			
+//		See Tiling 
+//
+// ################################################
+
 
 var mouse = new THREE.Vector2(); // un Vector2 contient un attribut x et un attribut y
 var raycaster = new THREE.Raycaster(); // rayon qui va intersecter la pile de sable
@@ -536,19 +625,23 @@ app.renderer.domElement.addEventListener('click', function( event ) {
 			
 			switch(mouseTODO){
 				case "rmOne":
-					currentGrid.remove(currentGrid.indexDict[face.faceIndex*3], nbTimes);
+					currentTiling.remove(currentTiling.indexDict[face.faceIndex*3], nbTimes);
 					break;
 
 				case "select":
-					if(currentGrid.selectedIndex)
-						currentGrid.colorTile(currentGrid.selectedIndex);
-					selectedTile = currentGrid.indexDict[face.faceIndex*3];
-					tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentGrid.tiles[selectedTile].sand;
-					currentGrid.selectedIndex = currentGrid.indexDict[face.faceIndex*3];
+					if(currentTiling.selectedIndex)
+						currentTiling.colorTile(currentTiling.selectedIndex);
+					selectedTile = currentTiling.indexDict[face.faceIndex*3];
+					
+					console.log(currentTiling.points.array[currentTiling.tiles[selectedTile].pointsIndexes[0]*3], 
+								currentTiling.points.array[currentTiling.tiles[selectedTile].pointsIndexes[0]*3 +1],
+								currentTiling.points.array[currentTiling.tiles[selectedTile].pointsIndexes[0]*3 +2]);
+					tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentTiling.tiles[selectedTile].sand;
+					currentTiling.selectedIndex = currentTiling.indexDict[face.faceIndex*3];
 					break;
 
 				default:
-					currentGrid.add(currentGrid.indexDict[face.faceIndex*3], nbTimes);
+					currentTiling.add(currentTiling.indexDict[face.faceIndex*3], nbTimes);
 					break;
 			}
 
@@ -557,28 +650,9 @@ app.renderer.domElement.addEventListener('click', function( event ) {
 
   }, false);
 
+// ################################################
+//
+// 	EOF
+//
+// ################################################
 
-/*******/
-/* FIN */
-/*******/
-
-
-
-function typed_splice(arr, starting, deleteCount, elements) {
-  if (arguments.length === 1) {
-    return arr;
-  }
-  starting = Math.max(starting, 0);
-  deleteCount = Math.max(deleteCount, 0);
-  elements = elements || [];
-
-
-  const newSize = arr.length - deleteCount + elements.length;
-  const splicedArray = new arr.constructor(newSize);
-
-  splicedArray.set(arr.subarray(0, starting));
-  splicedArray.set(elements, starting);
-  splicedArray.set(arr.subarray(starting + deleteCount), starting + elements.length);
-  return splicedArray;
-};
-//https://threejs.org/examples/#webgl_interactive_buffergeometry

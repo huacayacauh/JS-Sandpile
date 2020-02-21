@@ -1,233 +1,260 @@
 <!DOCTYPE html>
 <head>
-<meta charset="UTF-8">
-<title>Sandpiles</title>
-<link rel="icon" href="favicon.ico" />
-<style>
-	@import "./css/bootstrap.min.css";
-	@import "./css/scrollbar.css";
-	@import "./css/modal.css";
-	@import "./css/elements.css";
-</style>
+	<meta charset="UTF-8">
+	<title>Sandpiles</title>
+	<link rel="icon" href="favicon.ico" />
+	
+	<!-- ####################################################### CSS IMPORTS -->
+	<style>
+		@import "./css/bootstrap.min.css";
+		@import "./css/scrollbar.css";
+		@import "./css/modal.css";
+		@import "./css/elements.css";
+	</style>
 </head>
 <body>
+	<!-- ################################################################ UPPER BAR -->
+	<header>
+		<p style="margin:0; font-size:35px; font-weight:bold;">JS-Sandpiles</p>
 
-<header>
-<p style="margin:0; font-size:35px; font-weight:bold;">JS-Sandpiles</p>
+		Zoom :
+			<input type="number" id="zoomLevel" oninput="set_zoom(this)" value="100" max="9999" step="10"/>
+		%&emsp;
+		
+		Delay (ms) :
+			<input type="number" id="delay" style="margin-right:20px" value="100" oninput="changeDelay(this);" min="0"/>
+			
+		Iterations per frame :
+			<input type="number" id="IPF" style="margin-right:40px" value="1" oninput="changeIPS(this);" min="0" max="99"/>
+			<button id="playButton" onclick="playPause(this)" class="btn btn-default" style="margin-right:40px; font-weight:bold;">Play</button>
+			<button onclick="step()" style="margin-right:20px" class="btn btn-default">Step</button>
+			
+		<!-- <button id="stabilizeButton"  onclick="stabTiling()" class="btn btn-primary">Stabilize</button> -->
+		
+		<!-- Upper right alignment -->
+		<span style="position:absolute; top:10px; right:50px"> Auto-pause : </span>
+			<label class="switch" style="position:absolute; top:12px; right:10px">
+			  <input type="checkbox" id="pauseToggle" checked = "true">
+			  <span class="slider round"></span>
+			</label>
+		
+		<!-- Upper right alignment -->
+		<span style="position:absolute; top:30px; right:50px"> WireFrame : </span>
+			<label class="switch" style="position:absolute; top:32px; right:10px">
+			  <input type="checkbox" id="wireFrameToggle" oninput="enableWireFrame(this);" checked = "false">
+			  <span class="slider round "></span>
+			</label>
+		
+	</header>
 
-Zoom : 
-<input type="number" id="zoomLevel" oninput="set_zoom(this)" value="100" max="9999" step="1"/>
-%&emsp;
-Delay (ms) :
-	<input type="number" id="delay" style="margin-right:20px" value="100" oninput="changeDelay(this);" min="0"/>
-	Iterations per frame :
-	<input type="number" id="IPF" style="margin-right:40px" value="1" oninput="changeIPS(this);" min="0" max="99"/>
-	<button id="playButton" onclick="playPause(this)" class="btn btn-default" style="margin-right:40px; font-weight:bold;">Play</button>
-	<button onclick="step()" style="margin-right:20px" class="btn btn-default">Step</button>
+	<!-- ################################################################ CONTROL (LEFT) BAR -->
+	<nav>
 	
-	<!-- <button id="stabilizeButton"  onclick="stabGrid()" class="btn btn-primary">Stabilize</button> -->
-	<span style="position:absolute; top:10px; right:50px"> Auto-pause : </span>
-	<label class="switch" style="position:absolute; top:12px; right:10px">
-	  <input type="checkbox" id="pauseToggle" checked = "true">
-	  <span class="slider round"></span>
-	</label>
-	
-	<span style="position:absolute; top:30px; right:50px"> WireFrame : </span>
-	<label class="switch" style="position:absolute; top:32px; right:10px">
-	  <input type="checkbox" id="wireFrameToggle" oninput="enableWireFrame(this);" checked = "false">
-	  <span class="slider round "></span>
-	</label>
-</header>
+		<!-- ############################################################ Main Controls -->		
+		<div id="main controls" class="controlGroup">
+			<p class="groupTitle">Tiling selection</p>
+				<select id="TilingSelect">
+					<optgroup label="Regular">
+						<option value="sqTiling">Square Tiling</option>
+						<option value="hexTiling">Hexagonal Tiling</option>
+						<option value="triTiling">Triangular Tiling</option>
+					</optgroup>
+					<optgroup label="Penrose">
+						<option value="HKKDPenrose">Penrose HK</option>
+						<option value="HDKDPenrose">Penrose HD</option>
+						<option value="SunKDPenrose">Penrose Sun</option>
+						<option value="StarKDPenrose">Penrose Star</option>
+						<option value="HKRPenrose">Penrose HK Rhombus</option>
+						<option value="HDRPenrose">Penrose HD Rhombus</option>
+						<option value="SunRPenrose">Penrose Sun Rhombus</option>
+						<option value="StarRPenrose">Penrose Star Rhombus</option>
+					</optgroup>
+					<optgroup label="Symmetry Free">
+						<option value="sqSpecial">D2 Square</option>
+					</optgroup>
+					<optgroup label="Misc.">
+						<option value="sqTilingMoore">Square Moore</option>
+					</optgroup>
+				  
+				</select>
+				
+				<!--<form id="postCustom" enctype="multipart/form-data" action="/upload/image" method="post">
+					<input type="file" id="inputCustom" accept=".png,.jpg,.jpeg,.bmp" style="display:none;" />
+				</form>-->
+			<button onclick='drawTiling()' style="margin-left:25px;" class="btn btn-default ">Make Tiling</button>
+			<br>
+			
 
-<nav>
+			<!-- Tiling-specific controls -->
+			<p class="groupTitle" id="paramTitle" style="cursor:pointer" onclick="hideParams()">Parameters ▲</p>
+			<!-- Square controls -->
+			<div id="paramHide">
+				Width: 
+					<input type="number" id="cW" min="0" value="100" style="width: 50px;" />
+				
+				<span style="right:15px; position:absolute">
+				Height: 
+					<input type="number" id="cH" min="0" value="100" style="width: 50px;" />
+				</span>
+				<br><br>
+				<span style="right:15px;">
+				Size: 
+					<input type="number" id="size" min="0" value="100" style="width: 50px;" />
+				</span>
 
-<!-- Main controls-->
-<div id="main controls" class="controlGroup">
-<p class="groupTitle">Grid selection</p>
-	<select id="gridSelect">
-	  <option value="gridSq">Square grid</option>
-	  <option value="gridHex">Hexagonal grid</option>
-	  <option value="gridTri">Triangular grid</option>
-	  <option value="gridPenHKKD">Penrose HK</option>
-	  <option value="gridPenHDKD">Penrose HD</option>
-	  <option value="gridPenSunKD">Penrose Sun</option>
-	  <option value="gridPenStarKD">Penrose Star</option>
+				<!-- Penrose controls -->
+				<div id="penroseParams" style="position:relative">
+					<br>
+					Iterations: 
+						<input type="number" style="right:5px; bottom:0px; position:absolute;" id="penroseIt" min="0" value="8"/>
+					&nbsp;
+				</div>
+			</div>
+		</div> <!-- Main controls  -->
 
-	  <option value="gridPenHKR">Penrose HK Rhombus</option>
-	  <option value="gridPenHDR">Penrose HD Rhombus</option>
-	  <option value="gridPenSunR">Penrose Sun Rhombus</option>
-	  <option value="gridPenStarR">Penrose Star Rhombus</option>
+		<!-- ############################################################ Mouse Controls -->		
+		<div id="mouse controls" class="controlGroup">
+			<p class="groupTitle">Mouse controls</p>
+			<select id="mouseOperation">
+			  <option value="addOne">Add One</option>
+			  <option value="rmOne">Remove One</option>
+			  <option value="select">Select</option>
+			</select>
+			<div id="maskMouseRepeat" style="display:inline;">
+			&nbsp;&nbsp;times&nbsp;&nbsp;
+			<input type="number" id="mouseOperationRepeat" value="1" min="0" max="999999"style="width: 70px;" />
+			</div>
+		</div> <!-- Mouse controls -->
 
-	  <option value="gridSqMoore">Square Moore</option>
-	  
-	</select>
-	
-	<!--<form id="postCustom" enctype="multipart/form-data" action="/upload/image" method="post">
-		<input type="file" id="inputCustom" accept=".png,.jpg,.jpeg,.bmp" style="display:none;" />
-	</form>-->
-	<button onclick='drawGrid()' style="margin-left:38px;" class="btn btn-default ">Make grid</button>
-	<br>
-	
+		<!-- ############################################################ Operations / Secondary Controls -->		
+		<div id="secondary controls" class="controlGroup">
+			<p class="groupTitle">Tiling operations</p>
+			<select id="complexOperationValue">
+			  <option value="MaxS">Max stable</option>
+			  <option value="OneE">One Everywhere</option>
+			  <option value="Dual">Dual</option>
+			  <option value="Iden">Identity</option>
+			  <option value="Rand">Random</option>
+			</select>
+			<div id="complexTimesMask" style="display:inline;">
+				&nbsp;&nbsp;times&nbsp;&nbsp;
+				<input type="number" id="complexOperationRepeat" min="0" value="1" style="width: 70px;" />
+			</div>
+			<br>
+			<div style="margin-left:auto; margin-right:auto; display:table; margin-top:10px;" class="btn-group">
+				<button id="complexOperationAdd" onclick="complexOperationAdd()" class="btn btn-default">Add</button>
 
-<!-- Grid-specific controls -->
-<p class="groupTitle" id="paramTitle" style="cursor:pointer" onclick="hideParams()">Parameters ▲</p>
-<div id="paramHide">
-	Width: 
-	<input type="number" id="cW" min="0" value="100" style="width: 50px;" />
-	<span style="right:15px; position:absolute">Height: 
-	<input type="number" id="cH" min="0" value="100" style="width: 50px;" />
-	</span>
+				<button id="complexOperationSub" onclick="complexOperationSub()" class="btn btn-default">Substract</button>
 
-<!-- Penrose controls -->
-<div id="penroseParams" style="position:relative">
-<br>
-Iterations: 
-<input type="number" style="right:5px; bottom:0px; position:absolute;" id="penroseIt" min="0" value="8"/>
-&nbsp;
-</div>
+				<button id="complexOperationSet" onclick="complexOperationSet()" class="btn btn-default">Set</button>
+			</div>
+			<button onclick="clearTiling()" class="btn btn-default" style="margin-top:10px;display: table;width: -webkit-fill-available;">Clear</button>
+			<button id="saveConfig" onclick="saveConfiguration()" style="margin-top:10px;display: table;width: -webkit-fill-available;;" class="btn btn-default">Save Configuration</button>
+			
+			<!-- Random Seeding -->
+			<div id="seedMask" style="display:none;">
+				Seed :
+				<input id="randSeed" value="1" oninput="changeSeed(this);" style="width: 100px;" />
+			</div>
+		</div> <!-- Operations controls -->
 
-</div>
-</div>
+		<!-- ############################################################ Misc Controls -->		
+		<div class="controlGroup">
+			<p class="groupTitle">Misc controls</p>
+			<button id="colorButton"  style="margin-left:auto;margin-right:auto;display:block;" class="btn btn-default">Change colors</button>
+			<br>
+			
+			<!-- File importing -->
+			<div style="margin-left:auto; margin-right:auto; display:grid">
+				<label for="files" class="btn btn-default">
+					Import Tiling
+				</label>
+				<button id="create" style="margin-top:5px;" class="btn btn-default">Export Tiling</button> 
+				
+				<label for="filesPIC" class="btn btn-default" style="margin-top:5px;">
+					Square Tiling from image
+				</label>
+			</div>
+			
+			<!-- File button not displayed, and a JS command clicks on them. -->
+			<input type="file" id="files" name="files[]" accept=".JSON" multiple style="display:none;" />
+			<input type="file" id="filesPIC" name="files2[]" accept=".png,.jpg,.jpeg,.bmp" multiple style="display:none;" />
+			<output id="list" style="display:none;"></output>
 
-<!-- Mouse controls -->
-<div id="mouse controls" class="controlGroup">
-	<p class="groupTitle">Mouse controls</p>
-	<select id="mouseOperation">
-	  <option value="addOne">Add One</option>
-	  <option value="rmOne">Remove One</option>
-	  <option value="select">Select</option>
-	</select>
-	<div id="maskMouseRepeat" style="display:inline;">
-	&nbsp;&nbsp;times&nbsp;&nbsp;
-	<input type="number" id="mouseOperationRepeat" value="1" min="0" max="999999"style="width: 70px;" />
+			<a download="sandpile.json" id="downloadlink" style="display: none">Download</a>
+			<br>
+			
+			<!-- Experimental features -->
+			<p class="groupTitle">Experimental</p>
+			<select id="harmonicValue" style="width:100px">
+			  <option value="1A">1A</option>
+			  <option value="1B">1B</option>
+			  <option value="2A">2A</option>
+			  <option value="2B">2B</option>
+			  <option value="3A">3A</option>
+			  <option value="3B">3B</option>
+			  <option value="4A">4A</option>
+			  <option value="4B">4B</option>
+			</select>
+			<button onclick='currentTiling.apply_harmonic()' style="margin-left:10px;" class="btn btn-default ">Apply Harmonic</button>
+		</div>  <!-- Misc controls -->
+
+
+		<!-- ############################################################ Informations -->		
+		<div  id="bottomGroup"  class="controlGroup" style="height:280px; position:relative;">
+			<p class="groupTitle">Informations</p>
+
+			<span id="tileInfo">Tile info</span>
+			  
+			<br>
+			<button id="statsButton" style="position:absolute; bottom:10px; left:10px;" onclick="show_stats()" class="btn btn-default"> Get stats </button>
+			<br>
+			<p id="statsInfo"></p>
+			  
+			<button id="create2" style="position:absolute; bottom:50px; right:10px;" class="btn btn-default">Download stats</button>
+			<button id="create3" style="position:absolute; bottom:10px; right:10px;" class="btn btn-default">(Roundness)</button>
+			
+			<span style="position:absolute; bottom:60px; left:10px;"> Animate <br> roundness : </span>
+			<input type="checkbox" style="position:absolute; bottom:60px; left:70px;" id="roundShow" checked = "true">
+			  
+			<span style="bottom:-40px;position:absolute;left:10px">2019 JS-Sandpiles, CCBY</span>
+		</div>
+
+	</nav> <!-- ######################################################### End of Control bar -->		
+
+
+	<!-- ################################################################ Color picking window -->		
+	<div id="colors" class="modal">
+	  <div class="modal-content">
+		<span class="close">&times;</span>
+	  </div>
 	</div>
-</div>
 
-<!-- Operations controls -->
-<div id="secondary controls" class="controlGroup">
-	<p class="groupTitle">Tiling operations</p>
-	<select id="complexOperationValue">
-	  <option value="MaxS">Max stable</option>
-	  <option value="OneE">One Everywhere</option>
-	  <option value="Dual">Dual</option>
-	  <option value="Iden">Identity</option>
-	  <option value="Rand">Random</option>
-	</select>
-	<div id="complexTimesMask" style="display:inline;">
-	&nbsp;&nbsp;times&nbsp;&nbsp;
-	<input type="number" id="complexOperationRepeat" min="0" value="1" style="width: 70px;" />
+	<!-- ################################################################ Canvas -->		
+	<div class="canvasDiv" id="canvasHolder">
 	</div>
-	<br>
-	<div style="margin-left:auto; margin-right:auto; display:table; margin-top:10px;" class="btn-group">
-	<button id="complexOperationAdd" onclick="complexOperationAdd()" class="btn btn-default">Add</button>
 
-	<button id="complexOperationSub" onclick="complexOperationSub()" class="btn btn-default">Substract</button>
-
-	<button id="complexOperationSet" onclick="complexOperationSet()" class="btn btn-default">Set</button>
-	</div>
-	<button onclick="clearGrid()" class="btn btn-default" style="margin-top:10px;display: table;width: -webkit-fill-available;">Clear</button>
-	<button id="saveConfig" onclick="saveConfiguration()" style="margin-top:10px;display: table;width: -webkit-fill-available;;" class="btn btn-default">Save Configuration</button>
-
-	<div id="seedMask" style="display:none;">
-		Seed :
-		<input id="randSeed" value="1" oninput="changeSeed(this);" style="width: 100px;" />
-	</div>
-</div>
-
-<!-- Misc controls -->
-<div class="controlGroup">
-	<p class="groupTitle">Misc controls</p>
-	<button id="colorButton"  style="margin-left:auto;margin-right:auto;display:block;" class="btn btn-default">Change colors</button>
-	<br>
-	<div style="margin-left:auto; margin-right:auto; display:grid">
-	<label for="files" class="btn btn-default">
-		Import grid
-	</label>
-	<button id="create" style="margin-top:5px;" class="btn btn-default">Export grid</button> 
-	
-	<label for="filesPIC" class="btn btn-default" style="margin-top:5px;">
-		Square Tiling from image
-	</label>
-	
-	
-	
-	</div>
-	<input type="file" id="files" name="files[]" accept=".JSON" multiple style="display:none;" />
-	<input type="file" id="filesPIC" name="files2[]" accept=".png,.jpg,.jpeg,.bmp" multiple style="display:none;" />
-	<output id="list" style="display:none;"></output>
-
-	<a download="sandpile.json" id="downloadlink" style="display: none">Download</a>
-	<br>
-	<p class="groupTitle">Experimental</p>
-	<select id="harmonicValue" style="width:100px">
-	  <option value="1A">1A</option>
-	  <option value="1B">1B</option>
-	  <option value="2A">2A</option>
-	  <option value="2B">2B</option>
-	  <option value="3A">3A</option>
-	  <option value="3B">3B</option>
-	  <option value="4A">4A</option>
-	  <option value="4B">4B</option>
-	</select>
-	<button onclick='currentGrid.apply_harmonic()' style="margin-left:10px;" class="btn btn-default ">Apply Harmonic</button>
+	<!-- ################################################################ JS Imports -->	
+	<script src="./js/Utils/jquery.min.js"></script>
+	<script src="./js/Utils/three.min.js"></script>
+	<script src="./js/Utils/OrthographicTrackballControls.js"></script>
+	<script src="./js/Utils/bootstrap.min.js"></script>
 
 
-</div>
+	<script src="./js/Tiling.js"></script>
 
+	<script src="./js/TilingPresets/HexTiling.js"></script>
+	<script src="./js/TilingPresets/TriTiling.js"></script>
+	<script src="./js/TilingPresets/PenroseTiling.js"></script>
+	<script src="./js/TilingPresets/CustomSquareTiling.js"></script>
+	<script src="./js/TilingPresets/SquareTiling.js"></script>
 
-<div  id="bottomGroup"  class="controlGroup" style="height:280px; position:relative;">
+	<script src="./js/Features/ChangeDisplay.js"></script>
+	<script src="./js/Features/ImportExport.js"></script>
+	<script src="./js/Features/Stats.js"></script>
+	<script src="./js/Features/Harmonics.js"></script>
+	<script src="./js/Features/Roundness.js"></script>
 
-<p class="groupTitle">Informations</p>
+	<script src="./js/app.js"></script>
 
-  <span id="tileInfo">Tile info</span>
-  
-  <br>
-  <button id="statsButton" style="position:absolute; bottom:10px; left:10px;" onclick="show_stats()" class="btn btn-default"> Get stats </button>
-  <br>
-  <p id="statsInfo"></p>
-  
-  <button id="create2" style="position:absolute; bottom:50px; right:10px;" class="btn btn-default">Download stats</button>
-  <button id="create3" style="position:absolute; bottom:10px; right:10px;" class="btn btn-default">(Roundness)</button>
-  
-  <span style="position:absolute; bottom:60px; left:10px;"> Animate <br> roundness : </span>
-  <input type="checkbox" style="position:absolute; bottom:60px; left:70px;" id="roundShow" checked = "true">
-  
-  <span style="bottom:-40px;position:absolute;left:10px">2019 JS-Sandpiles, CCBY</span>
-</div>
-
-</nav>
-
-
-<div id="colors" class="modal">
-  <div class="modal-content">
-	<span class="close">&times;</span>
-  </div>
-</div>
-
-<div class="canvasDiv" id="canvasHolder">
-</div>
-
-<!-- JS Sources -->
-<script src="./js/Utils/jquery.min.js"></script>
-<script src="./js/Utils/three.min.js"></script>
-<script src="./js/Utils/OrthographicTrackballControls.js"></script>
-<script src="./js/Utils/bootstrap.min.js"></script>
-
-
-<script src="./js/Tiling.js"></script>
-
-<script src="./js/TilingPresets/HexTiling.js"></script>
-<script src="./js/TilingPresets/TriTiling.js"></script>
-<script src="./js/TilingPresets/PenroseTiling.js"></script>
-<script src="./js/TilingPresets/CustomSquareTiling.js"></script>
-<script src="./js/TilingPresets/SquareTiling.js"></script>
-
-<script src="./js/Features/ChangeDisplay.js"></script>
-<script src="./js/Features/ImportExport.js"></script>
-<script src="./js/Features/Stats.js"></script>
-<script src="./js/Features/Harmonics.js"></script>
-<script src="./js/Features/Roundness.js"></script>
-
-<script src="./js/app.js"></script>
-
-</body>
+</body> <!-- ############################################################ End. -->

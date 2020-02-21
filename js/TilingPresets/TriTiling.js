@@ -1,4 +1,4 @@
-Tiling.triTiling = function (size, cmap) {
+Tiling.triTiling = function (cmap, {size}={}) {
 	
 	var pos = [];
 	var col = [];

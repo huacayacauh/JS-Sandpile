@@ -1,3 +1,40 @@
+// 	#############  IMPORTEXPORT.JS  ################
+//	 		Authors : 	FERSULA Jérémy
+// 	################################################
+// 
+// 	To help you dig into this code, the main parts
+// 	in this file are indexed via comments.	
+//
+//		Ex:  [ 2.4 ] - Something
+//
+//	References to other parts of the app are linked
+//	via indexes.
+//
+//		### indexes a section
+//		--- indexes a sub-section
+//
+//	---
+//
+//	All relations between indexing in files can be
+// 	found on our GitHub :
+//
+// 		https://github.com/huacayacauh/JS-Sandpile
+//
+// 	---
+//
+//  This file is under CC-BY.
+//
+//	Feel free to edit it as long as you provide 
+// 	a link to its original source.
+//
+// 	################################################
+
+// ################################################
+//
+// 	[ 1.0 ] 	JSON Translation of Tilings
+//
+// ################################################
+
 jsonToTilling = function(json){
 
     var points = json.points;
@@ -13,21 +50,21 @@ jsonToTilling = function(json){
 	var colors = json.points;
 
 
-    currentGrid = new Tiling(points, colors, tiles, cmap);
+    currentTiling = new Tiling(points, colors, tiles, cmap);
 	while(app.scene.children.length > 0){
 		app.scene.remove(app.scene.children[0]);
 		console.log("cleared");
 	}
 	
-	grid_check_stable = currentGrid.copy();
+	tiling_check_stable = currentTiling.copy();
 	
 	selectedTile = null;
 	app.controls.zoomCamera();
 	app.controls.object.updateProjectionMatrix();
 
-	app.scene.add(currentGrid.mesh);
-	currentGrid.colorTiles();
-	//console.log(currentGrid);
+	app.scene.add(currentTiling.mesh);
+	currentTiling.colorTiles();
+	//console.log(currentTiling);
 
 	playWithDelay();
 
@@ -79,6 +116,12 @@ tillingToJson = function(sandpile){
     return textFile; 
 };
 
+// ################################################
+//
+// 	[ 2.0 ] 	Tiling Download
+//
+// ################################################
+
 //cette fonction est applé quand on clique sur le bouton selection
 handleFileSelect = function(evt) {
     var files = evt.target.files; // FileList object
@@ -108,9 +151,9 @@ handleFileSelect = function(evt) {
 //cette fonction est appelé quand on clique sur le bouton create file
 handleDownload = function(evt){
 
-    if(currentGrid === undefined) return
+    if(currentTiling === undefined) return
     var link = document.getElementById('downloadlink');
-    link.href = tillingToJson(currentGrid);
+    link.href = tillingToJson(currentTiling);
 	link.setAttribute('download', "Sandpile.JSON");
     //link.style.display = 'block';
 	link.click();
@@ -122,3 +165,11 @@ var textFile = null;
 create.addEventListener('click', handleDownload, false);
 
 document.getElementById('files').addEventListener('change', handleFileSelect, false);
+
+
+// ################################################
+//
+// 	EOF
+//
+// ################################################
+

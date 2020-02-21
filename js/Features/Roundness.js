@@ -1,6 +1,57 @@
+// 	###############  ROUNDNESS.JS  #################
+//	 		Authors : 	FERSULA Jérémy
+// 	################################################
+// 
+// 	To help you dig into this code, the main parts
+// 	in this file are indexed via comments.	
+//
+//		Ex:  [ 2.4 ] - Something
+//
+//	References to other parts of the app are linked
+//	via indexes.
+//
+//		### indexes a section
+//		--- indexes a sub-section
+//
+//	---
+//
+//	All relations between indexing in files can be
+// 	found on our GitHub :
+//
+// 		https://github.com/huacayacauh/JS-Sandpile
+//
+// 	---
+//
+//  This file is under CC-BY.
+//
+//	Feel free to edit it as long as you provide 
+// 	a link to its original source.
+//
+// 	################################################
+
+// ################################################
+//
+// 	[ 1.0 ] 	Measures the roundness of
+//				the operation max_stable +
+//				Identity.
+//				Calculates radius by estimating
+//				the center of mass of the tiling,
+//				or by measuring from the center
+//				of canvas space.
+//
+//		This section could be improved.
+//			-> Make a better center estimation
+//			-> Let the user choose or not to compute the estimated center
+//			-> Apply direclty max_stable + identity
+//
+// ################################################
+
 var bound_set = [];			// Out of the circle
 var init_bounds = false;
 var anim_done = false;
+
+var estimate_center = true;
+var estimation = [0, 0, 0];
 
 var round_delay = delay;
 
@@ -58,6 +109,7 @@ Tiling.prototype.get_roundness = function(){
 			}
 		} while(added_tiles.length >0);
 		
+		
 		init_bounds = true;  	// reachable only when all bounds that are < limit are in bound_set
 		return; 				// next iteration, there will be circles.
 	}
@@ -93,10 +145,18 @@ Tiling.prototype.get_roundness = function(){
 		}
 	}
 	
+	
 	for(var i = 0; i<circle.length; i++){
 		this.colorTile(circle[i], new THREE.Color(0xFF0000));
 		for(var k = 0; k<this.tiles[circle[i]].pointsIndexes.length; k++){
-			var rad = this.points.array[this.tiles[circle[i]].pointsIndexes[k]*3]**2 + this.points.array[this.tiles[circle[i]].pointsIndexes[k]*3 +1]**2 + this.points.array[this.tiles[circle[i]].pointsIndexes[k]*3+2]**2;
+			var rad = 0;
+			if(estimate_center){
+				rad += (this.points.array[this.tiles[circle[i]].pointsIndexes[k]*3] - estimation[0])**2;
+				rad += (this.points.array[this.tiles[circle[i]].pointsIndexes[k]*3 +1] - estimation[1])**2;
+				rad += (this.points.array[this.tiles[circle[i]].pointsIndexes[k]*3 +2] - estimation[2])**2;
+			} else {
+				rad = this.points.array[this.tiles[circle[i]].pointsIndexes[k]*3]**2 + this.points.array[this.tiles[circle[i]].pointsIndexes[k]*3 +1]**2 + this.points.array[this.tiles[circle[i]].pointsIndexes[k]*3+2]**2;
+			}
 			rad = Math.sqrt(rad);
 			if(rad > max_radius){
 				max_radius = rad;
@@ -117,45 +177,65 @@ Tiling.prototype.get_roundness = function(){
 	return {"Min":min_radius, "Max":max_radius};
 }
 
-async function makeRoundnessFile(grid){
+// ################################################
+//
+// 	[ 2.0 ] 	Creates a file corresponding
+//				to all measures of roundness
+//
+// ################################################
+
+async function makeRoundnessFile(Tiling){
+	if(estimate_center){
+		for(var i=0; i<Tiling.tiles.length; i++){
+			for(var k = 0; k<Tiling.tiles[i].pointsIndexes.length; k++){
+				estimation[0] += Tiling.points.array[Tiling.tiles[i].pointsIndexes[k]*3];
+				estimation[1] += Tiling.points.array[Tiling.tiles[i].pointsIndexes[k]*3 +1];
+				estimation[2] += Tiling.points.array[Tiling.tiles[i].pointsIndexes[k]*3 +2];
+			}
+		}
+		estimation[0] /= Tiling.points.array.length;
+		estimation[1] /= Tiling.points.array.length;
+		estimation[2] /= Tiling.points.array.length;
+		console.log("Estimated center : ", estimation);
+	}
 	// Make a file out of the function above
 	show_round = document.getElementById('roundShow').checked;
 	var arr_min = [];
 	var arr_max = [];
 	
 	var oldTiles = [];
-	for(var i = 0; i<grid.tiles.length; i++){
-		oldTiles.push(new Tile(grid.tiles[i].id, Array.from(grid.tiles[i].neighbors), Array.from(grid.tiles[i].pointsIndexes)));
+	for(var i = 0; i<Tiling.tiles.length; i++){
+		oldTiles.push(new Tile(Tiling.tiles[i].id, Array.from(Tiling.tiles[i].neighbors), Array.from(Tiling.tiles[i].pointsIndexes)));
 	}
 	var done = false;
 	round_delay = delay;
 	while(!done){
 		done = true;
-		for(var i = 0; i<grid.tiles.length; i++){
-			if(oldTiles[i].sand != grid.tiles[i].sand){
-				oldTiles[i].sand = grid.tiles[i].sand;
+		for(var i = 0; i<Tiling.tiles.length; i++){
+			if(oldTiles[i].sand != Tiling.tiles[i].sand){
+				oldTiles[i].sand = Tiling.tiles[i].sand;
 				done = false;
 			}
 		}
 		for(var i = 0; i<50; i++){
 			if(show_round){
-				grid.colorTiles();
+				Tiling.colorTiles();
 			}
-			var stat = grid.get_roundness();
+			var stat = Tiling.get_roundness();
 			if(stat != null){
 				arr_min.push(stat["Min"]);
 				arr_max.push(stat["Max"]);
 			}
 			
-			for(var j = 0; j<SPEED; j++){
-				grid.iterate();
+			for(var j = 0; j<it_per_frame; j++){
+				Tiling.iterate();
 			}
 			if(show_round){
 				await sleep(round_delay);
 			}
 		}
 	}
-	grid.colorTiles();
+	Tiling.colorTiles();
 	
 	bound_set = [];
     init_bounds = false;
@@ -177,18 +257,19 @@ async function makeRoundnessFile(grid){
 	return [textFile1]; 
 }
 
+// ################################################
+//
+// 	[ 3.0 ] 	Roundness file download
+//
+//		Same as ImportExport.js [ 2.0 ]
+//
+// ################################################
 handleDownloadRoundness = async function(evt){
 	document.getElementById('create3').disabled = true;
 
-    if(currentGrid === undefined) return
+    if(currentTiling === undefined) return
     var link = document.getElementById('downloadlink');
-	let textFile = await makeRoundnessFile(currentGrid);
-	
-	/*while(!anim_done){
-		await(20);
-	}
-	console.log("hello");
-	anim_done = false;*/
+	let textFile = await makeRoundnessFile(currentTiling);
 	
 	link.setAttribute('download', "Sandpile_Roundness.txt");
     link.href = textFile;
@@ -200,3 +281,9 @@ handleDownloadRoundness = async function(evt){
 
 var create3 = document.getElementById('create3');
 create3.addEventListener('click', handleDownloadRoundness, false);
+
+// ################################################
+//
+// 	EOF
+//
+// ################################################

@@ -1,6 +1,43 @@
+// 	#############  CHANGEDISPLAY.JS  ###############
+//	 		Authors : 	FERSULA Jérémy
+// 	################################################
+// 
+// 	To help you dig into this code, the main parts
+// 	in this file are indexed via comments.	
+//
+//		Ex:  [ 2.4 ] - Something
+//
+//	References to other parts of the app are linked
+//	via indexes.
+//
+//		### indexes a section
+//		--- indexes a sub-section
+//
+//	---
+//
+//	All relations between indexing in files can be
+// 	found on our GitHub :
+//
+// 		https://github.com/huacayacauh/JS-Sandpile
+//
+// 	---
+//
+//  This file is under CC-BY.
+//
+//	Feel free to edit it as long as you provide 
+// 	a link to its original source.
+//
+// 	################################################
 
+// ################################################
+//
+// 	[ 1.0 ] 	GUI Functions
+//
+//		Used directly by Sandpiles.html
+//
+// ################################################
 function changeIPS(val){
-	SPEED = val.value;
+	it_per_frame = val.value;
 }
 
 function changeDelay(val){
@@ -11,11 +48,6 @@ function changeSeed(val){
 	Math.seedrandom(val.value);
 }
 
-function refresh_zoom(){
-	if(app)
-		document.getElementById("zoomLevel").value = Math.round(app.camera.zoom * 100);
-}
-
 function set_zoom(val){
 	if(app){
 		app.camera.zoom = val.value / 100;
@@ -24,12 +56,32 @@ function set_zoom(val){
 	}
 }
 
+// Using JQuerry to prevent breaking the inputs
+$(document).on('keyup', 'input', function () {
+    var _this = $(this);
+    var min = parseInt(_this.attr('min')) || 0; // if min attribute is not defined, 1 is default
+	var max = parseInt(_this.attr('max')) || 999; // if max attribute is not defined, 100 is default
+    var val = parseInt(_this.val()) || (min - 1); // if input char is not a number the value will be (min - 1) so first condition will be true
+	if(val < min)
+        _this.val( min );
+    if(val > max)
+        _this.val( max );
+});
+
+
+// ------------------------------------------------
+// 	[ 1.1 ] 	Display various measures
+//				of the current Tiling.
+//
+//		See Stats.js [ 1.0 ]
+//
+// ------------------------------------------------
 function show_stats(){
-	if(currentGrid){
-		var infos = currentGrid.get_stats();
+	if(currentTiling){
+		var infos = currentTiling.get_stats();
 		var info_disp = document.getElementById("statsInfo");
 		
-		var text_stats = "Number of tiles : " + currentGrid.tiles.length + "<br>Mean : " + infos["Mean"] + "<br> Standard deviation : " + infos["Std"] + "<br> Population : <br>";
+		var text_stats = "Number of tiles : " + currentTiling.tiles.length + "<br>Mean : " + infos["Mean"] + "<br> Standard deviation : " + infos["Std"] + "<br> Population : <br>";
 		var jump_line = false;
 		Object.keys(infos["Population"]).forEach(function(key) {
 				text_stats += " " + key + " : " + (Math.round(infos["Population"][key]*1000000)/10000).toFixed(2) + " %";
@@ -43,21 +95,15 @@ function show_stats(){
 	}
 }
 
-var paramshown = true;
 
-function hideParams(){
-	if(paramshown){
-		document.getElementById("paramTitle").innerHTML ="Parameters ▼";
-		paramshown = false;
-		document.getElementById("paramHide").style="display:none";
-	} else {
-		
-		document.getElementById("paramTitle").innerHTML ="Parameters ▲";
-		paramshown = true;
-		document.getElementById("paramHide").style="display:inherit";
-	}
-		
-}
+// ################################################
+//
+// 	[ 2.0 ] 	Color picking window
+//
+//		See Tiling.js [ 2.0 ] and [ 2.6 ]
+//		for the use of colormaps.
+//
+// ################################################
 
 // Color selection modal
 var modal = document.getElementById('colors');
@@ -68,7 +114,10 @@ var btn = document.getElementById("colorButton");
 // When the user clicks on the button, open the modal 
 btn.onclick = function() {
 	
-	// We re-build the content of the modal every-time we open it
+	// ------------------------------------------------
+	// 	[ 2.1 ] 	Re-build the content of the
+	//				modal every-time we open it
+	// ------------------------------------------------
 	while (modal.children[0].firstChild) {
 		modal.children[0].removeChild(modal.children[0].firstChild);
 	}
@@ -138,12 +187,19 @@ btn.onclick = function() {
 			newCmap.push(col);
 		}
 		cmap = newCmap;
-		if(currentGrid){
-			currentGrid.cmap = newCmap;
-			currentGrid.colorTiles();
+		if(currentTiling){
+			currentTiling.cmap = newCmap;
+			currentTiling.colorTiles();
 		}
 		modal.style.display = "none";
 	}
+	
+	// ------------------------------------------------
+	// 	[ 2.2 ] 	Manages presets
+	//
+	//		This section could be improved.
+	// ------------------------------------------------
+	
 	var preset_span = document.createElement("span");
 	preset_span.innerHTML = "Preset : ";
 	var preset_choice = document.createElement("select");
@@ -196,9 +252,7 @@ btn.onclick = function() {
 		}
 	}
 	
-	// Color presets
-	
-	
+	// Create element for each preset we defined
 	
 	var p1 = document.createElement("option");
 	p1.value = "grey";
@@ -236,17 +290,38 @@ window.onclick = function(event) {
   }
 }
 
+
+// ################################################
+//
+// 	[ 3.0 ] 	Misc display Functions
+//
+//		Used directly by Sandpiles.html
+//
+// ################################################
+
+var paramshown = true;
+
+function hideParams(){
+	if(paramshown){
+		document.getElementById("paramTitle").innerHTML ="Parameters ▼";
+		paramshown = false;
+		document.getElementById("paramHide").style="display:none";
+	} else {
+		
+		document.getElementById("paramTitle").innerHTML ="Parameters ▲";
+		paramshown = true;
+		document.getElementById("paramHide").style="display:inherit";
+	}
+		
+}
+
+// Prevents wireFrameToggle from being automatcally set to true
 $('input[id="wireFrameToggle"]').removeAttr('checked');
 
 
-// Using JQuerry to prevent breaking the inputs
-$(document).on('keyup', 'input', function () {
-    var _this = $(this);
-    var min = parseInt(_this.attr('min')) || 0; // if min attribute is not defined, 1 is default
-	var max = parseInt(_this.attr('max')) || 999; // if max attribute is not defined, 100 is default
-    var val = parseInt(_this.val()) || (min - 1); // if input char is not a number the value will be (min - 1) so first condition will be true
-	if(val < min)
-        _this.val( min );
-    if(val > max)
-        _this.val( max );
-});
+// ################################################
+//
+// 	EOF
+//
+// ################################################
+

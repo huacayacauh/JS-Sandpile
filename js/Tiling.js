@@ -1,3 +1,44 @@
+// 	#################  TILING.JS  ##################
+//	 		Authors : 	FERSULA Jérémy
+// 	################################################
+// 
+// 	To help you dig into this code, the main parts
+// 	in this file are indexed via comments.	
+//
+//		Ex:  [ 2.4 ] - Something
+//
+//	References to other parts of the app are linked
+//	via indexes.
+//
+//		### indexes a section
+//		--- indexes a sub-section
+//
+//	---
+//
+//	All relations between indexing in files can be
+// 	found on our GitHub :
+//
+// 		https://github.com/huacayacauh/JS-Sandpile
+//
+// 	---
+//
+//  This file is under CC-BY.
+//
+//	Feel free to edit it as long as you provide 
+// 	a link to its original source.
+//
+// 	################################################
+
+
+// ################################################
+//
+// 	[ 1.0 ] 	Representation of any Tile
+//
+//		The tile contains a list of its neighbors,
+//		all tiles are included in a Tiling.			
+//		See [ 2.0 ]
+//
+// ################################################
 class Tile{
 	constructor(id, neighbors, points, lim){
 		this.id = id;
@@ -13,12 +54,35 @@ class Tile{
 	}
 }
 
+
+// ################################################
+//
+// 	[ 2.0 ] 	Representation of any Tiling
+//			
+//		This class contains maily a list of
+//		Tiles, which themselves contains 
+//		references to their neighbors.
+//
+//		This class also contains the THREE.js
+//		Object displayed in the app.
+//
+// ################################################
 class Tiling{
-	// Represents any tiling
+	
+	// ------------------------------------------------
+	// 	[ 2.1 ] 	The class takes in lists
+	//				of numbers, which are packed
+	//				3 by 3 to create the points
+	//				of the figure and their colors.
+	//				
+	//		Things could be improved a bit here,
+	//		colormap should be optional, WireFrame
+	//		should be constructed and not given.
+	//				
+	// ------------------------------------------------
 	constructor(points, colors, tiles, colormap, wireFrame){
 
 		this.tiles = tiles;
-		//this.limit = toppleMin; // limit until the sand topple to adjacents tiles
 
 		var geometry = new THREE.BufferGeometry();
 
@@ -59,6 +123,9 @@ class Tiling{
 		this.selectedIndex;
 	}
 
+	// ------------------------------------------------
+	// 	[ 2.2 ] 	Apply one sandpile step
+	// ------------------------------------------------
 	iterate(){
 		// Topple any tile that has more than the limit of sand
 		this.tiles.forEach(function(element) {
@@ -74,19 +141,21 @@ class Tiling{
 			}
 		}
 	}
-
+	
+	// ------------------------------------------------
+	// 	[ 2.3 ] 	Basic operation functions
+	// ------------------------------------------------
 	add(index, amount){
 		this.tiles[index].sand += amount;
 		this.colorTile(index);
 	}
-
-	addEverywhere(amount){
-		for(var i = 0; i<this.tiles.length; i++){
-			this.tiles[i].sand += amount;
-		}
-		this.colorTiles();
+	
+	remove(index, amount){
+		this.tiles[index].sand -= amount;
+		if(this.tiles[index].sand < 0) this.tiles[index].sand = 0;
+		this.colorTile(index);
 	}
-
+	
 	addRandom(amount){
 		for(var j = 0; j<amount; j++){
 			this.add(Math.floor(Math.random() * this.tiles.length), 1);
@@ -100,6 +169,30 @@ class Tiling{
 
 		}
 	}
+	
+	// ------------------------------------------------
+	// 	[ 2.4 ] 	"Everywhere" operations
+	// ------------------------------------------------
+	clear(){
+		for(var i = 0; i<this.tiles.length; i++){
+			this.tiles[i].sand = 0;
+		}
+		this.colorTiles();
+	}
+
+	addEverywhere(amount){
+		for(var i = 0; i<this.tiles.length; i++){
+			this.tiles[i].sand += amount;
+		}
+		this.colorTiles();
+	}
+	
+	addMaxStable(){
+		for(var i = 0; i< this.tiles.length; i++){
+			this.add(i, this.tiles[i].limit - 1);
+		}
+		this.colorTiles();
+	}
 
 	addRandomEverywhere(amount){
 		for(var j = 0; j<amount; j++){
@@ -110,12 +203,6 @@ class Tiling{
 		this.colorTiles();
 	}
 
-	remove(index, amount){
-		this.tiles[index].sand -= amount;
-		if(this.tiles[index].sand < 0) this.tiles[index].sand = 0;
-		this.colorTile(index);
-	}
-
 	removeEverywhere(amount){
 		for(var i = 0; i<this.tiles.length; i++){
 			this.tiles[i].sand -= amount;
@@ -123,7 +210,10 @@ class Tiling{
 		}
 		this.colorTiles();
 	}
-
+	
+	// ------------------------------------------------
+	// 	[ 2.5 ] 	Complex operations
+	// ------------------------------------------------
 	addConfiguration(otherTiling){
 		if(otherTiling.tiles.length != this.tiles.length) alert("Can't add configurations ! Different number of tiles.");
 		for(var i = 0; i<this.tiles.length; i++){
@@ -153,12 +243,6 @@ class Tiling{
 		return newTiling;
 	}
 
-	addMaxStable(){
-		for(var i = 0; i< this.tiles.length; i++){
-			this.add(i, this.tiles[i].limit - 1);
-		}
-		this.colorTiles();
-	}
 
 	copy(){
 		var newTiles = [];
@@ -172,12 +256,6 @@ class Tiling{
 		return newTiling;
 	}
 
-	clear(){
-		for(var i = 0; i<this.tiles.length; i++){
-			this.tiles[i].sand = 0;
-		}
-		this.colorTiles();
-	}
 
 	stabilize(){
 		var t0 = performance.now();
@@ -203,9 +281,12 @@ class Tiling{
 		this.colorTiles();
 
 	}
-
+	
+	// ------------------------------------------------
+	// 	[ 2.6 ] 	Coloring and display
+	// ------------------------------------------------
 	colorTile(index, color){
-		// Colors only one tile
+		// Colors only one tile according to this.cmap
 		for(var j = 0; j<this.tiles[index].pointsIndexes.length; j++){
 			var colorNum = this.tiles[index].sand;
 			if(colorNum >= this.cmap.length){
@@ -231,4 +312,11 @@ class Tiling{
 	}
 
 }
+
+// ################################################
+//
+// 	EOF
+//
+// ################################################
+
 

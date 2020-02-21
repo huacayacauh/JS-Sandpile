@@ -99,19 +99,19 @@ async function draw_custom(srcPIC){
 	selectedTile = null;
 	
 	
-	currentGrid = new Tiling(pos, col, tils, cmap, pos);
+	currentTiling = new Tiling(pos, col, tils, cmap, pos);
 	
 	enableWireFrame(document.getElementById("wireFrameToggle"));
 	app.camera.zoom = 1.0;
 	
-	grid_check_stable = currentGrid.copy();
+	tiling_check_stable = currentTiling.copy();
 
 	app.controls.zoomCamera();
 	app.controls.object.updateProjectionMatrix();
 	
-	app.scene.add(currentGrid.mesh);
-	currentGrid.colorTiles();
-	//console.log(currentGrid);
+	app.scene.add(currentTiling.mesh);
+	currentTiling.colorTiles();
+	//console.log(currentTiling);
 
 	playWithDelay();
 
