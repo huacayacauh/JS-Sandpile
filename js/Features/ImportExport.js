@@ -37,28 +37,23 @@
 
 jsonToTilling = function(json){
 
-    var points = json.points;
-    var tiles = []
-
+	var tiles = [];
     for(var i = 0; i < json.tiles.length; i++){
         var tileJson = json.tiles[i]
-		var til = new Tile(tileJson.id, tileJson.neighbors, tileJson.points, tileJson.lim);
+		var til = new Tile(tileJson.id, tileJson.neighbors, tileJson.bounds, tileJson.lim);
 		til.sand = tileJson.sand;
         tiles.push(til);
     }
+
+    currentTiling = new Tiling(tiles);
 	
-	var colors = json.points;
-
-
-    currentTiling = new Tiling(points, colors, tiles, cmap);
 	while(app.scene.children.length > 0){
 		app.scene.remove(app.scene.children[0]);
 		console.log("cleared");
 	}
 	
-	tiling_check_stable = currentTiling.copy();
-	
 	selectedTile = null;
+	currentIdentity = null;
 	app.controls.zoomCamera();
 	app.controls.object.updateProjectionMatrix();
 
@@ -80,22 +75,12 @@ jsonToTilling = function(json){
 tillingToJson = function(sandpile){
 
     var json = {};
-    
-    var arrayPosition = sandpile.mesh.geometry.attributes.position.array;
-
-    var points = []
-    for(var i = 0; i < arrayPosition.length; i++){
-        points.push(arrayPosition[i]);
-    }
-
-    json.points = points
-
-
+	
     var tiles = []
 
     for(var i = 0; i < sandpile.tiles.length; i++){
         var tile = sandpile.tiles[i];
-        tiles.push({id: tile.id, neighbors: tile.neighbors, points: tile.pointsIndexes, lim: tile.limit, sand:tile.sand});
+        tiles.push({id: tile.id, neighbors: tile.neighbors, bounds: tile.bounds, lim: tile.limit, sand:tile.sand});
         
     }
 

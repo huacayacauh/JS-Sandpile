@@ -1,168 +1,155 @@
 Tiling.sqTiling = function(cmap, {width, height}={}){
 	// Creates a Tiling corresponding to a square Tiling of dimensions width, height
 	
-	var pos = [];
-	var col = [];
 	var tils = [];
-
-	var c2 = width/2;
-	var l2 = height/2;
 
 	for(var j = 0; j < width; j++){
 		for(var i = 0; i < height; i++){
-			// triangles corresponding to a square Tiling
-			pos.push( j - c2, -i + l2, 0 );
-			pos.push( j- c2, -i-1 + l2, 0 );
-			pos.push( j+1- c2, -i-1 + l2, 0 );
-
-			col.push( 255, 0, 0 );
-			col.push( 255, 0, 0 );
-			col.push( 255, 0, 0 );
-
-			pos.push( j+1- c2, -i-1 + l2, 0 );
-			pos.push( j+1- c2, -i + l2, 0 );
-			pos.push( j- c2, -i + l2, 0 );
-
-			col.push( 255, 255, 255 );
-			col.push( 255, 255, 255 );
-			col.push( 255, 255, 255 );
-			tils.push(Tile.squareTile(j, i, width, height));
+			tils.push(Tile.squareTile(j, i));
 		}	
 	}
 
-	return new Tiling(pos, col, tils, cmap, pos);
+	return new Tiling(tils);
 }
 
-Tiling.sqSpecial = function(cmap, {width, height}={}){
-	// Creates a Tiling corresponding to a square Tiling of dimensions width, height
-	
-	var pos = [];
-	var col = [];
+Tiling.sqD2 = function(cmap, {size}={}){
 	var tils = [];
 
-	var c2 = width/2;
-	var l2 = height/2;
-
-	for(var j = 0; j < width; j++){
-		for(var i = 0; i < height; i++){
-			// triangles corresponding to a square Tiling
-			pos.push( j - c2, -i + l2, 0 );
-			pos.push( j- c2, -i-1 + l2, 0 );
-			pos.push( j+1- c2, -i-1 + l2, 0 );
-
-			col.push( 255, 0, 0 );
-			col.push( 255, 0, 0 );
-			col.push( 255, 0, 0 );
-
-			pos.push( j+1- c2, -i-1 + l2, 0 );
-			pos.push( j+1- c2, -i + l2, 0 );
-			pos.push( j- c2, -i + l2, 0 );
-
-			col.push( 255, 255, 255 );
-			col.push( 255, 255, 255 );
-			col.push( 255, 255, 255 );
-			tils.push(Tile.specialTile(j, i, width, height));
+	for(var j = 0; j < size; j++){
+		for(var i = 0; i < size; i++){
+			tils.push(Tile.sqD2Tile(j, i, size));
 		}	
 	}
 
-	return new Tiling(pos, col, tils, cmap, pos);
+	return new Tiling(tils);
 }
+
+Tiling.sqD4 = function(cmap, {size}={}){
+	var tils = [];
+
+	for(var j = 0; j < size; j++){
+		for(var i = 0; i < size; i++){
+			tils.push(Tile.sqD4Tile(j, i, size));
+		}	
+	}
+
+	return new Tiling(tils);
+}
+
 
 Tiling.sqTilingMoore = function(cmap, {width, height}={}){
 	// Creates a Tiling corresponding to a square Tiling of dimensions width, height
 	
-	var pos = [];
-	var col = [];
 	var tils = [];
-
-	var c2 = width/2;
-	var l2 = height/2;
 
 	for(var j = 0; j < width; j++){
 		for(var i = 0; i < height; i++){
-			// triangles corresponding to a square Tiling
-			pos.push( j - c2, -i + l2, 0 );
-			pos.push( j- c2, -i-1 + l2, 0 );
-			pos.push( j+1- c2, -i-1 + l2, 0 );
-
-			col.push( 255, 0, 0 );
-			col.push( 255, 0, 0 );
-			col.push( 255, 0, 0 );
-
-			pos.push( j+1- c2, -i-1 + l2, 0 );
-			pos.push( j+1- c2, -i + l2, 0 );
-			pos.push( j- c2, -i + l2, 0 );
-
-			col.push( 255, 255, 255 );
-			col.push( 255, 255, 255 );
-			col.push( 255, 255, 255 );
-			
-			tils.push(Tile.squareTileMoore(j, i, width, height));
+			tils.push(Tile.sqMooreTile(j, i));
 		}	
 	}
 
-	return new Tiling(pos, col, tils, cmap, pos);
+	return new Tiling(tils);
 }
 
-Tile.squareTile = function(x, y, xMax, yMax){
+
+Tile.squareTile = function(x, y){
 	// Creates the Tile in position x, y of a square Tiling
 
-	var id;
+	var id = [x, y];
+	
 	var neighbors = [];
-	id = x*yMax + y;
-	if(x > 0) neighbors.push((x-1)*yMax + y);
-	if(x < xMax-1) neighbors.push((x+1)*yMax + y);
-	if(y > 0) neighbors.push(x*yMax + (y-1));
-	if(y < yMax-1) neighbors.push(x*yMax + (y+1));
-	var pointsIds = [];
-	for(var i=0; i<6; i++){
-		pointsIds.push(id*6 + i);
-	}
-	return new Tile(id, neighbors, pointsIds, 4);
+	
+	/*if(x > 0) neighbors.push([x-1, y]);
+	if(x < xMax-1) neighbors.push([x+1, y]);
+	if(y > 0) neighbors.push([x, y-1]);
+	if(y < yMax-1) neighbors.push([x, y+1]);*/
+	
+	neighbors.push([x-1, y]);
+	neighbors.push([x+1, y]);
+	neighbors.push([x, y-1]);
+	neighbors.push([x, y+1]);
+	
+	var bounds = [];
+	bounds.push(x, y);
+	bounds.push(x+1, y);
+	bounds.push(x+1, y+1);
+	bounds.push(x, y+1);
+				
+	return new Tile(id, neighbors, bounds, 4);
 }
 
-Tile.specialTile = function(x, y, xMax, yMax){
+
+
+Tile.sqD2Tile = function(x, y, Max){
 	// Creates the Tile in position x, y of a square Tiling
 
-	var id;
+	var id = [x, y];
+	
 	var neighbors = [];
-	id = x*yMax + y;
-	if(x > 0) neighbors.push((x-1)*yMax + y);
-	else neighbors.push(y*yMax + x);
-	if(x < xMax-1) neighbors.push((x+1)*yMax + y);
-	if(y > 0) neighbors.push(x*yMax + (y-1));
-	else neighbors.push(y*yMax + x);
-	if(y < yMax-1) neighbors.push(x*yMax + y+1);
-	if(x==0 && y==0) neighbors = [0, 0, 1, yMax];
-	var pointsIds = [];
-	for(var i=0; i<6; i++){
-		pointsIds.push(id*6 + i);
-	}
-	return new Tile(id, neighbors, pointsIds, 4);
+	
+	if(x > 0) neighbors.push([x-1, y]);
+	else neighbors.push([y, x]);
+	if(x < Max-1) neighbors.push([x+1, y]);
+	if(y > 0) neighbors.push([x, y-1]);
+	else neighbors.push([y, x]);
+	if(y < Max-1) neighbors.push([x, y+1]);
+	if(x==0 && y==0) neighbors = [[0, 0], [0, 0], [0, 1], [1, 0]];
+	
+	var bounds = [];
+	bounds.push(x, y);
+	bounds.push(x+1, y);
+	bounds.push(x+1, y+1);
+	bounds.push(x, y+1);
+				
+	return new Tile(id, neighbors, bounds, 4);
+}
+
+Tile.sqD4Tile = function(x, y, Max){
+	// Creates the Tile in position x, y of a square Tiling
+
+	var id = [x, y];
+	
+	var neighbors = [];
+	
+	if(x > 0) neighbors.push([x-1, y]);
+	else neighbors.push([y, x]);
+	if(x < Max-1) neighbors.push([x+1, y]);
+	if(y > 0) neighbors.push([x, y-1]);
+	else neighbors.push([y, x]);
+	if(y < Max-1) neighbors.push([x, y+1]);
+	if(x==0 && y==0) neighbors = [[0, 0], [0, 0], [0, 1], [1, 0]];
+	
+	var bounds = [];
+	bounds.push(x, y);
+	bounds.push(x+1, y);
+	bounds.push(x+1, y+1);
+	bounds.push(x, y+1);
+				
+	return new Tile(id, neighbors, bounds, 4);
 }
 	
-Tile.squareTileMoore = function(x, y, xMax, yMax){
+Tile.sqMooreTile = function(x, y){
 	// Creates the Tile in position x, y of a square Tiling
 
-	var id;
+	var id = [x, y];
+	
 	var neighbors = [];
-	id = x*yMax + y;
-	if(x > 0) neighbors.push((x-1)*yMax + y);
-	if(x < xMax-1) neighbors.push((x+1)*yMax + y);
-	if(y > 0) neighbors.push(x*yMax + (y-1));
-	if(y < yMax-1) neighbors.push(x*yMax + (y+1));
 	
+	neighbors.push([x-1, y]);
+	neighbors.push([x+1, y]);
+	neighbors.push([x, y-1]);
+	neighbors.push([x, y+1]);
 	
-	if(y < yMax-1 && x < xMax-1) neighbors.push((x+1)*yMax + (y+1));
+	neighbors.push([x+1, y+1]);
+	neighbors.push([x-1, y+1]);
+	neighbors.push([x+1, y-1]);
+	neighbors.push([x-1, y-1]);
 	
-	if(y < yMax-1 && x > 0) neighbors.push((x-1)*yMax + (y+1));
-	
-	if(y > 0 && x < xMax - 1) neighbors.push((x+1)*yMax + (y-1));
-	
-	if(y > 0 && x > 0) neighbors.push((x-1)*yMax + (y-1));
-	var pointsIds = [];
-	for(var i=0; i<6; i++){
-		pointsIds.push(id*6 + i);
-	}
-	return new Tile(id, neighbors, pointsIds, 8);
+	var bounds = [];
+	bounds.push(x, y);
+	bounds.push(x+1, y);
+	bounds.push(x+1, y+1);
+	bounds.push(x, y+1);
+				
+	return new Tile(id, neighbors, bounds, 8);
 }

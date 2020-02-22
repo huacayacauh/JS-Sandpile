@@ -25,7 +25,7 @@
 			<input type="number" id="delay" style="margin-right:20px" value="100" oninput="changeDelay(this);" min="0"/>
 			
 		Iterations per frame :
-			<input type="number" id="IPF" style="margin-right:40px" value="1" oninput="changeIPS(this);" min="0" max="99"/>
+			<input type="number" id="IPF" style="margin-right:40px" value="1" oninput="changeIPS(this);" min="0" max="999"/>
 			<button id="playButton" onclick="playPause(this)" class="btn btn-default" style="margin-right:40px; font-weight:bold;">Play</button>
 			<button onclick="step()" style="margin-right:20px" class="btn btn-default">Step</button>
 			
@@ -70,10 +70,13 @@
 						<option value="StarRPenrose">Penrose Star Rhombus</option>
 					</optgroup>
 					<optgroup label="Symmetry Free">
-						<option value="sqSpecial">D2 Square</option>
+						<option value="sqD2">D2 Square</option>
+						<option value="sqD4">D4 Square</option>
 					</optgroup>
 					<optgroup label="Misc.">
 						<option value="sqTilingMoore">Square Moore</option>
+						<option value="pythagorean">Pythagorean</option>
+						<option value="truncSq">Truncated Square</option>
 					</optgroup>
 				  
 				</select>
@@ -239,6 +242,7 @@
 	<script src="./js/Utils/three.min.js"></script>
 	<script src="./js/Utils/OrthographicTrackballControls.js"></script>
 	<script src="./js/Utils/bootstrap.min.js"></script>
+	<script src="./js/Utils/earcut.js"></script>
 
 
 	<script src="./js/Tiling.js"></script>
@@ -248,6 +252,8 @@
 	<script src="./js/TilingPresets/PenroseTiling.js"></script>
 	<script src="./js/TilingPresets/CustomSquareTiling.js"></script>
 	<script src="./js/TilingPresets/SquareTiling.js"></script>
+	<script src="./js/TilingPresets/Pythagorean.js"></script>
+	<script src="./js/TilingPresets/TruncSquare.js"></script>
 
 	<script src="./js/Features/ChangeDisplay.js"></script>
 	<script src="./js/Features/ImportExport.js"></script>

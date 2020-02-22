@@ -145,26 +145,28 @@ Tiling.prototype.get_roundness = function(){
 		}
 	}
 	
-	
+	var pos = this.mesh.geometry.attributes.position;
 	for(var i = 0; i<circle.length; i++){
 		this.colorTile(circle[i], new THREE.Color(0xFF0000));
-		for(var k = 0; k<this.tiles[circle[i]].pointsIndexes.length; k++){
-			var rad = 0;
-			if(estimate_center){
-				rad += (this.points.array[this.tiles[circle[i]].pointsIndexes[k]*3] - estimation[0])**2;
-				rad += (this.points.array[this.tiles[circle[i]].pointsIndexes[k]*3 +1] - estimation[1])**2;
-				rad += (this.points.array[this.tiles[circle[i]].pointsIndexes[k]*3 +2] - estimation[2])**2;
-			} else {
-				rad = this.points.array[this.tiles[circle[i]].pointsIndexes[k]*3]**2 + this.points.array[this.tiles[circle[i]].pointsIndexes[k]*3 +1]**2 + this.points.array[this.tiles[circle[i]].pointsIndexes[k]*3+2]**2;
-			}
-			rad = Math.sqrt(rad);
-			if(rad > max_radius){
-				max_radius = rad;
-			}
-			if(rad < min_radius){
-				min_radius = rad;
-			}
+		var rad = 0;
+		var posX = 0;
+		var posY = 0;
+		for(var k = 0; k<this.tiles[circle[i]].bounds.length; k+=2){
+			posX += this.tiles[circle[i]].bounds[k];
+			posY += this.tiles[circle[i]].bounds[k+1];
 		}
+		posX *= 2.0 / this.tiles[circle[i]].bounds.length;
+		posY *= 2.0 / this.tiles[circle[i]].bounds.length;
+		rad += (posX - this.massCenter[0])**2;
+		rad += (posY - this.massCenter[1])**2;
+		rad = Math.sqrt(rad);
+		if(rad > max_radius){
+			max_radius = rad;
+		}
+		if(rad < min_radius){
+			min_radius = rad;
+		}
+		
 	}
 	
 	
@@ -185,54 +187,33 @@ Tiling.prototype.get_roundness = function(){
 // ################################################
 
 async function makeRoundnessFile(Tiling){
-	if(estimate_center){
-		for(var i=0; i<Tiling.tiles.length; i++){
-			for(var k = 0; k<Tiling.tiles[i].pointsIndexes.length; k++){
-				estimation[0] += Tiling.points.array[Tiling.tiles[i].pointsIndexes[k]*3];
-				estimation[1] += Tiling.points.array[Tiling.tiles[i].pointsIndexes[k]*3 +1];
-				estimation[2] += Tiling.points.array[Tiling.tiles[i].pointsIndexes[k]*3 +2];
-			}
-		}
-		estimation[0] /= Tiling.points.array.length;
-		estimation[1] /= Tiling.points.array.length;
-		estimation[2] /= Tiling.points.array.length;
-		console.log("Estimated center : ", estimation);
-	}
+	
+	Tiling.addMaxStable();
+	if(!currentIdentity)
+		findIdentity();
+	Tiling.addConfiguration(currentIdentity);
+	
 	// Make a file out of the function above
 	show_round = document.getElementById('roundShow').checked;
 	var arr_min = [];
 	var arr_max = [];
 	
-	var oldTiles = [];
-	for(var i = 0; i<Tiling.tiles.length; i++){
-		oldTiles.push(new Tile(Tiling.tiles[i].id, Array.from(Tiling.tiles[i].neighbors), Array.from(Tiling.tiles[i].pointsIndexes)));
-	}
 	var done = false;
 	round_delay = delay;
 	while(!done){
-		done = true;
-		for(var i = 0; i<Tiling.tiles.length; i++){
-			if(oldTiles[i].sand != Tiling.tiles[i].sand){
-				oldTiles[i].sand = Tiling.tiles[i].sand;
-				done = false;
-			}
+		
+		if(show_round){
+			Tiling.colorTiles();
 		}
-		for(var i = 0; i<50; i++){
-			if(show_round){
-				Tiling.colorTiles();
-			}
-			var stat = Tiling.get_roundness();
-			if(stat != null){
-				arr_min.push(stat["Min"]);
-				arr_max.push(stat["Max"]);
-			}
-			
-			for(var j = 0; j<it_per_frame; j++){
-				Tiling.iterate();
-			}
-			if(show_round){
-				await sleep(round_delay);
-			}
+		var stat = Tiling.get_roundness();
+		if(stat != null){
+			arr_min.push(stat["Min"]);
+			arr_max.push(stat["Max"]);
+		}
+		
+		done = Tiling.iterate();
+		if(show_round){
+			await sleep(round_delay);
 		}
 	}
 	Tiling.colorTiles();

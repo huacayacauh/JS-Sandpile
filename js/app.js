@@ -139,17 +139,13 @@ var color_select = new THREE.Color(); // Animation of selected tile color
 
 var tileInfo = document.getElementById("tileInfo"); 
 
-var tiling_check_stable;
-
 var check_copy = true; // Copy the tiling once in a while to see if it is stable
 
 // ---------------------- Routines
 
-setInterval(colorSelected, 100); //		[ 4.2 ]
+setInterval(colorSelected, 200); //		[ 4.2 ]
 
 setInterval(refresh_zoom, 200); // 		[ 5.2 ]
-
-setInterval(check_stable, 500); // 		[ 5.4 ]
 
 // ---------------------- Events
 
@@ -186,9 +182,13 @@ function step(){
 //		Tiling.js [ 2.2 ] [ 2.6 ]
 // ------------------------------------------------
 function iterateTiling(){
+	var is_stable = false;
 	for(var i = 0; i<it_per_frame; i++){
-		currentTiling.iterate();
+		is_stable = currentTiling.iterate();
 	}
+	
+	if(document.getElementById("pauseToggle").checked && is_stable)
+		playPause(document.getElementById("playButton"));
 	currentTiling.colorTiles();
 	if(selectedTile)
 		tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentTiling.tiles[selectedTile].sand;
@@ -201,14 +201,15 @@ function iterateTiling(){
 //		Tiling.js [ 2.4 ] [ 2.5 ]
 // ------------------------------------------------
 function findIdentity(){
-	var identity1 = currentTiling.copy();
-	var identity2 = currentTiling.copy();
+	var identity1 = currentTiling.hiddenCopy();
+	var identity2 = currentTiling.hiddenCopy();
 	identity1.clear();
 	identity2.clear();
+	console.log(identity1);
 	var maxLimit = 0;
-	for(var i = 0; i < currentTiling.tiles.length; i++){
-		if(maxLimit < currentTiling.tiles[i].limit)
-			maxLimit = currentTiling.tiles[i].limit;
+	for(var id in currentTiling.tiles){
+		if(maxLimit < currentTiling.tiles[id].limit)
+			maxLimit = currentTiling.tiles[id].limit;
 	}
 	identity1.addEverywhere((maxLimit - 1) * 2);
 	identity2.addEverywhere((maxLimit - 1) * 2);
@@ -275,7 +276,7 @@ function complexOperationAdd(){
 			break;
 
 			case "Dual":
-				currentTiling.addConfiguration(currentTiling.getDual());
+				currentTiling.addConfiguration(currentTiling.getHiddenDual());
 			break;
 
 			case "Iden":
@@ -319,7 +320,7 @@ function complexOperationSet(){
 			break;
 
 			case "Dual":
-				var newTiling = currentTiling.getDual();
+				var newTiling = currentTiling.getHiddenDual();
 				currentTiling.clear();
 				currentTiling.addConfiguration(newTiling);
 			break;
@@ -366,7 +367,7 @@ function complexOperationSub(){
 			break;
 
 			case "Dual":
-				currentTiling.removeConfiguration(currentTiling.getDual());
+				currentTiling.removeConfiguration(currentTiling.getHiddenDual());
 			break;
 
 			case "Iden":
@@ -431,7 +432,7 @@ function playPause(elem){
 function colorSelected(){
 	if(currentTiling){
 		if(!play){
-			color_hue_shift += 0.025;
+			color_hue_shift += 0.05;
 			color_hue_shift = color_hue_shift % 1.0;
 			if(currentTiling.selectedIndex >= 0 ){
 				color_select.setHSL( color_hue_shift, 1.0, 0.5 );
@@ -488,12 +489,13 @@ function drawTiling(){
 	
 	eval(command);
 	
-	tiling_check_stable = currentTiling.copy();
+	currentTiling.cmap = cmap;
 	
 	app.controls.zoomCamera();
 	app.controls.object.updateProjectionMatrix();
 
 	app.scene.add(currentTiling.mesh);
+	
 	currentTiling.colorTiles();
 	//console.log(currentTiling);
 	
@@ -544,43 +546,9 @@ function saveConfiguration(){
 		}
 		document.getElementById("complexOperationValue").innerHTML += '<option value="CNFG'+ savedConfigs.length +'">' + config_name + '</option>';
 		
-		savedConfigs.push(currentTiling.copy());
+		savedConfigs.push(currentTiling.hiddenCopy());
 	}
 }
-
-// ------------------------------------------------
-// 	[ 5.4 ] 	Check stability by alternatively
-//				copying and comparing iterations.
-//
-//			Called by a routine.
-// ------------------------------------------------
-function check_stable(){
-	if(currentTiling){
-		if(play){
-			if(document.getElementById("pauseToggle").checked){
-				if(check_copy){
-					for(var j = 0; j<currentTiling.tiles.length; j++){
-						tiling_check_stable.tiles[j].sand = new Number(currentTiling.tiles[j].sand);
-					}
-					check_copy = false;
-				} else {
-					var can_pause = true;
-					for(var j = 0; j<currentTiling.tiles.length; j++){
-						if(currentTiling.tiles[j].sand != tiling_check_stable.tiles[j].sand){
-							can_pause = false;
-							break;
-						}
-					}
-					if(can_pause){
-						playPause(document.getElementById("playButton"));
-					}
-					check_copy = true;
-				}
-			}
-		}
-	}
-}
-
 
 
 // ################################################
@@ -633,9 +601,7 @@ app.renderer.domElement.addEventListener('click', function( event ) {
 						currentTiling.colorTile(currentTiling.selectedIndex);
 					selectedTile = currentTiling.indexDict[face.faceIndex*3];
 					
-					console.log(currentTiling.points.array[currentTiling.tiles[selectedTile].pointsIndexes[0]*3], 
-								currentTiling.points.array[currentTiling.tiles[selectedTile].pointsIndexes[0]*3 +1],
-								currentTiling.points.array[currentTiling.tiles[selectedTile].pointsIndexes[0]*3 +2]);
+					console.log(currentTiling.tiles[selectedTile]);
 					tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentTiling.tiles[selectedTile].sand;
 					currentTiling.selectedIndex = currentTiling.indexDict[face.faceIndex*3];
 					break;

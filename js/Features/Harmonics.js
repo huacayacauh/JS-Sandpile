@@ -44,7 +44,7 @@
 // 	[ 1.0 ] 	Apply Square Tiling harmonics
 //
 // ################################################
-Tiling.apply_harmonic = function(){
+Tiling.prototype.apply_harmonic = function(){
 	
 	var Tiling_width = Number(document.getElementById("cW").value);
 	var Tiling_height = Number(document.getElementById("cH").value);

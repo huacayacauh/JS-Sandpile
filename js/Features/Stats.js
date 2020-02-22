@@ -68,27 +68,13 @@ function makeStatsFile(Tiling){
 	var arr_mean = [];
 	var arr_std = [];
 	var arr_populations = [];
-	
-	var oldTiles = [];
-	for(var i = 0; i<Tiling.tiles.length; i++){
-		oldTiles.push(new Tile(Tiling.tiles[i].id, Array.from(Tiling.tiles[i].neighbors), Array.from(Tiling.tiles[i].pointsIndexes)));
-	}
 	var done = false;
 	while(!done){
-		done = true;
-		for(var i = 0; i<Tiling.tiles.length; i++){
-			if(oldTiles[i].sand != Tiling.tiles[i].sand){
-				oldTiles[i].sand = Tiling.tiles[i].sand;
-				done = false;
-			}
-		}
-		for(var i = 0; i<50; i++){
-			var stat = Tiling.get_stats();
-			arr_mean.push(stat["Mean"]);
-			arr_std.push(stat["Std"]);
-			arr_populations.push(stat["Population"]);
-			Tiling.iterate();
-		}
+		var stat = Tiling.get_stats();
+		arr_mean.push(stat["Mean"]);
+		arr_std.push(stat["Std"]);
+		arr_populations.push(stat["Population"]);
+		done = Tiling.iterate();
 	}
 	Tiling.colorTiles();
 	

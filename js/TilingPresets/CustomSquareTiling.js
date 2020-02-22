@@ -25,70 +25,13 @@ async function draw_custom(srcPIC){
 	var width = img.width;
 	
 	//Tiling construction
-	var pos = [];
-	var col = [];
 	var tils = [];
-
-	var c2 = width/2;
-	var l2 = height/2;
-	
-	var index = 0;
-	
-	var neighbourhood = {};
 	
 	for(var i = 0; i < width; i++){
 		for(var j = 0; j < height; j++){
 			if(context.getImageData(i, j, 1, 1).data[0] == 0){
-				pos.push( i - l2, -j + c2, 0 );
-				pos.push( i+1 - l2, -j + c2, 0 );
-				pos.push( i+1 - l2, -j-1 + c2, 0 );
-
-				col.push( 255, 0, 0 );
-				col.push( 255, 0, 0 );
-				col.push( 255, 0, 0 );
-
-				pos.push( i+1 - l2, -j-1 + c2, 0 );
-				pos.push( +i - l2, -j-1 + c2, 0 );
-				pos.push( +i - l2, -j + c2, 0 );
-
-				col.push( 255, 255, 255 );
-				col.push( 255, 255, 255 );
-				col.push( 255, 255, 255 );
-				
-				
-				var id;
-				var neighbors = [];
-				id = index;
-				
-				neighbourhood[i*height+j]=index;
-				
-				var pointsIds = [];
-				for(var k=0; k<6; k++){
-					pointsIds.push(pos.length/3 - 6 + k);
-				}
-				index++;
-				tils.push(new Tile(id, neighbors, pointsIds, 4));
+				tils.push(Tile.squareTile(i, j, 10000, 10000));
 			}
-		}
-	}
-	index = 0;
-	for(var i = 0; i < width; i++){
-		for(var j = 0; j < height; j++){
-			if(context.getImageData(i, j, 1, 1).data[0] == 0){
-				if(context.getImageData(i, j, 1, 1).data[1] == 255){
-				tils[index].sand = 2;
-				}
-				if(context.getImageData(i, j, 1, 1).data[2] == 255){
-					tils[index].sand = 3;
-				}
-				if(context.getImageData(i-1, j, 1, 1).data[0] == 0) tils[index].neighbors.push(neighbourhood[(i-1)*height + j]);
-				if(context.getImageData(i+1, j, 1, 1).data[0] == 0) tils[index].neighbors.push(neighbourhood[(i+1)*height + j]);
-				if(context.getImageData(i, j-1, 1, 1).data[0] == 0) tils[index].neighbors.push(neighbourhood[i*height + j-1]);
-				if(context.getImageData(i, j+1, 1, 1).data[0] == 0) tils[index].neighbors.push(neighbourhood[i*height + j+1]);
-				
-				index++;
-			}
-			
 		}
 	}
 	
@@ -98,13 +41,11 @@ async function draw_custom(srcPIC){
 
 	selectedTile = null;
 	
-	
-	currentTiling = new Tiling(pos, col, tils, cmap, pos);
-	
+	currentIdentity = null;
+	currentTiling = new Tiling(tils);
+	currentTiling.cmap = cmap;
 	enableWireFrame(document.getElementById("wireFrameToggle"));
 	app.camera.zoom = 1.0;
-	
-	tiling_check_stable = currentTiling.copy();
 
 	app.controls.zoomCamera();
 	app.controls.object.updateProjectionMatrix();
