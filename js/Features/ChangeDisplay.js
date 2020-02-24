@@ -207,16 +207,24 @@ btn.onclick = function() {
 	preset_choice.style = "display:inline";
 	preset_span.appendChild(preset_choice);
 	preset_choice.oninput = function() {
+		var black4_array = ["#ffffff", "#cccccc", "#666666", "#000000", "#ff1a1a", "#ff751a", "#ffbb33", "#ffff4d", "#99ff66"];
+		var black3_array = ["#ffffff", "#aaaaaa", "#000000", "#ff1a1a", "#ff9933", "#ffff4d", "#99ff66"];
 		var grey_array = ["#ffffff", "#dddddd", "#bbbbbb", "#999999", "#777777", "#555555", "#eeee00"];
 		var lava_array = ["#cccccc", "#888888", "#444444", "#553333", "#772222", "#aa1111", "#ff1100", "#ff8800", "#eeee00"];
-		
 		var blue_array = ["#000055", "#000088", "#0022aa", "#0044ff", "#0099ff", "#00ccff", "#00ffff", "#aaffff", "#ffffff"];
-		
 		var green_array = ["#ffffff", "#ffffcc", "#ddffaa", "#aaff77", "#66ff33", "#33cc33", "#009933"];
 		
 		var selected_array;
 		
 		switch(preset_choice.value){
+			case "black4":
+			selected_array = black4_array;
+			break;
+
+			case "black3":
+			selected_array = black3_array;
+			break;
+
 			case "grey":
 			selected_array = grey_array;
 			break;
@@ -255,24 +263,34 @@ btn.onclick = function() {
 	// Create element for each preset we defined
 	
 	var p1 = document.createElement("option");
-	p1.value = "grey";
-	p1.innerHTML = "Gold Dust";
+	p1.value = "black4";
+	p1.innerHTML = "Greyscale 4";
 	preset_choice.appendChild(p1);
 	
 	var p2 = document.createElement("option");
-	p2.value = "lava";
-	p2.innerHTML = "Lava red";
+	p2.value = "black3";
+	p2.innerHTML = "Greyscale 3";
 	preset_choice.appendChild(p2);
 	
 	var p3 = document.createElement("option");
-	p3.value = "blue";
-	p3.innerHTML = "Deep blue";
+	p3.value = "grey";
+	p3.innerHTML = "Gold Dust";
 	preset_choice.appendChild(p3);
 	
 	var p4 = document.createElement("option");
-	p4.value = "green";
-	p4.innerHTML = "Lime green";
+	p4.value = "lava";
+	p4.innerHTML = "Lava red";
 	preset_choice.appendChild(p4);
+	
+	var p5 = document.createElement("option");
+	p5.value = "blue";
+	p5.innerHTML = "Deep blue";
+	preset_choice.appendChild(p5);
+	
+	var p6 = document.createElement("option");
+	p6.value = "green";
+	p6.innerHTML = "Lime green";
+	preset_choice.appendChild(p6);
 	
 	
 	// We append the controls created to the modal and display it on screen

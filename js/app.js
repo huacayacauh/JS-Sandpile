@@ -106,12 +106,14 @@ class App{
 // ################################################
 
 var cmap = [new THREE.Color(0xffffff),
-              new THREE.Color(0xdddddd),
-              new THREE.Color(0xbbbbbb),
-              new THREE.Color(0x999999),
-              new THREE.Color(0x777777),
-              new THREE.Color(0x555555),
-              new THREE.Color(0xeeee00)];
+              new THREE.Color(0xcccccc),
+              new THREE.Color(0x666666),
+              new THREE.Color(0x000000),
+              new THREE.Color(0xff1a1a),
+              new THREE.Color(0xff751a),
+              new THREE.Color(0xffbb33),
+              new THREE.Color(0xffff4d),
+              new THREE.Color(0x99ff66),];
 
 var play = false;
 
