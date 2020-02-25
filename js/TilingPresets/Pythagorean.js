@@ -1,6 +1,5 @@
-Tiling.pythagorean = function(cmap, {width, height}={}){
-	// Creates a Tiling corresponding to a square Tiling of dimensions width, height
-	
+Tiling.pythagorean = function({width, height}={}){
+
 	var tils = [];
 
 	for(var j = 0; j < width; j++){
@@ -15,7 +14,6 @@ Tiling.pythagorean = function(cmap, {width, height}={}){
 }
 
 Tile.pythBig = function(x, y){
-	// Creates the Tile in position x, y of a square Tiling
 
 	var id = ["b", x, y];
 	
@@ -42,7 +40,6 @@ Tile.pythBig = function(x, y){
 	return new Tile(id, neighbors, bounds, 8);
 }
 Tile.pythSmall = function(x, y){
-	// Creates the Tile in position x, y of a square Tiling
 
 	var id = ["s", x, y];
 	

@@ -1,4 +1,4 @@
-Tiling.sqTiling = function(cmap, {width, height}={}){
+Tiling.sqTiling = function({width, height}={}){
 	// Creates a Tiling corresponding to a square Tiling of dimensions width, height
 	
 	var tils = [];
@@ -12,7 +12,7 @@ Tiling.sqTiling = function(cmap, {width, height}={}){
 	return new Tiling(tils);
 }
 
-Tiling.sqD2 = function(cmap, {size}={}){
+Tiling.sqD2 = function({size}={}){
 	var tils = [];
 
 	for(var j = 0; j < size; j++){
@@ -24,11 +24,11 @@ Tiling.sqD2 = function(cmap, {size}={}){
 	return new Tiling(tils);
 }
 
-Tiling.sqD4 = function(cmap, {size}={}){
+Tiling.sqD4 = function({size}={}){
 	var tils = [];
 
 	for(var j = 0; j < size; j++){
-		for(var i = 0; i < size; i++){
+		for(var i = 0; i <= j; i++){
 			tils.push(Tile.sqD4Tile(j, i, size));
 		}	
 	}
@@ -37,7 +37,7 @@ Tiling.sqD4 = function(cmap, {size}={}){
 }
 
 
-Tiling.sqTilingMoore = function(cmap, {width, height}={}){
+Tiling.sqTilingMoore = function({width, height}={}){
 	// Creates a Tiling corresponding to a square Tiling of dimensions width, height
 	
 	var tils = [];
@@ -81,7 +81,6 @@ Tile.squareTile = function(x, y){
 
 
 Tile.sqD2Tile = function(x, y, Max){
-	// Creates the Tile in position x, y of a square Tiling
 
 	var id = [x, y];
 	
@@ -105,7 +104,6 @@ Tile.sqD2Tile = function(x, y, Max){
 }
 
 Tile.sqD4Tile = function(x, y, Max){
-	// Creates the Tile in position x, y of a square Tiling
 
 	var id = [x, y];
 	
@@ -115,9 +113,11 @@ Tile.sqD4Tile = function(x, y, Max){
 	else neighbors.push([y, x]);
 	if(x < Max-1) neighbors.push([x+1, y]);
 	if(y > 0) neighbors.push([x, y-1]);
-	else neighbors.push([y, x]);
+	else neighbors.push([x, y]);
 	if(y < Max-1) neighbors.push([x, y+1]);
 	if(x==0 && y==0) neighbors = [[0, 0], [0, 0], [0, 1], [1, 0]];
+	if(x==y) neighbors.push([x+1, y]);
+	if(x==y) neighbors.push([x, y-1]);
 	
 	var bounds = [];
 	bounds.push(x, y);

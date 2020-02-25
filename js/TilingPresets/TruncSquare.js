@@ -1,5 +1,4 @@
-Tiling.truncSq = function(cmap, {width, height}={}){
-	// Creates a Tiling corresponding to a square Tiling of dimensions width, height
+Tiling.truncSq = function({width, height}={}){
 	
 	var tils = [];
 
@@ -16,16 +15,10 @@ Tiling.truncSq = function(cmap, {width, height}={}){
 }
 
 Tile.truncSqTile = function(x, y){
-	// Creates the Tile in position x, y of a square Tiling
 
 	var id = [x, y];
 	
 	var neighbors = [];
-	
-	/*if(x > 0) neighbors.push([x-1, y]);
-	if(x < xMax-1) neighbors.push([x+1, y]);
-	if(y > 0) neighbors.push([x, y-1]);
-	if(y < yMax-1) neighbors.push([x, y+1]);*/
 	
 	neighbors.push([x+1, y]);
 	neighbors.push([x-1, y]);
@@ -44,16 +37,10 @@ Tile.truncSqTile = function(x, y){
 
 
 Tile.truncOctoTile = function(x, y){
-	// Creates the Tile in position x, y of a square Tiling
 
 	var id = [x, y];
 	
 	var neighbors = [];
-	
-	/*if(x > 0) neighbors.push([x-1, y]);
-	if(x < xMax-1) neighbors.push([x+1, y]);
-	if(y > 0) neighbors.push([x, y-1]);
-	if(y < yMax-1) neighbors.push([x, y+1]);*/
 	
 	neighbors.push([x-1, y]);
 	neighbors.push([x+1, y]);

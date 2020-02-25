@@ -487,7 +487,7 @@ function drawTiling(){
 
 	var nbIt = document.getElementById("penroseIt").value;
 	
-	var command = "currentTiling = Tiling." + preset + "(cmap, {height:cH, width:cW, iterations:nbIt, size:size})";
+	var command = "currentTiling = Tiling." + preset + "({height:cH, width:cW, iterations:nbIt, size:size})";
 	
 	eval(command);
 	

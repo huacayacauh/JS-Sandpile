@@ -1,4 +1,4 @@
-Tiling.hexTiling = function (cmap, {size}={}) {
+Tiling.hexTiling = function ({size}={}) {
 	
 	var pos = [];
 	var col = [];

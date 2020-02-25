@@ -50,7 +50,7 @@ class Tile{
 
 		this.limit = lim;
 
-		this.bounds = bounds; // Indexes of points representing the tile, in the Tiling array of points
+		this.bounds = bounds; // bound points of the tile
 		this.points = [];
 	}
 }
@@ -71,15 +71,7 @@ class Tile{
 class Tiling{
 	
 	// ------------------------------------------------
-	// 	[ 2.1 ] 	The class takes in lists
-	//				of numbers, which are packed
-	//				3 by 3 to create the points
-	//				of the figure and their colors.
-	//				
-	//		Things could be improved a bit here,
-	//		colormap should be optional, WireFrame
-	//		should be constructed and not given.
-	//				
+	// 	[ 2.1 ] 	TODO
 	// ------------------------------------------------
 	constructor(tiles, hide=false){
 		
@@ -98,7 +90,7 @@ class Tiling{
 			
 			for(var i = 0; i<tiles.length; i++){
 				if(tiles[i].bounds){
-					triangles = earcut(tiles[i].bounds);
+					var triangles = earcut(tiles[i].bounds);
 					for(var index in triangles){
 						points.push(tiles[i].bounds[triangles[index]*2], tiles[i].bounds[triangles[index]*2 +1], 0);
 						colors.push(0, 255, 0);

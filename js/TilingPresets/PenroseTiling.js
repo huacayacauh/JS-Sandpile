@@ -1074,7 +1074,7 @@ generateStarTilingR = function(n){
 
 //créer un tas de sable abélien à partir
 //d'une liste de triangles
-makePenroseSandpile = function(data, cmap){
+makePenroseSandpile = function(data){
 
     var tils = [];
     
@@ -1107,45 +1107,45 @@ makePenroseSandpile = function(data, cmap){
     
 }
 
-Tiling.HKPenroseSandpile = function(iterations, cmap){
+Tiling.HKPenroseSandpile = function(iterations){
     generateHKTiling(iterations);
-    return makePenroseSandpile(triangles, cmap);
+    return makePenroseSandpile(triangles);
 }
 
-Tiling.HKPenroseSandpileR = function(iterations, cmap){
+Tiling.HKPenroseSandpileR = function(iterations){
     generateHKTilingR(iterations);
-    return makePenroseSandpile(triangles, cmap);
+    return makePenroseSandpile(triangles);
 }
 
 
-Tiling.HDPenroseSandpile = function(iterations, cmap){
+Tiling.HDPenroseSandpile = function(iterations){
     generateHDTiling(iterations);
-    return makePenroseSandpile(triangles, cmap);
+    return makePenroseSandpile(triangles);
 }
 
-Tiling.HDPenroseSandpileR = function(iterations, cmap){
+Tiling.HDPenroseSandpileR = function(iterations){
     generateHDTilingR(iterations);
-    return makePenroseSandpile(triangles, cmap);
+    return makePenroseSandpile(triangles);
 }
 
-Tiling.SunPenroseSandpile = function(iterations, cmap){
+Tiling.SunPenroseSandpile = function(iterations){
     generateSunTiling(iterations);
-    return makePenroseSandpile(triangles, cmap);
+    return makePenroseSandpile(triangles);
 }
 
-Tiling.SunPenroseSandpileR = function(iterations, cmap){
+Tiling.SunPenroseSandpileR = function(iterations){
     generateSunTilingR(iterations);
-    return makePenroseSandpile(triangles, cmap);
+    return makePenroseSandpile(triangles);
 }
 
-Tiling.StarPenroseSandpile = function(iterations, cmap){
+Tiling.StarPenroseSandpile = function(iterations){
     generateStarTiling(iterations);
-    return makePenroseSandpile(triangles, cmap);
+    return makePenroseSandpile(triangles);
 }
 
-Tiling.StarPenroseSandpileR = function(iterations, cmap){
+Tiling.StarPenroseSandpileR = function(iterations){
     generateStarTilingR(iterations);
-    return makePenroseSandpile(triangles, cmap);
+    return makePenroseSandpile(triangles);
 }
 
 /**************/
@@ -1317,7 +1317,7 @@ getAdjCell = function(c){
 
 //make KD prenrose tiling abelian sandpile (KD = Kite and Dart)
 //with a list of cells
-makeKDPenroseSandpile = function(data, cmap){
+makeKDPenroseSandpile = function(data){
 
     var tils = [];
     
@@ -1352,52 +1352,52 @@ makeKDPenroseSandpile = function(data, cmap){
 }
 
 
-Tiling.HKKDPenrose = function(cmap, {iterations}={}){
+Tiling.HKKDPenrose = function({iterations}={}){
     generateHKTiling(iterations);
     trianglesToKDTiling();
-    return makeKDPenroseSandpile(cells, cmap);
+    return makeKDPenroseSandpile(cells);
 }
 
-Tiling.HDKDPenrose = function(cmap, {iterations}={}){
+Tiling.HDKDPenrose = function({iterations}={}){
     generateHDTiling(iterations);
     trianglesToKDTiling();
-    return makeKDPenroseSandpile(cells, cmap);
+    return makeKDPenroseSandpile(cells);
 }
 
-Tiling.SunKDPenrose = function(cmap, {iterations}={}){
+Tiling.SunKDPenrose = function({iterations}={}){
     generateSunTiling(iterations);
     trianglesToKDTiling();
-    return makeKDPenroseSandpile(cells, cmap);
+    return makeKDPenroseSandpile(cells);
 }
 
-Tiling.StarKDPenrose = function(cmap, {iterations}={}){
+Tiling.StarKDPenrose = function({iterations}={}){
     generateStarTiling(iterations);
     trianglesToKDTiling();
-    return makeKDPenroseSandpile(cells, cmap);
+    return makeKDPenroseSandpile(cells);
 }
 
-Tiling.HKRPenrose = function(cmap, {iterations}={}){
+Tiling.HKRPenrose = function({iterations}={}){
     generateHKTilingR(iterations);
     trianglesToRTiling();
-    return makeKDPenroseSandpile(cells, cmap);
+    return makeKDPenroseSandpile(cells);
 }
 
-Tiling.HDRPenrose = function(cmap, {iterations}={}){
+Tiling.HDRPenrose = function({iterations}={}){
     generateHDTilingR(iterations);
     trianglesToRTiling();
-    return makeKDPenroseSandpile(cells, cmap);
+    return makeKDPenroseSandpile(cells);
 }
 
-Tiling.SunRPenrose = function(cmap, {iterations}={}){
+Tiling.SunRPenrose = function({iterations}={}){
     generateSunTilingR(iterations);
     trianglesToRTiling();
-    return makeKDPenroseSandpile(cells, cmap);
+    return makeKDPenroseSandpile(cells);
 }
 
-Tiling.StarRPenrose = function(cmap, {iterations}={}){
+Tiling.StarRPenrose = function({iterations}={}){
     generateStarTilingR(iterations);
     trianglesToRTiling();
-    return makeKDPenroseSandpile(cells, cmap);
+    return makeKDPenroseSandpile(cells);
 }
 
 // ################################################
