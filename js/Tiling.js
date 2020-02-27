@@ -50,7 +50,7 @@ class Tile{
 
 		this.limit = lim;
 
-		this.bounds = bounds; // bound points of the tile
+		this.bounds = bounds; // vertices of the polygon to be drawn
 		this.points = [];
 	}
 }
@@ -65,13 +65,22 @@ class Tile{
 //		references to their neighbors.
 //
 //		This class also contains the THREE.js
-//		Object displayed in the app.
+//		Objects displayed in the app.
 //
 // ################################################
 class Tiling{
 	
 	// ------------------------------------------------
-	// 	[ 2.1 ] 	TODO
+	// 	[ 2.1 ] 	The Tiling object takes in
+	//				just a list of Tile, and proceed
+	//				to translate it into a more
+	//				computable efficient representation
+	//				with arrays instead of dict.
+	//				
+	//	It builds the THREE.js object representing
+	//	the Tiling, and the THREE.js object representing
+	//	the limits of the Tiles (called the WireFrame).
+	//
 	// ------------------------------------------------
 	constructor(tiles, hide=false){
 		
@@ -80,6 +89,9 @@ class Tiling{
 		this.hide = hide;
 		
 		if(!hide){
+			
+			// Building the THREE.js main Object ------------------
+			
 			var geometry = new THREE.BufferGeometry();
 			var points = [];
 			var colors = [];
@@ -90,7 +102,7 @@ class Tiling{
 			
 			for(var i = 0; i<tiles.length; i++){
 				if(tiles[i].bounds){
-					var triangles = earcut(tiles[i].bounds);
+					var triangles = earcut(tiles[i].bounds);  // triangulation of the bounds
 					for(var index in triangles){
 						points.push(tiles[i].bounds[triangles[index]*2], tiles[i].bounds[triangles[index]*2 +1], 0);
 						colors.push(0, 255, 0);
@@ -105,11 +117,15 @@ class Tiling{
 			
 			var material = new THREE.MeshBasicMaterial( {vertexColors: THREE.VertexColors, side: THREE.DoubleSide} );
 			this.mesh = new THREE.Mesh( geometry, material );
+			
+			// The THREE.js object is built. ------------------
 
 			this.selectedIndex;
 			this.cmap = [new THREE.Color(0xffffff),
-				  new THREE.Color(0xff0000)]; // default
+						 new THREE.Color(0xff0000)]; // if you see these colors, something went wrong
 			
+			// From the idloc dictionnary, translates neighbors of each Tile from ID to
+			// Indexes in the list of Tiles.
 			for(var i = 0; i<this.tiles.length; i++){
 				this.tiles[i].id = i;
 				var new_neighbors = [];
@@ -161,7 +177,7 @@ class Tiling{
 				}
 			}
 			
-			// Centering
+			// Centering -----------------------------------------------------
 			
 			this.massCenter = [0, 0];
 			var count = 0;
@@ -339,11 +355,24 @@ class Tiling{
 		if(colorNum >= this.cmap.length){
 			colorNum = this.cmap.length-1;
 		}
-		if(colorNum < 0){
-			color = new THREE.Color(0x000000);
-		} else{
-			if(!color)
+		
+		if(!color){
+			if(colorNum >= 0){
 				color = this.cmap[colorNum];
+			} else{
+				// default
+				
+				if(tile.sand >= tile.limit){
+					// ready to topple - flashy colors
+					var flashy = ["#ff1a1a", "#ff751a", "#ffbb33", "#ffff4d", "#99ff66", "#44ff11", "#22ffaa", "#00ffff", "#0077ff",  "#0000ff"];
+					var flashyIndex = Math.min(tile.sand-tile.limit, flashy.length-1);
+					color = new THREE.Color(flashy[flashyIndex]);
+				} else {
+					// stable, grey
+					var greyScale = 1.0 - tile.sand / tile.limit;
+					color = new THREE.Color( greyScale, greyScale, greyScale );
+				}
+			}
 		}
 		for(var k in tile.points){
 			var point = tile.points[k];

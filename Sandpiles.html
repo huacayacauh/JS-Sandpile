@@ -53,7 +53,7 @@
 		<!-- ############################################################ Main Controls -->		
 		<div id="main controls" class="controlGroup">
 			<p class="groupTitle">Tiling selection</p>
-				<select id="TilingSelect">
+				<select id="TilingSelect" onchange="hideParams()">
 					<optgroup label="Regular">
 						<option value="sqTiling">Square Tiling</option>
 						<option value="hexTiling">Hexagonal Tiling</option>
@@ -91,29 +91,30 @@
 			
 
 			<!-- Tiling-specific controls -->
-			<p class="groupTitle" id="paramTitle" style="cursor:pointer" onclick="hideParams()">Parameters ▲</p>
+			<p class="groupTitle" id="paramTitle">Parameters</p>
 			<!-- Square controls -->
 			<div id="paramHide">
-				Width: 
+				<span id="p_width">
+				Width : 
 					<input type="number" id="cW" min="0" value="100" style="width: 50px;" />
+				</span>
 				
-				<span style="right:15px; position:absolute">
-				Height: 
+				<span id="p_height">
+				&nbsp; &nbsp; Height : 
 					<input type="number" id="cH" min="0" value="100" style="width: 50px;" />
-				</span>
-				<br><br>
-				<span style="right:15px;">
-				Size: 
+				<br></span> 
+				
+				<span id="p_size" style="display:none;">
+				Size : 
 					<input type="number" id="size" min="0" value="100" style="width: 50px;" />
-				</span>
+				<br></span>
 
 				<!-- Penrose controls -->
-				<div id="penroseParams" style="position:relative">
-					<br>
-					Iterations: 
-						<input type="number" style="right:5px; bottom:0px; position:absolute;" id="penroseIt" min="0" value="8"/>
-					&nbsp;
-				</div>
+				<span id="p_iterations" style="display:none;">
+				Iterations : 
+					<input type="number" style="width: 50px;" id="penroseIt" min="0" value="8"/>
+				<br></span>
+				
 			</div>
 		</div> <!-- Main controls  -->
 
@@ -206,21 +207,21 @@
 
 
 		<!-- ############################################################ Informations -->		
-		<div  id="bottomGroup"  class="controlGroup" style="height:280px; position:relative;">
+		<div  id="bottomGroup"  class="controlGroup" style="height:400px; position:relative;">
 			<p class="groupTitle">Informations</p>
 
 			<span id="tileInfo">Tile info</span>
 			  
 			<br>
-			<button id="statsButton" style="position:absolute; bottom:10px; left:10px;" onclick="show_stats()" class="btn btn-default"> Get stats </button>
+			<button id="statsButton" style="position:absolute; top:32px; right:10px;" onclick="show_stats()" class="btn btn-default"> Get stats </button>
 			<br>
 			<p id="statsInfo"></p>
 			  
-			<button id="create2" style="position:absolute; bottom:50px; right:10px;" class="btn btn-default">Download stats</button>
+			<button id="create2" style="position:absolute; bottom:10px; left:10px;" class="btn btn-default">Download stats</button>
 			<button id="create3" style="position:absolute; bottom:10px; right:10px;" class="btn btn-default">(Roundness)</button>
 			
-			<span style="position:absolute; bottom:60px; left:10px;"> Animate <br> roundness : </span>
-			<input type="checkbox" style="position:absolute; bottom:60px; left:70px;" id="roundShow" checked = "true">
+			<span style="position:absolute; bottom:50px; left:10px;"> Animate roundness : </span>
+			<input type="checkbox" style="position:absolute; bottom:52px; right:80px;" id="roundShow" checked = "true">
 			  
 			<span style="bottom:-40px;position:absolute;left:10px">2019 JS-Sandpiles, CCBY</span>
 		</div>

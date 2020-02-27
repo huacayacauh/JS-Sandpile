@@ -105,15 +105,7 @@ class App{
 //
 // ################################################
 
-var cmap = [new THREE.Color(0xffffff),
-              new THREE.Color(0xcccccc),
-              new THREE.Color(0x666666),
-              new THREE.Color(0x000000),
-              new THREE.Color(0xff1a1a),
-              new THREE.Color(0xff751a),
-              new THREE.Color(0xffbb33),
-              new THREE.Color(0xffff4d),
-              new THREE.Color(0x99ff66),];
+var cmap = []; // default
 
 var play = false;
 
@@ -412,7 +404,7 @@ async function playWithDelay() {
 }
 
 // ------------------------------------------------
-// 	[ 4.1 ] 	Either play, or pause
+// 	[ 4.2 ] 	Either play, or pause
 // ------------------------------------------------
 function playPause(elem){
 	if(play){
@@ -427,7 +419,7 @@ function playPause(elem){
 }
 
 // ------------------------------------------------
-// 	[ 4.2 ] 	Shift hue of selected tile
+// 	[ 4.3 ] 	Shift hue of selected tile
 //			
 //			Called by a routine.
 // ------------------------------------------------
@@ -445,7 +437,7 @@ function colorSelected(){
 }
 
 // ------------------------------------------------
-// 	[ 4.3 ] 	Display border of tiles.
+// 	[ 4.4 ] 	Display border of tiles.
 // ------------------------------------------------
 function enableWireFrame(elem){
 	if(currentTiling){
@@ -460,7 +452,7 @@ function enableWireFrame(elem){
 }
 
 // ------------------------------------------------
-// 	[ 4.4 ] 	Draws currentTiling on
+// 	[ 4.5 ] 	Draws currentTiling on
 //				the THREE.js Canvas.
 //
 //		App.js [ 1.0 ]

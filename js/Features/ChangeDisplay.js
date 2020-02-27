@@ -111,6 +111,8 @@ var modal = document.getElementById('colors');
 // Button that opens the modal
 var btn = document.getElementById("colorButton");
 
+var current_preset = "default";
+
 // When the user clicks on the button, open the modal 
 btn.onclick = function() {
 	
@@ -132,6 +134,8 @@ btn.onclick = function() {
 	modal.children[0].appendChild(exitModal);
 	
 	var colorInputs = []
+	
+	var default_para;
 	
 	for(var i = 0; i<cmap.length; i++){
 		var para = document.createElement("p");
@@ -162,11 +166,14 @@ btn.onclick = function() {
 		var para = document.createElement("p");
 		var node = document.createTextNode("Color " + colorTotal);
 		colorTotal ++;
+		
 		var colElement = document.createElement("input");
 		colElement.type = "color";
 		colElement.style= "display:inline; margin-left:20px";
-		colElement.value = colorInputs[colorInputs.length - 1].value;
-		
+		if(colorInputs.length > 0)
+			colElement.value = colorInputs[colorInputs.length - 1].value;
+		else
+			colElement.value = "#000000";
 		colorInputs.push(colElement);
 		
 		para.appendChild(node);
@@ -180,11 +187,14 @@ btn.onclick = function() {
 	validate.innerHTML = "Save";
 	validate.style = "bottom:20px; right:20px;position:absolute;";
 	validate.onclick = function() {
+		current_preset = preset_choice.value;
 		var newCmap = [];
-		for(var i = 0; i < colorInputs.length; i++){
-			var col = new THREE.Color(0x000000);
-			col.set(colorInputs[i].value);
-			newCmap.push(col);
+		if(preset_choice.value != "default"){
+			for(var i = 0; i < colorInputs.length; i++){
+				var col = new THREE.Color(0x000000);
+				col.set(colorInputs[i].value);
+				newCmap.push(col);
+			}
 		}
 		cmap = newCmap;
 		if(currentTiling){
@@ -205,8 +215,27 @@ btn.onclick = function() {
 	var preset_choice = document.createElement("select");
 	preset_span.style = "top:60px; right:20px;position:absolute;";
 	preset_choice.style = "display:inline";
+	preset_choice.id ="preset_choice";
 	preset_span.appendChild(preset_choice);
 	preset_choice.oninput = function() {
+		
+		if(this.value == "default" || this.value ==""){
+			// default 
+			var para = document.createElement("p");
+			var node = document.createTextNode("Greyscale while stable, flashy colors if not.");
+			para.style = "height:80px; margin-top:80px;";
+			
+			para.appendChild(node);
+			default_para = para;
+			modal.children[0].appendChild(para);
+			addColor.style = "display:none";
+		} else {
+			if(default_para){
+				modal.children[0].removeChild(default_para);
+				addColor.style = "bottom:20px;right:100px;position:absolute;";
+				default_para = null;
+			}
+		}
 		var black4_array = ["#ffffff", "#cccccc", "#666666", "#000000", "#ff1a1a", "#ff751a", "#ffbb33", "#ffff4d", "#99ff66"];
 		var black3_array = ["#ffffff", "#aaaaaa", "#000000", "#ff1a1a", "#ff9933", "#ffff4d", "#99ff66"];
 		var grey_array = ["#ffffff", "#dddddd", "#bbbbbb", "#999999", "#777777", "#555555", "#eeee00"];
@@ -240,6 +269,10 @@ btn.onclick = function() {
 			case "green":
 			selected_array = green_array;
 			break;
+			
+			default:
+			selected_array = [];
+			break;
 		}
 		
 		for(var i = 0; i < selected_array.length; i++){
@@ -261,6 +294,11 @@ btn.onclick = function() {
 	}
 	
 	// Create element for each preset we defined
+	
+	var p0 = document.createElement("option");
+	p0.value = "default";
+	p0.innerHTML = "Default";
+	preset_choice.appendChild(p0);
 	
 	var p1 = document.createElement("option");
 	p1.value = "black4";
@@ -299,6 +337,9 @@ btn.onclick = function() {
 	modal.children[0].appendChild(validate);
 	modal.children[0].appendChild(preset_span);
     modal.style.display = "block";
+	
+	document.getElementById("preset_choice").value = current_preset;
+	preset_choice.oninput();
 }
 
 // When the user clicks anywhere outside of the modal, close it
@@ -317,18 +358,18 @@ window.onclick = function(event) {
 //
 // ################################################
 
-var paramshown = true;
-
 function hideParams(){
-	if(paramshown){
-		document.getElementById("paramTitle").innerHTML ="Parameters ▼";
-		paramshown = false;
-		document.getElementById("paramHide").style="display:none";
-	} else {
-		
-		document.getElementById("paramTitle").innerHTML ="Parameters ▲";
-		paramshown = true;
-		document.getElementById("paramHide").style="display:inherit";
+	var func = document.getElementById("TilingSelect").value;
+	func = "Tiling." + func +".toString()";
+	var func_str = eval(func);
+	
+	var params = ["height", "width", "iterations", "size"];
+	for(var i=0; i<4; i++){
+		if(func_str.includes(params[i])){
+			document.getElementById("p_" + params[i]).style="display:contents";
+		} else {
+			document.getElementById("p_" + params[i]).style="display:none";
+		}
 	}
 		
 }
