@@ -52,6 +52,8 @@ class Tile{
 
 		this.bounds = bounds; // vertices of the polygon to be drawn
 		this.points = [];
+		
+		this.svg_color = "000000";
 	}
 }
 
@@ -371,6 +373,7 @@ class Tiling{
 					// stable, grey
 					var greyScale = 1.0 - tile.sand / tile.limit;
 					color = new THREE.Color( greyScale, greyScale, greyScale );
+					
 				}
 			}
 		}
@@ -378,7 +381,7 @@ class Tiling{
 			var point = tile.points[k];
 			this.mesh.geometry.attributes.color.setXYZ(point, color.r, color.g, color.b);
 		}
-
+		tile.svg_color = color.getHexString();
 		this.mesh.geometry.attributes.color.needsUpdate = true;
 	}
 

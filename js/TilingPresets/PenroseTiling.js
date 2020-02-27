@@ -1,5 +1,5 @@
 // 	#############  PENROSETILING.JS  ###############
-//	 		Authors : 	DARRGIGO Valentin
+//	 		Authors : 	DARRIGO Valentin
 // 	################################################
 // 
 // 	To help you dig into this code, the main parts

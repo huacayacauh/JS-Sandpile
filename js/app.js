@@ -1,6 +1,6 @@
 // 	###################  APP.JS  ###################
 //	 		Authors : 	FERSULA Jérémy
-//						DARRGIGO Valentin
+//						DARRIGO Valentin
 // 	################################################
 // 
 // 	To help you dig into this code, the main parts
@@ -442,10 +442,14 @@ function colorSelected(){
 function enableWireFrame(elem){
 	if(currentTiling){
 		if(currentTiling.wireFrame){
-			if(elem.checked)
+			if(elem.checked){
 				app.scene.add(currentTiling.wireFrame);
-			else
+				wireFrameEnabled = true;
+			}
+			else{
 				app.scene.remove(currentTiling.wireFrame);
+				wireFrameEnabled = false;
+			}
 		}
 	}
 		

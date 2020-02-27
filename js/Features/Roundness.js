@@ -230,7 +230,9 @@ async function makeRoundnessFile(Tiling){
 
     // If we are replacing a previously generated file we need to
     // manually revoke the object URL to avoid memory leaks.
-
+	if (textFile1 !== null) {
+      window.URL.revokeObjectURL(textFile1);
+    }
     var textFile1 = window.URL.createObjectURL(data1);
 	
 	anim_done = true;

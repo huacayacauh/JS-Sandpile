@@ -1,5 +1,6 @@
 // 	#############  IMPORTEXPORT.JS  ################
 //	 		Authors : 	FERSULA Jérémy
+//						DARRIGO Valentin
 // 	################################################
 // 
 // 	To help you dig into this code, the main parts
@@ -101,6 +102,61 @@ tillingToJson = function(sandpile){
     return textFile; 
 };
 
+tilingToSvg = function(sandpile){
+
+   
+	
+    var tiles = []
+	
+	var x_min = 0;
+	var y_min = 0;
+	var x_max = 0;
+	var y_max = 0;
+	
+	for(var i = 0; i < sandpile.tiles.length; i++){
+        var tile = sandpile.tiles[i];
+		for(var j=0; j<tile.bounds.length; j+=2){
+			if(tile.bounds[j] < x_min)
+				x_min = tile.bounds[j];
+			if(tile.bounds[j+1] < y_min)
+				y_min = tile.bounds[j+1];
+			if(tile.bounds[j] > x_max)
+				x_max = tile.bounds[j];
+			if(tile.bounds[j+1] > y_max)
+				y_max = tile.bounds[j+1];
+		}
+    }
+	
+	 var svg = ['<?xml version="1.0" standalone="no"?> \n<svg width="' + (x_max - x_min)*2 + '" height="' + (y_max-y_min)*2 + '" version="1.1" xmlns="http://www.w3.org/2000/svg">\n\n'];
+
+    for(var i = 0; i < sandpile.tiles.length; i++){
+        var tile = sandpile.tiles[i];
+		var poly = '<polygon points="';
+		for(var j=0; j<tile.bounds.length; j+=2){
+			poly += " " + (tile.bounds[j] - x_min)*2 + " " + (tile.bounds[j+1] - y_min)*2;
+		}
+		
+		if(wireFrameEnabled)
+			poly += '" stroke="black" fill="#'+tile.svg_color+'" stroke-width="1"/>\n';
+		else
+			poly += '" stroke="black" fill="#'+tile.svg_color+'" stroke-width="0"/>\n';
+		svg += poly;
+    }
+    svg += "\n</svg>";
+
+    var data = new Blob([svg], {type: 'text/plain'});
+
+    // If we are replacing a previously generated file we need to
+    // manually revoke the object URL to avoid memory leaks.
+    if (textFile !== null) {
+      window.URL.revokeObjectURL(textFile);
+    }
+
+    textFile = window.URL.createObjectURL(data);
+
+    return textFile; 
+};
+
 // ################################################
 //
 // 	[ 2.0 ] 	Tiling Download
@@ -144,12 +200,25 @@ handleDownload = function(evt){
 	link.click();
 }
 
+handleDownloadSVG = function(evt){
+    if(currentTiling === undefined) return
+    var link = document.getElementById('downloadlink');
+	var textFile = tilingToSvg(currentTiling);
+	
+	link.setAttribute('download', "Sandpile.svg");
+    link.href = textFile;
+	link.click();
+}
+
 var create = document.getElementById('create')
 var textFile = null;
 
 create.addEventListener('click', handleDownload, false);
 
 document.getElementById('files').addEventListener('change', handleFileSelect, false);
+
+var createsvg = document.getElementById('createsvg');
+createsvg.addEventListener('click', handleDownloadSVG, false);
 
 
 // ################################################
