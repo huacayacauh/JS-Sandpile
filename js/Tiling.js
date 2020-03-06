@@ -41,20 +41,68 @@
 // ################################################
 class Tile{
 	constructor(id, neighbors, bounds, lim){
-		this.id = id;
-		this.prevSand = 0; // "trick" variable to iterate the sand
-		this.sand = 0;
+		this.id = id; // unique identifier
+		this.neighbors = neighbors; // ids of adjacent tiles
+
+		this.limit = lim; // topples when sand > limit
+		this.sand = 0; // sand content
 		if(lim < 0)
 			this.sand = -1;
-		this.neighbors = neighbors; // Ids of adjacent tiles
-
-		this.limit = lim;
+		this.prevSand = 0; // "trick" variable to iterate the sand
 
 		this.bounds = bounds; // vertices of the polygon to be drawn
 		this.points = [];
 		
 		this.svg_color = "000000";
 	}
+        
+        // [1.1] homemade Tile cloning method
+        myclone(){
+                var newid=JSON.parse(JSON.stringify(this.id));
+                var newneighbors=JSON.parse(JSON.stringify(this.neighbors));
+                var newbounds=JSON.parse(JSON.stringify(this.bounds));
+                return new Tile(newid, newneighbors, newbounds, this.limit)
+        }
+        resetNeighbors(){
+                for(let i=0; i<this.neighbors.length;i++){
+                        this.neighbors[i]=undefined;
+                }
+        }
+        
+        // [1.2] geometric transformations of a tile (scale, shift, rotate)
+
+        // scale tile (all points) towards point B by factor f
+        scale(xB, yB, f){
+                // scale all points one by one with scalePoint
+                var newpoint = [];
+                for(var i=0; i<this.bounds.length; i+=2){
+                        newpoint = scalePoint(this.bounds[i], this.bounds[i+1], xB, yB, f);
+                        this.bounds[i] = newpoint[0];
+                        this.bounds[i+1] = newpoint[1];
+                }
+        }
+
+        // shift tile by vector B
+        shift(xB, yB){
+                // shift all points one by one with shiftPoint
+                var newpoint = [];
+                for(var i=0; i<this.bounds.length; i+=2){
+                        newpoint = shiftPoint(this.bounds[i], this.bounds[i+1], xB, yB);
+                        this.bounds[i] = newpoint[0];
+                        this.bounds[i+1] = newpoint[1];
+                }
+        }
+
+        // rotate tile around point B by angle a (in radian)
+        rotate(xB, yB, a){
+                // rotate all points one by one with rotatePoint
+                var newpoint = [];
+                for(var i=0; i<this.bounds.length; i+=2){
+                        newpoint = rotatePoint(this.bounds[i], this.bounds[i+1], xB, yB, a);
+                        this.bounds[i] = newpoint[0];
+                        this.bounds[i+1] = newpoint[1];
+                }
+        }
 }
 
 
