@@ -4,6 +4,5 @@ The JS-Sandpiles app is a simple JavaScript implementation of the [Abelian sandp
 
 # Install
 
-1. Clone
-2. Open ``Sandpiles.html``
-
+1. Clone.
+2. Open ``Sandpiles.html`` in a browser.
