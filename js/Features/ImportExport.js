@@ -137,7 +137,7 @@ tilingToSvg = function(sandpile){
 		}
 		
 		if(wireFrameEnabled)
-			poly += '" stroke="black" fill="#'+tile.svg_color+'" stroke-width="1"/>\n';
+			poly += '" stroke="black" fill="#'+tile.svg_color+'" stroke-width=".1"/>\n';
 		else
 			poly += '" stroke="black" fill="#'+tile.svg_color+'" stroke-width="0"/>\n';
 		svg += poly;
