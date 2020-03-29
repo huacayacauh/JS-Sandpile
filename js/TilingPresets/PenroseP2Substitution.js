@@ -2,7 +2,9 @@
 // substitution described at
 // http://tilings.math.uni-bielefeld.de/substitution/penrose-kite-dart/
 
-// CAUTION: starting from number of iterations 7, it misses some neighbor creation by the substitution
+// CAUTION a: starting from number of iterations 4, it misses some neighbor creation by the substitution
+// CAUTION b: starting from number of iterations 5, some tiles are duplicated! (related to a)
+// CAUTION: make this code easier to read? (especially the neighbors management parts)
 
 // golden number
 var phi = (1+Math.sqrt(5))/2;
@@ -26,13 +28,13 @@ Tiling.penroseP2sun = function({iterations}={}){
   }
   // scale the base tiling
   for(tile of tiles){
-    tile.scale(0,0,60);
+    tile.scale(0,0,phi**iterations);
   }
   // iterate substitution
   for(var i=0; i < iterations; i++){
     // substitute
     var newtiles = tiles.flatMap(substitutionP2);
-    // convert newtiles array to dictionnary with id as key (for convenient access)
+    // convert newtiles array to dictionary with id as key (for convenient access)
     var newtilesdict = new Map(newtiles.map(i => [id2key(i.id), i]));
     // compute map of duplicated tiles, and its inverse
     var dup = duplicatedP2(tiles); // id -> idkey
@@ -122,18 +124,18 @@ function substitutionP2(tile){
 
       // new dart 1
       var newdart1 = tile.myclone();
-      newdart1.resetNeighbors();
       newdart1.kite2dart();
       newdart1.id.push('dart1');
+      newdart1.resetNeighbors();
       newdart1.scale(tile.bounds[0],tile.bounds[1],1/phi);
       newdart1.rotate(tile.bounds[0],tile.bounds[1],-Math.PI/5);
       newtiles.push(newdart1);
 
       // new dart 2
       var newdart2 = tile.myclone();
-      newdart2.resetNeighbors();
       newdart2.kite2dart();
       newdart2.id.push('dart2');
+      newdart2.resetNeighbors();
       newdart2.scale(tile.bounds[0],tile.bounds[1],1/phi);
       newdart2.rotate(tile.bounds[0],tile.bounds[1],Math.PI/5);
       newtiles.push(newdart2);
@@ -152,16 +154,16 @@ function substitutionP2(tile){
 
       // new kite 1
       var newkite1 = tile.myclone();
-      newkite1.resetNeighbors();
       newkite1.dart2kite();
       newkite1.id.push('kite1');
+      newkite1.resetNeighbors();
       newkite1.scale(tile.bounds[0],tile.bounds[1],1/phi);
       newtiles.push(newkite1);
 
       // new dart 1
       var newdart1 = tile.myclone();
-      newdart1.resetNeighbors();
       newdart1.id.push('dart1');
+      newdart1.resetNeighbors();
       newdart1.scale(tile.bounds[0],tile.bounds[1],1/phi);
       newdart1.rotate(tile.bounds[0],tile.bounds[1],4*Math.PI/5);
       newdart1.shift(tile.bounds[2]-tile.bounds[0],tile.bounds[3]-tile.bounds[1]);
@@ -169,8 +171,8 @@ function substitutionP2(tile){
 
       // new dart 2
       var newdart2 = tile.myclone();
-      newdart2.resetNeighbors();
       newdart2.id.push('dart2');
+      newdart2.resetNeighbors();
       newdart2.scale(tile.bounds[0],tile.bounds[1],1/phi);
       newdart2.rotate(tile.bounds[0],tile.bounds[1],6*Math.PI/5);
       newdart2.shift(tile.bounds[6]-tile.bounds[0],tile.bounds[7]-tile.bounds[1]);
@@ -186,9 +188,9 @@ function substitutionP2(tile){
   }
 }
 
-// [1.3] return a dictionnary (map) of duplicated tiles
+// [1.3] return a dictionary (map) of duplicated tiles
 //       dup[idkey1]=idkey2 with idkey2 the main tile and idkey1 the duplicated
-//       and dup[idkey1]=unefined if tile idkey1 is not duplicated
+//       and dup[idkey1]=undefined if tile idkey1 is not duplicated
 //
 function duplicatedP2(tiles){
   // construct map
