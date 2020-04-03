@@ -10,30 +10,13 @@
 // * each subsequent string identifies the child of a parent tile (uses push method)
 // THESE IDENTIFIERS MUST BE UNIQUE
 //
-// procedure: see [1] to [TODO]
+// How to use this API? see [1] to [6]
+//
 // "side effect" = a function modifies directly the objects it receives as argument
 //
-//
-//
-//
-//
-// * construct substitution:
-//   * substitution infos (use myclone and some type to type transformation in order to keep the orientation), give the ratio
-//   * duplicate infos (+boolean to tell if there are duplicate or not)
-//   * neighborhood infos
-// * construct base tiling (as Array of tiles)
-// * iterate substitution: full scale once
-//   * sub
-//   * compute_dup
-//   * compute_neighbors
-//   * clean dup
 
 //
-// [0] toolbox
-//
-
-//
-// [0.1] convert an id array to a key (used in maps)
+// [0.1] toolbox: convert an id array to a key (used in maps)
 //
 function id2key (a){
   return JSON.stringify(a);
@@ -78,6 +61,11 @@ function id2key (a){
 //
 // [3] user provides informations on duplicated tiles
 // as 'mydupinfos' an Array of DupInfo
+//
+// indeed, it often happens that the subsitution "deborde"
+// and as a consequence, neighboring parent tiles may create twice
+// a same newtile. If your substitution is very nice and does not
+// have this issue, then simply set 'mydupinfo=[];'.
 //
 
 //
@@ -167,6 +155,9 @@ function isDup(newdup,pid,id,type){
 // * Map of newtiles (newidkey -> newtile)
 // * Map of duplicated newtiles (newidkey -> id of original)
 // no output, just return;
+//
+// remark: newtiles' neighbors are computed based on the parent's neighbors,
+// therefore it may be natural to iterate over parent tiles.
 //
 // remark: you may have used Tile.resetNeighbors() at step [2]
 //
