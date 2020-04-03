@@ -441,3 +441,27 @@ Tiling.P2sunbysubst = function({iterations}={}){
   return new Tiling(tiles);
 }
 
+//
+// [6] construct "P2 (kite-dart) Star by subst" tiling by substitution
+// 
+Tiling.P2starbysubst = function({iterations}={}){
+  var tiles = [];
+  // push base "sun" tiling
+  for(var i=0; i<5; i++){
+    // construct tiles
+    var mydart = dart.myclone();
+    mydart.id.push(i);
+    mydart.rotate(0,0,i*2*Math.PI/5);
+    // define neighbors with undefined on the boundary
+    mydart.neighbors.push(['dart',(i-1+5)%5]); // 0
+    mydart.neighbors.push(undefined); // 1
+    mydart.neighbors.push(undefined); // 2
+    mydart.neighbors.push(['dart',(i+1)%5]); // 3
+    tiles.push(mydart);
+  }
+  // call the substitution
+  tiles = substitute(iterations,tiles,phi,substitutionP2,duplicatedP2,neighborsP2);
+  // construct tiling
+  return new Tiling(tiles);
+}
+
