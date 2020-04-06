@@ -436,7 +436,14 @@ Tiling.P2sunbysubst = function({iterations}={}){
     tiles.push(mykite);
   }
   // call the substitution
-  tiles = substitute(iterations,tiles,phi,substitutionP2,duplicatedP2,neighborsP2);
+  tiles = substitute(
+    iterations,
+    tiles,
+    phi,
+    substitutionP2,
+    duplicatedP2,
+    neighborsP2
+  );
   // construct tiling
   return new Tiling(tiles);
 }
@@ -460,7 +467,14 @@ Tiling.P2starbysubst = function({iterations}={}){
     tiles.push(mydart);
   }
   // call the substitution
-  tiles = substitute(iterations,tiles,phi,substitutionP2,duplicatedP2,neighborsP2);
+  tiles = substitute(
+    iterations,
+    tiles,
+    phi,
+    substitutionP2,
+    duplicatedP2,
+    neighborsP2
+  );
   // construct tiling
   return new Tiling(tiles);
 }

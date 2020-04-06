@@ -14,6 +14,8 @@ function shiftPoint(xA, yA, xB, yB){
 
 // [1.3] rotate point A around point B by angle a (in radian)
 //       return the new coordinates for point A
+//       caution: a positive = counterclockwise
+//                a negative = clockwise
 function rotatePoint(xA, yA, xB, yB, a){
   // source: https://www.euclideanspace.com/maths/geometry/affine/aroundPoint/matrix2d/index.htm
   cosa=Math.cos(a);

@@ -32,6 +32,7 @@ function id2key (a){
 // converting (by side effect) some tile of typeX to typeY
 // at the "same position" with the "same orientation".
 // e.g. Tile.prototype.kite2dart = function(){ update id[0] and move bounds }
+// geometric point transformations provided by Utils/Geometry.js may be useful
 //
 // remark: neighbors may be left empty []
 // or set all neighbors as undefined [undefined,undefined,...,undefined]
@@ -53,6 +54,9 @@ function id2key (a){
 // depending on how you code neighbors computation:
 // * Tile.resetNeighbors()
 //
+// remark: newtiles are supposed to be scaled down by 1/ratio,
+// with ratio the value passed to substitute at step [6]
+//
 // remark: should may use "switch(tile.id[0]){...}" for the different tile types
 //
 // remark: the substitution may create duplicated tiles
@@ -62,10 +66,13 @@ function id2key (a){
 // [3] user provides informations on duplicated tiles
 // as 'mydupinfos' an Array of DupInfo
 //
-// indeed, it often happens that the subsitution "deborde"
+// indeed, it often happens that the subsitution "déborde"
 // and as a consequence, neighboring parent tiles may create twice
-// a same newtile. If your substitution is very nice and does not
+// a same newtile.
+// If your substitution is very nice and does not
 // have this issue, then simply set 'mydupinfo=[];'.
+// Otherwise init to [] and then 'mydupinfo.push(new Dupinfo(...));'
+// for each potential duplicate case.
 //
 
 //
