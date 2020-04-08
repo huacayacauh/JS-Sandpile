@@ -5,9 +5,8 @@
 // substitution described at
 // http://tilings.math.uni-bielefeld.de/substitution/penrose-rhomb/
 
-// TODO CAUTION A: starting from number of iterations 1, it misses some neighbor creation by the substitution
-// TODO CAUTION B: starting from number of iterations 2, some tiles are duplicated (related to A)
-// TODO TODO TODO : remove (lookup) and instead implement border neighbor discovery
+// TODO CAUTION A: starting from number of iterations 6, it misses some neighbor creation by the substitution
+// TODO CAUTION B: starting from number of iterations 7, some tiles are duplicated (related to A)
 
 //
 // [0] toolbox
@@ -131,6 +130,17 @@ function substitutionP3(tile){
       //
       var newtiles = [];
 
+      // check that neighbors 1 and 2 of a thin is not a thin
+      // otherwise there is a not nice overlap of new thins
+      if(  tile.neighbors[1] != undefined
+        && tile.neighbors[1][0] == 'thin'){
+        console.log("error: neighbor 1 of thin tile "+tile.id+" is thin tile "+tile.neighbors[1]);
+      }
+      if(  tile.neighbors[2] != undefined
+        && tile.neighbors[2][0] == 'thin'){
+        console.log("error: neighbor 2 of thin tile "+tile.id+" is thin tile "+tile.neighbors[2]);
+      }
+
       // new fat 1
       var newfat1 = tile.myclone();
       newfat1.thin2fat();
@@ -186,7 +196,6 @@ duplicatedP3.push(new DupInfo('thin','fat','fat1',0,'fat','fat3'));
 duplicatedP3.push(new DupInfo('thin','thin','thin1',1,'fat','thin1'));
 duplicatedP3.push(new DupInfo('thin','thin','thin2',2,'fat','thin2'));
 duplicatedP3.push(new DupInfo('thin','fat','fat2',3,'thin','fat1'));
-duplicatedP3.push(new DupInfo('thin','thin','thin2',2,'thin','thin1'));
 
 //
 // [4] fill neighbors informations in P3 newtiles (by side effect)
@@ -275,6 +284,11 @@ function neighborsP3(tiles,tilesdict,newtiles,newtilesdict,newdup){
               }
           }
         }
+        // (from non-adjacent side)
+        else if(tile.neighbors[1] != undefined
+             && tile.neighbors[1][0] == 'thin'){
+          setNeighbor(newtilesdict,tile.id,'fat2','fat',3,tile.neighbors[1],'thin2','thin');
+        }
         else{
           setNeighborUndefined(newtilesdict,tile.id,'fat2','fat',3);
         }
@@ -303,6 +317,11 @@ function neighborsP3(tiles,tilesdict,newtiles,newtilesdict,newdup){
                   setNeighborUndefined(newtilesdict,tile.id,'fat3','fat',0);
                 }
             }
+          }
+          // (from non-adjacent side)
+          else if(tile.neighbors[2] != undefined
+               && tile.neighbors[2][0] == 'thin'){
+            setNeighbor(newtilesdict,tile.id,'fat3','fat',0,tile.neighbors[2],'thin1','thin');
           }
           else{
             setNeighborUndefined(newtilesdict,tile.id,'fat3','fat',0);
@@ -338,7 +357,7 @@ function neighborsP3(tiles,tilesdict,newtiles,newtilesdict,newdup){
               setNeighbor(newtilesdict,tile.id,'thin1','thin',0,tile.neighbors[1],'thin2','thin');
           }
         }
-        // (lookup)
+        // (from non-adjacent side)
         else if(tile.neighbors[0] != undefined
              && tile.neighbors[0][0] == 'fat'){
           setNeighbor(newtilesdict,tile.id,'thin1','thin',0,tile.neighbors[0],'thin2','thin');
@@ -395,7 +414,7 @@ function neighborsP3(tiles,tilesdict,newtiles,newtilesdict,newdup){
                 setNeighbor(newtilesdict,tile.id,'thin2','thin',3,tile.neighbors[2],'thin1','thin');
             }
           }
-          // (lookup)
+          // (from non-adjacent side)
           else if(tile.neighbors[3] != undefined
                && tile.neighbors[3][0] == 'fat'){
             setNeighbor(newtilesdict,tile.id,'thin2','thin',3,tile.neighbors[3],'thin1','thin');
@@ -443,6 +462,11 @@ function neighborsP3(tiles,tilesdict,newtiles,newtilesdict,newdup){
               case 'thin':
                 setNeighbor(newtilesdict,tile.id,'fat1','fat',2,tile.neighbors[0],'thin2','thin');
             }
+          }
+          // (from non-adjacent side)
+          else if(tile.neighbors[3] != undefined
+               && tile.neighbors[3][0] == 'thin'){
+            setNeighbor(newtilesdict,tile.id,'fat1','fat',2,tile.neighbors[3],'fat2','fat');
           }
           else{
             setNeighborUndefined(newtilesdict,tile.id,'fat1','fat',2);
@@ -511,6 +535,11 @@ function neighborsP3(tiles,tilesdict,newtiles,newtilesdict,newdup){
                 setNeighbor(newtilesdict,tile.id,'fat2','fat',1,tile.neighbors[3],'thin1','thin');
             }
           }
+          // (from non-adjacent side)
+          else if(tile.neighbors[0] != undefined
+               && tile.neighbors[0][0] == 'thin'){
+            setNeighbor(newtilesdict,tile.id,'fat2','fat',1,tile.neighbors[0],'fat1','fat');
+          }
           else{
             setNeighborUndefined(newtilesdict,tile.id,'fat2','fat',1);
           }
@@ -546,6 +575,7 @@ function neighborsP3(tiles,tilesdict,newtiles,newtilesdict,newdup){
                 setNeighbor(newtilesdict,tile.id,'thin1','thin',2,tile.neighbors[1],'fat1','fat');
                 break;
               case 'thin':
+                console.log("error (neighborsP3): neighbor 1 of thin tile "+tile.id+" is thin tile "+tile.neighbors[1]);
                 setNeighbor(newtilesdict,tile.id,'thin1','thin',2,tile.neighbors[1],'fat2','fat');
             }
           }
@@ -561,6 +591,11 @@ function neighborsP3(tiles,tilesdict,newtiles,newtilesdict,newdup){
               case 'thin':
                 setNeighbor(newtilesdict,tile.id,'thin1','thin',3,tile.neighbors[1],'thin1','thin');
             }
+          }
+          // (from non-adjacent side)
+          else if(tile.neighbors[2] != undefined
+               && tile.neighbors[2][0] == 'fat'){
+            setNeighbor(newtilesdict,tile.id,'thin1','thin',3,tile.neighbors[2],'fat3','fat');
           }
           else{
             setNeighborUndefined(newtilesdict,tile.id,'thin1','thin',3);
@@ -581,6 +616,11 @@ function neighborsP3(tiles,tilesdict,newtiles,newtilesdict,newdup){
                 setNeighbor(newtilesdict,tile.id,'thin2','thin',0,tile.neighbors[2],'thin2','thin');
             }
           }
+          // (from non-adjacent side)
+          else if(tile.neighbors[1] != undefined
+               && tile.neighbors[1][0] == 'fat'){
+            setNeighbor(newtilesdict,tile.id,'thin2','thin',0,tile.neighbors[1],'fat2','fat');
+          }
           else{
             setNeighborUndefined(newtilesdict,tile.id,'thin2','thin',0);
           }
@@ -591,6 +631,7 @@ function neighborsP3(tiles,tilesdict,newtiles,newtilesdict,newdup){
                 setNeighbor(newtilesdict,tile.id,'thin2','thin',1,tile.neighbors[2],'fat1','fat');
                 break;
               case 'thin':
+                console.log("error (neighborsP3): neighbor 2 of thin tile "+tile.id+" is thin tile "+tile.neighbors[2]);
                 setNeighbor(newtilesdict,tile.id,'thin2','thin',1,tile.neighbors[2],'fat1','fat');
             }
           }
@@ -618,11 +659,20 @@ function neighborsP3(tiles,tilesdict,newtiles,newtilesdict,newdup){
 }
 
 //
-// [6] construct "P3 (rhomb) Star by subst" tiling by substitution
+// [6] use default neighbors2bounds
+//
+var neighbors2boundsP3 = new Map();
+neighbors2boundsP3.set('fat',default_neighbors2bounds(4));
+neighbors2boundsP3.set('thin',default_neighbors2bounds(4));
+
+// [7] TODO what is a base thombus tiling ? fat with origin inside/outside ? with thin around ?
+
+//
+// [7] construct "P3 (rhomb) Star by subst" tiling by substitution
 // 
 Tiling.P3starbysubst = function({iterations}={}){
   var tiles = [];
-  // push base "sun" tiling
+  // push base "star" tiling
   for(var i=0; i<5; i++){
     // construct tiles
     var myfat = fat.myclone();
@@ -642,11 +692,51 @@ Tiling.P3starbysubst = function({iterations}={}){
     phi,
     substitutionP3,
     duplicatedP3,
-    neighborsP3
+    neighborsP3,
+    neighbors2boundsP3
   );
   // construct tiling
   return new Tiling(tiles);
 }
 
-// TODO [6] Sun
-
+//
+// [7] construct "P3 (rhomb) Sun by subst" tiling by substitution
+// 
+Tiling.P3sunbysubst = function({iterations}={}){
+  var tiles = [];
+  // push base "sun" tiling
+  for(var i=0; i<5; i++){
+    // construct tiles
+    var myfat = fat.myclone();
+    myfat.id.push(i);
+    myfat.rotate(0,0,i*2*Math.PI/5);
+    var mythin = thin.myclone();
+    mythin.id.push(i);
+    mythin.rotate(0,0,Math.PI);
+    mythin.shift(0,2*Math.cos(2*Math.PI/5)+1);
+    mythin.rotate(0,0,(i*2+1)*Math.PI/5);
+    // define neighbors with undefined on the boundary
+    myfat.neighbors.push(['fat',(i-1+5)%5]); // 0
+    myfat.neighbors.push(['thin',(i-1+5)%5]); // 1
+    myfat.neighbors.push(['thin',i]); // 2
+    myfat.neighbors.push(['fat',(i+1)%5]); // 3
+    mythin.neighbors.push(undefined); // 0
+    mythin.neighbors.push(['fat',(i+1)%5]); // 1
+    mythin.neighbors.push(['fat',i]); // 2
+    mythin.neighbors.push(undefined); // 3
+    tiles.push(myfat);
+    tiles.push(mythin);
+  }
+  // call the substitution
+  tiles = substitute(
+    iterations,
+    tiles,
+    phi,
+    substitutionP3,
+    duplicatedP3,
+    neighborsP3,
+    neighbors2boundsP3
+  );
+  // construct tiling
+  return new Tiling(tiles);
+}

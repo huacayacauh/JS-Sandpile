@@ -1,3 +1,5 @@
+//TODO renumber neighbors!!
+
 // This code is part of JS-Sandpile (https://github.com/huacayacauh/JS-Sandpile/)
 // CC-BY Valentin Darrigo, Jeremy Fersula, Kevin Perrot
 
@@ -418,7 +420,14 @@ function neighborsP2(tiles,tilesdict,newtiles,newtilesdict,newdup){
 }
 
 //
-// [6] construct "P2 (kite-dart) Sun by subst" tiling by substitution
+// [6] use default neighbors2bounds
+// 
+var neighbors2boundsP2 = new Map();
+neighbors2boundsP2.set('kite',default_neighbors2bounds(4));
+neighbors2boundsP2.set('dart',default_neighbors2bounds(4));
+
+//
+// [7] construct "P2 (kite-dart) Sun by subst" tiling by substitution
 // 
 Tiling.P2sunbysubst = function({iterations}={}){
   var tiles = [];
@@ -442,18 +451,19 @@ Tiling.P2sunbysubst = function({iterations}={}){
     phi,
     substitutionP2,
     duplicatedP2,
-    neighborsP2
+    neighborsP2,
+    neighbors2boundsP2
   );
   // construct tiling
   return new Tiling(tiles);
 }
 
 //
-// [6] construct "P2 (kite-dart) Star by subst" tiling by substitution
+// [7] construct "P2 (kite-dart) Star by subst" tiling by substitution
 // 
 Tiling.P2starbysubst = function({iterations}={}){
   var tiles = [];
-  // push base "sun" tiling
+  // push base "star" tiling
   for(var i=0; i<5; i++){
     // construct tiles
     var mydart = dart.myclone();
@@ -473,7 +483,8 @@ Tiling.P2starbysubst = function({iterations}={}){
     phi,
     substitutionP2,
     duplicatedP2,
-    neighborsP2
+    neighborsP2,
+    neighbors2boundsP2
   );
   // construct tiling
   return new Tiling(tiles);

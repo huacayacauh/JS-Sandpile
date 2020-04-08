@@ -10,7 +10,7 @@
 // * each subsequent string identifies the child of a parent tile (uses push method)
 // THESE IDENTIFIERS MUST BE UNIQUE
 //
-// How to use this API? see [1] to [6]
+// How to use this API? see [1] to [7]
 //
 // "side effect" = a function modifies directly the objects it receives as argument
 //
@@ -36,6 +36,7 @@ function id2key (a){
 //
 // remark: neighbors may be left empty []
 // or set all neighbors as undefined [undefined,undefined,...,undefined]
+// (remember this when creating you base tiling at step [7])
 //
 
 //
@@ -55,7 +56,7 @@ function id2key (a){
 // * Tile.resetNeighbors()
 //
 // remark: newtiles are supposed to be scaled down by 1/ratio,
-// with ratio the value passed to substitute at step [6]
+// with ratio the value passed to substitute at step [7]
 //
 // remark: should may use "switch(tile.id[0]){...}" for the different tile types
 //
@@ -269,7 +270,139 @@ function clean(tiles,dup){
 }
 
 // 
-// [6] (eventually) the substitution method to call
+// [6] (optional)
+//     findNeighbors checks if non-neighboring tiles have neighborhing children,
+//     in time O(n log n) with n the number of undefined neighbors
+//     (hoping that javascript Array.sort() implements quicksort)
+//
+// remark: the default correspondence is that tile.neighbors[i] corresponds to
+// segment (tile.bounds[2*i],tile.bounds[2*i+1]) -- (tile.bounds[2*i+2 %_],tile.bounds[2*i+3 %_]).
+// If this is not the case in user's implementation,
+// then user will provide a correspondance method (see [6.2] and [7])
+// 
+// remark: it is expected that tile.bounds.length = 2*tile.neighbors.length
+//
+// remark: this takes into account rounding error in coordinates computation,
+// up to a distance between two points (expected to be identical) less than:
+var p_error=0.001;
+
+//
+// [6.1] toolbox
+// 
+
+// segment (Array of 4 coordinates + tile idkey + neighbor index) to key
+// id2key(tile.id) and neighbor index added otherwise segments may have identical keys
+function segment2key (a){
+  return JSON.stringify(a);
+}
+
+// datastructure associated to some tile's segment:
+// * tile id
+// * neighbors' index
+function TileSegment(id,nindex){
+  this.id=id;
+  this.nindex=nindex;
+}
+
+//
+// [6.2] neighbors' index to bounds' indices correspondence, for each tile type,
+//       in order to fill the second par of the Map:
+//       'type' -> Array of neighbors.length Arrays of four indices
+//       (these latter corresponding to bounds)
+//
+// default one: tile.neighbors[i] corresponds to
+// segment (tile.bounds[2*i],tile.bounds[2*i+1]) -- (tile.bounds[2*i+2 %_],tile.bounds[2*i+3 %_])
+// may be constructed via the method below, as it depends on input:
+// * number of neighbors
+function default_neighbors2bounds(n){
+  var n2b_array = [];
+  for(let i=0; i<n; i++){
+    n2b_array.push([2*i,2*i+1,(2*i+2)%(2*n),(2*i+3)%(2*n)]);
+  }
+  return n2b_array;
+}
+
+//
+// [6.3] findneighbors
+//
+// input:
+// * Array of tiles
+// * Map of tiles (idkey -> tile)
+// * neighbors2bounds (n2b) is a Map
+//   tile 'type' -> Array of neighbors.length Arrays of four indices
+//
+function findNeighbors(tiles,tilesdict,n2b){
+  // construct
+  // * segments = list of segments (Array of 4 coordinates + tile idkey + neighbor index)
+  //   for undefined neighbors
+  // * segmentsMap = segmentkey -> tile id, neighbors' index
+  var segments = [];
+  var segmentsMap = new Map();
+  tiles.forEach(function(tile){
+    for(let i=0; i<tile.neighbors.length; i++){
+      if(tile.neighbors[i] == undefined){
+        // found an undefined neighbor
+        // caution: segment points need to be ordered (up to p_error)
+        //          so that [x,y,x',y']=[x',y',x,y].
+        //          smallest x first, and if x ~equal then smallest y first
+        //          
+        let segment = [];
+        let x1 = tile.bounds[n2b.get(tile.id[0])[i][0]];
+        let y1 = tile.bounds[n2b.get(tile.id[0])[i][1]];
+        let x2 = tile.bounds[n2b.get(tile.id[0])[i][2]];
+        let y2 = tile.bounds[n2b.get(tile.id[0])[i][3]];
+        if( x2-x1>=p_error || (Math.abs(x2-x1)<p_error && y2-y1>=p_error) ){
+          // normal order
+          segment.push(x1);
+          segment.push(y1);
+          segment.push(x2);
+          segment.push(y2);
+        }
+        else{
+          // reverse order
+          segment.push(x2);
+          segment.push(y2);
+          segment.push(x1);
+          segment.push(y1);
+        }
+        // something unique for segment2key...
+        segment.push(id2key(tile.id));
+        segment.push(i);
+        // add to datastructures
+        segments.push(segment);
+        segmentsMap.set(segment2key(segment),new TileSegment(tile.id,i));
+      }
+    }
+  });
+  // sort the list of segments lexicographicaly
+  // takes into account rounding errors (up to p_error)
+  segments.sort(function(s1,s2){
+    for(let i=0; i<s1.length-2; i++){ // -2 to exclude idkey and index
+      if(Math.abs(s1[i]-s2[i])>=p_error){return s1[i]-s2[i];}
+    }
+    return 0;
+  });
+  // check if consecutive elements are identical => new neighbors!
+  // (hypothesis: no three consecutive elements are identical)
+  for(let i=0; i<segments.length-1; i++){
+    // check if points are identical (up to p_error)
+    if(  distance(segments[i][0],segments[i][1],segments[i+1][0],segments[i+1][1])<p_error
+      && distance(segments[i][2],segments[i][3],segments[i+1][2],segments[i+1][3])<p_error){
+      // found two identical segments => set neighbors
+      let ts1=segmentsMap.get(segment2key(segments[i]));
+      let ts2=segmentsMap.get(segment2key(segments[i+1]));
+      tilesdict.get(id2key(ts1.id)).neighbors[ts1.nindex] = ts2.id;
+      tilesdict.get(id2key(ts2.id)).neighbors[ts2.nindex] = ts1.id;
+      // i+1 already set
+      i++;
+    }
+  }
+  // done
+  return; // side effect
+}
+
+// 
+// [7] (eventually) the substitution method to call
 //
 // at this point the user writes its Tiling.mytiling function:
 // 1. define a base tiling
@@ -297,19 +430,22 @@ function clean(tiles,dup){
 //   * mysubstitution (see [2])
 //   * mydupinfos (see [3])
 //   * myneighbors (see [4])
+//   * (optional) whether to call findNeighbors (see [6]), one of:
+//     * false
+//     * neighbors2bounds
 //   how it work? see the code below
 //
 //   3. return new Tiling(tiles);
 //
 // }
 // 
-function substitute(iterations,tiles,ratio,mysubstitution,mydupinfos,myneighbors){
+function substitute(iterations,tiles,ratio,mysubstitution,mydupinfos,myneighbors,findNeighbors_option=false){
   // scale the base tiling all at once
   for(tile of tiles){
     tile.scale(0,0,ratio**iterations);
   }
   // iterate substitution
-  for(var i=0; i < iterations; i++){
+  for(let i=0; i < iterations; i++){
     // substitute (scaling already done)
     var newtiles = tiles.flatMap(mysubstitution);
     // compute map of duplicated newtiles (idkey -> id)
@@ -322,6 +458,8 @@ function substitute(iterations,tiles,ratio,mysubstitution,mydupinfos,myneighbors
     myneighbors(tiles,tilesdict,newtiles,newtilesdict,newdup);
     // remove duplicated tiles
     newtiles = clean(newtiles,newdup);
+    // find neighbors from non-adjacent tiles
+    if(findNeighbors_option != false){findNeighbors(newtiles,newtilesdict,findNeighbors_option);}
     // update tiles
     tiles = newtiles;
   }
