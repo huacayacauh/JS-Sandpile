@@ -330,6 +330,8 @@ function default_neighbors2bounds(n){
 // * Map of tiles (idkey -> tile)
 // * neighbors2bounds (n2b) is a Map
 //   tile 'type' -> Array of neighbors.length Arrays of four indices
+// output:
+// * number of matching segments founds
 //
 function findNeighbors(tiles,tilesdict,n2b){
   // construct
@@ -338,10 +340,12 @@ function findNeighbors(tiles,tilesdict,n2b){
   // * segmentsMap = segmentkey -> tile id, neighbors' index
   var segments = [];
   var segmentsMap = new Map();
+  var fn = 0;
   tiles.forEach(function(tile){
     for(let i=0; i<tile.neighbors.length; i++){
       if(tile.neighbors[i] == undefined){
         // found an undefined neighbor
+        fn++;
         // caution: segment points need to be ordered (up to p_error)
         //          so that [x,y,x',y']=[x',y',x,y].
         //          smallest x first, and if x ~equal then smallest y first
@@ -391,7 +395,6 @@ function findNeighbors(tiles,tilesdict,n2b){
       // found two identical segments => set neighbors
       let ts1=segmentsMap.get(segment2key(segments[i]));
       let ts2=segmentsMap.get(segment2key(segments[i+1]));
-      console.log("findNeighbors: "+ts1.id+" is neighbor of "+ts2.id+" (sides "+ts1.nindex+","+ts2.nindex+")");
       tilesdict.get(id2key(ts1.id)).neighbors[ts1.nindex] = ts2.id;
       tilesdict.get(id2key(ts2.id)).neighbors[ts2.nindex] = ts1.id;
       // i+1 already set
@@ -399,7 +402,7 @@ function findNeighbors(tiles,tilesdict,n2b){
     }
   }
   // done
-  return; // side effect
+  return fn; // side effect
 }
 
 // 
@@ -447,22 +450,32 @@ function substitute(iterations,tiles,ratio,mysubstitution,mydupinfos,myneighbors
   }
   // iterate substitution
   for(let i=0; i < iterations; i++){
+    console.log("starting substitution "+(i+1)+"/"+iterations+"...");
     // substitute (scaling already done)
+    console.log("* create (new) tiles");
     let newtiles = tiles.flatMap(mysubstitution);
     // compute map of duplicated newtiles (idkey -> id)
+    console.log("* compute map of duplicated tiles");
     let newdup = duplicatedMap(mydupinfos,tiles);
     // convert tiles array to map with id as key (for convenient access)
     let tilesdict = new Map(tiles.map(i => [id2key(i.id), i]));
     // convert newtiles array to map with id as key (for convenient access)
     let newtilesdict = new Map(newtiles.map(i => [id2key(i.id), i]));
     // set neighbors
+    console.log("* compute neighbors (local)");
     myneighbors(tiles,tilesdict,newtiles,newtilesdict,newdup);
     // remove duplicated tiles
+    console.log("* clean duplicated tiles");
     newtiles = clean(newtiles,newdup);
     // find neighbors from non-adjacent tiles
-    if(findNeighbors_option != false){findNeighbors(newtiles,newtilesdict,findNeighbors_option);}
+    if(findNeighbors_option != false){
+      console.log("* compute neighbors (global)");
+      let fn=findNeighbors(newtiles,newtilesdict,findNeighbors_option);
+      console.log("  found "+fn);
+    }
     // update tiles
     tiles = newtiles;
+      console.log("* done");
   }
   // done
   return tiles;
