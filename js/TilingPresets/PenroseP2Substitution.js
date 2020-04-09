@@ -1,14 +1,9 @@
-//TODO renumber neighbors!!
-
 // This code is part of JS-Sandpile (https://github.com/huacayacauh/JS-Sandpile/)
 // CC-BY Valentin Darrigo, Jeremy Fersula, Kevin Perrot
 
 // Penrose P2 (kite-dart)
 // substitution described at
 // http://tilings.math.uni-bielefeld.de/substitution/penrose-kite-dart/
-
-// CAUTION A: starting from number of iterations 4, it misses some neighbor creation by the substitution
-// CAUTION B: starting from number of iterations 5, some tiles are duplicated (related to A)
 
 //
 // [0] toolbox

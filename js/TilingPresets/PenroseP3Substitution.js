@@ -5,9 +5,6 @@
 // substitution described at
 // http://tilings.math.uni-bielefeld.de/substitution/penrose-rhomb/
 
-// TODO CAUTION A: starting from number of iterations 6, it misses some neighbor creation by the substitution
-// TODO CAUTION B: starting from number of iterations 7, some tiles are duplicated (related to A)
-
 //
 // [0] toolbox
 //
