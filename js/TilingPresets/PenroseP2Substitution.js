@@ -427,7 +427,11 @@ neighbors2boundsP2.set('kite',default_neighbors2bounds(4));
 neighbors2boundsP2.set('dart',default_neighbors2bounds(4));
 
 //
-// [7] construct "P2 (kite-dart) Sun by subst" tiling by substitution
+// [7] construct base tilings and call substitute
+//
+
+//
+// [7.1] construct "P2 (kite-dart) Sun by subst" tiling by substitution
 // 
 Tiling.P2sunbysubst = function({iterations}={}){
   var tiles = [];
@@ -459,7 +463,7 @@ Tiling.P2sunbysubst = function({iterations}={}){
 }
 
 //
-// [7] construct "P2 (kite-dart) Star by subst" tiling by substitution
+// [7.2] construct "P2 (kite-dart) Star by subst" tiling by substitution
 // 
 Tiling.P2starbysubst = function({iterations}={}){
   var tiles = [];

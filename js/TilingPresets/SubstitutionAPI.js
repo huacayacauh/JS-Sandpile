@@ -391,6 +391,7 @@ function findNeighbors(tiles,tilesdict,n2b){
       // found two identical segments => set neighbors
       let ts1=segmentsMap.get(segment2key(segments[i]));
       let ts2=segmentsMap.get(segment2key(segments[i+1]));
+      console.log("findNeighbors: "+ts1.id+" is neighbor of "+ts2.id+" (sides "+ts1.nindex+","+ts2.nindex+")");
       tilesdict.get(id2key(ts1.id)).neighbors[ts1.nindex] = ts2.id;
       tilesdict.get(id2key(ts2.id)).neighbors[ts2.nindex] = ts1.id;
       // i+1 already set
@@ -447,13 +448,13 @@ function substitute(iterations,tiles,ratio,mysubstitution,mydupinfos,myneighbors
   // iterate substitution
   for(let i=0; i < iterations; i++){
     // substitute (scaling already done)
-    var newtiles = tiles.flatMap(mysubstitution);
+    let newtiles = tiles.flatMap(mysubstitution);
     // compute map of duplicated newtiles (idkey -> id)
-    var newdup = duplicatedMap(mydupinfos,tiles);
+    let newdup = duplicatedMap(mydupinfos,tiles);
     // convert tiles array to map with id as key (for convenient access)
-    var tilesdict = new Map(tiles.map(i => [id2key(i.id), i]));
+    let tilesdict = new Map(tiles.map(i => [id2key(i.id), i]));
     // convert newtiles array to map with id as key (for convenient access)
-    var newtilesdict = new Map(newtiles.map(i => [id2key(i.id), i]));
+    let newtilesdict = new Map(newtiles.map(i => [id2key(i.id), i]));
     // set neighbors
     myneighbors(tiles,tilesdict,newtiles,newtilesdict,newdup);
     // remove duplicated tiles

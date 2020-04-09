@@ -665,14 +665,16 @@ var neighbors2boundsP3 = new Map();
 neighbors2boundsP3.set('fat',default_neighbors2bounds(4));
 neighbors2boundsP3.set('thin',default_neighbors2bounds(4));
 
-// [7] TODO what is a base thombus tiling ? fat with origin inside/outside ? with thin around ?
+//
+// [7] construct base tilings and call substitute
+//
 
 //
-// [7] construct "P3 (rhomb) Star by subst" tiling by substitution
+// [7.1] construct "P3 (rhomb) Star1 by subst" tiling by substitution
 // 
-Tiling.P3starbysubst = function({iterations}={}){
+Tiling.P3star1bysubst = function({iterations}={}){
   var tiles = [];
-  // push base "star" tiling
+  // push base "star" tiling with origins inside
   for(var i=0; i<5; i++){
     // construct tiles
     var myfat = fat.myclone();
@@ -700,7 +702,40 @@ Tiling.P3starbysubst = function({iterations}={}){
 }
 
 //
-// [7] construct "P3 (rhomb) Sun by subst" tiling by substitution
+// [7.2] construct "P3 (rhomb) Star2 by subst" tiling by substitution
+// 
+Tiling.P3star2bysubst = function({iterations}={}){
+  var tiles = [];
+  // push base "star" tiling with origins outside
+  for(var i=0; i<5; i++){
+    // construct tiles
+    var myfat = fat.myclone();
+    myfat.id.push(i);
+    myfat.shift(0,-2*Math.cos(Math.PI/5));
+    myfat.rotate(0,0,Math.PI+i*2*Math.PI/5);
+    // define neighbors with undefined on the boundary
+    myfat.neighbors.push(undefined); // 0
+    myfat.neighbors.push(['fat',(i+1)%5]); // 1
+    myfat.neighbors.push(['fat',(i-1+5)%5]); // 2
+    myfat.neighbors.push(undefined); // 3
+    tiles.push(myfat);
+  }
+  // call the substitution
+  tiles = substitute(
+    iterations,
+    tiles,
+    phi,
+    substitutionP3,
+    duplicatedP3,
+    neighborsP3,
+    neighbors2boundsP3
+  );
+  // construct tiling
+  return new Tiling(tiles);
+}
+
+//
+// [7.3] construct "P3 (rhomb) Sun by subst" tiling by substitution
 // 
 Tiling.P3sunbysubst = function({iterations}={}){
   var tiles = [];
@@ -708,21 +743,21 @@ Tiling.P3sunbysubst = function({iterations}={}){
   for(var i=0; i<5; i++){
     // construct tiles
     var myfat = fat.myclone();
-    myfat.id.push(i);
+    myfat.id.push('basefat'+i); // unique!
     myfat.rotate(0,0,i*2*Math.PI/5);
     var mythin = thin.myclone();
-    mythin.id.push(i);
+    mythin.id.push('basethin'+i); // unique!
     mythin.rotate(0,0,Math.PI);
     mythin.shift(0,2*Math.cos(2*Math.PI/5)+1);
     mythin.rotate(0,0,(i*2+1)*Math.PI/5);
     // define neighbors with undefined on the boundary
-    myfat.neighbors.push(['fat',(i-1+5)%5]); // 0
-    myfat.neighbors.push(['thin',(i-1+5)%5]); // 1
-    myfat.neighbors.push(['thin',i]); // 2
-    myfat.neighbors.push(['fat',(i+1)%5]); // 3
+    myfat.neighbors.push(['fat','basefat'+(i-1+5)%5]); // 0
+    myfat.neighbors.push(['thin','basethin'+(i-1+5)%5]); // 1
+    myfat.neighbors.push(['thin','basethin'+i]); // 2
+    myfat.neighbors.push(['fat','basefat'+(i+1)%5]); // 3
     mythin.neighbors.push(undefined); // 0
-    mythin.neighbors.push(['fat',(i+1)%5]); // 1
-    mythin.neighbors.push(['fat',i]); // 2
+    mythin.neighbors.push(['fat','basefat'+(i+1)%5]); // 1
+    mythin.neighbors.push(['fat','basefat'+i]); // 2
     mythin.neighbors.push(undefined); // 3
     tiles.push(myfat);
     tiles.push(mythin);
