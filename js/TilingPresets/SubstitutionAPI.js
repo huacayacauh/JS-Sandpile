@@ -23,6 +23,17 @@ function id2key (a){
 }
 
 //
+// [0.2] toolbox: test if two id Arrays are equal
+//
+function are_id_equal(id1,id2){
+  if(id1.length != id2.length){return false;}
+  for(let i=0; i<id1.length; i++){
+    if(id1[i] != id2[i]){return false;}
+  }
+  return true;
+}
+
+//
 // [1] user creates base Tile objects (id, bounds, lim)
 //
 // remark: each one must have a unique id identifying the type
@@ -64,8 +75,9 @@ function id2key (a){
 //
 
 //
-// [3] user provides informations on duplicated tiles
-// as 'mydupinfos' an Array of DupInfo
+// [3] user provides informations on duplicated tiles as
+// 'mydupinfos' an Array of DupInfo, and
+// 'mydupinfosoriented' an Array of DupInfoOriented
 //
 // indeed, it often happens that the subsitution "déborde"
 // and as a consequence, neighboring parent tiles may create twice
@@ -103,13 +115,44 @@ function DupInfo(ptype,type,id,index,potype,oid){
 
 //
 // [3.2]
+// data structure storing informations about the potential
+// duplicated children of a parent tile,
+// when this also depends on the matching side of neighbor tile
+// (thus on the orientation of the neighboring tile)
+//
+// meaning:
+// if parent is 'ptype' and parent.neighbors['index'] is 'potype',
+// and if furthermore the former is neighbor 'oindex' of the latter,
+// then "'id' child of parent" is a duplicate of
+// "'oid' child of parent.neighbors['index']" (both are 'type')
+//
+function DupInfoOriented(ptype,type,id,index,potype,oid,oindex){
+  // type of parent
+  this.ptype=ptype;
+  // type of child potentialy duplicated
+  this.type=type; 
+  // id of the child potentialy duplicated (last part)
+  this.id=id;
+  // parent's neighbor index of the parent of original
+  this.index=index;
+  // type of parent of original
+  this.potype=potype;
+  // id of original (last part)
+  this.oid=oid;
+  // parent of original's neighbor index of the parent
+  this.oindex=oindex;
+}
+
+//
+// [3.3]
 // construct a map of duplicated tiles:
 // * idkey of duplicated -> id of original
 // from:
 // * an Array of DupInfo
 // * an Array of Tile
 //
-function duplicatedMap(dupInfos,tiles){
+function duplicatedMap(dupInfos,dupInfosOriented,tiles,tilesdict){
+  // TODO add dupInfosOriented
   // construct map
   var dup = new Map();
   // iterate tiles and fill dup
@@ -132,15 +175,34 @@ function duplicatedMap(dupInfos,tiles){
         dup.set(id2key(dupid),originalid);
       }
     }
+    // for each potential duplicated oriented
+    for(let dupInfo of dupInfosOriented){
+      // check if it is duplicated
+      if(  tile.id[0] == dupInfo.ptype
+        && tile.neighbors[dupInfo.index] != undefined
+        && tile.neighbors[dupInfo.index][0] == dupInfo.potype
+        && are_id_equal(tile.id,tilesdict(id2key(tile.neighbors[dupInfo.index])).neighbors[dupInfo.nindex])){
+        // construct duplicated tile id
+        let dupid = JSON.parse(JSON.stringify(tile.id));
+        dupid[0]=dupInfo.type;
+        dupid.push(dupInfo.id);
+        // construct original tile id
+        let originalid = JSON.parse(JSON.stringify(tile.neighbors[dupInfo.index]));
+        originalid[0]=dupInfo.type;
+        originalid.push(dupInfo.oid);
+        // add to dup map
+        dup.set(id2key(dupid),originalid);
+      }
+    }
   }
   // done
   return dup;
 }
 
 //
-// [3.3] 
+// [3.4] 
 // check if child id of pid is a duplicated tile, with
-// * dup the map of duplicated tiles
+// * newdup the map of duplicated tiles
 // * pid the parend of id (Array)
 // * id the child id (last part)
 // * type the child type
@@ -443,7 +505,7 @@ function findNeighbors(tiles,tilesdict,n2b){
 //
 // }
 // 
-function substitute(iterations,tiles,ratio,mysubstitution,mydupinfos,myneighbors,findNeighbors_option=false){
+function substitute(iterations,tiles,ratio,mysubstitution,mydupinfos,mydupinfosoriented,myneighbors,findNeighbors_option=false){
   // scale the base tiling all at once
   for(tile of tiles){
     tile.scale(0,0,ratio**iterations);
@@ -454,13 +516,13 @@ function substitute(iterations,tiles,ratio,mysubstitution,mydupinfos,myneighbors
     // substitute (scaling already done)
     console.log("* create (new) tiles");
     let newtiles = tiles.flatMap(mysubstitution);
-    // compute map of duplicated newtiles (idkey -> id)
-    console.log("* compute map of duplicated tiles");
-    let newdup = duplicatedMap(mydupinfos,tiles);
     // convert tiles array to map with id as key (for convenient access)
     let tilesdict = new Map(tiles.map(i => [id2key(i.id), i]));
     // convert newtiles array to map with id as key (for convenient access)
     let newtilesdict = new Map(newtiles.map(i => [id2key(i.id), i]));
+    // compute map of duplicated newtiles (idkey -> id)
+    console.log("* compute map of duplicated tiles");
+    let newdup = duplicatedMap(mydupinfos,mydupinfosoriented,tiles,tilesdict);
     // set neighbors
     console.log("* compute neighbors (local)");
     myneighbors(tiles,tilesdict,newtiles,newtilesdict,newdup);
