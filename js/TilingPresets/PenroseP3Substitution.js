@@ -185,6 +185,7 @@ function substitutionP3(tile){
 //
 // [3] defined duplicated tile informations P3
 //
+
 var duplicatedP3 = [];
 duplicatedP3.push(new DupInfo('fat','fat','fat3',3,'fat','fat2'));
 duplicatedP3.push(new DupInfo('fat','thin','thin2',2,'fat','thin1'));
@@ -193,6 +194,8 @@ duplicatedP3.push(new DupInfo('thin','fat','fat1',0,'fat','fat3'));
 duplicatedP3.push(new DupInfo('thin','thin','thin1',1,'fat','thin1'));
 duplicatedP3.push(new DupInfo('thin','thin','thin2',2,'fat','thin2'));
 duplicatedP3.push(new DupInfo('thin','fat','fat2',3,'thin','fat1'));
+
+var duplicatedP3oriented = [];
 
 //
 // [4] fill neighbors informations in P3 newtiles (by side effect)
@@ -691,6 +694,7 @@ Tiling.P3star1bysubst = function({iterations}={}){
     phi,
     substitutionP3,
     duplicatedP3,
+    duplicatedP3oriented,
     neighborsP3,
     neighbors2boundsP3
   );
@@ -724,6 +728,7 @@ Tiling.P3star2bysubst = function({iterations}={}){
     phi,
     substitutionP3,
     duplicatedP3,
+    duplicatedP3oriented,
     neighborsP3,
     neighbors2boundsP3
   );
@@ -766,6 +771,7 @@ Tiling.P3sunbysubst = function({iterations}={}){
     phi,
     substitutionP3,
     duplicatedP3,
+    duplicatedP3oriented,
     neighborsP3,
     neighbors2boundsP3
   );

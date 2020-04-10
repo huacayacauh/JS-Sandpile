@@ -139,11 +139,14 @@ function substitutionP2(tile){
 //
 // [3] defined duplicated tile informations P2
 //
+
 var duplicatedP2 = [];
 duplicatedP2.push(new DupInfo('kite','dart','dart2',3,'kite','dart1'));
 duplicatedP2.push(new DupInfo('dart','dart','dart1',0,'kite','dart1'));
 duplicatedP2.push(new DupInfo('dart','dart','dart2',3,'kite','dart2'));
 duplicatedP2.push(new DupInfo('dart','dart','dart2',3,'dart','dart1'));
+
+var duplicatedP2oriented = [];
 
 //
 // [4] fill neighbors informations in P2 newtiles (by side effect)
@@ -450,6 +453,7 @@ Tiling.P2sunbysubst = function({iterations}={}){
     phi,
     substitutionP2,
     duplicatedP2,
+    duplicatedP2oriented,
     neighborsP2,
     neighbors2boundsP2
   );
@@ -482,6 +486,7 @@ Tiling.P2starbysubst = function({iterations}={}){
     phi,
     substitutionP2,
     duplicatedP2,
+    duplicatedP2oriented,
     neighborsP2,
     neighbors2boundsP2
   );
