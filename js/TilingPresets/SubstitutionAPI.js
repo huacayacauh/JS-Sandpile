@@ -26,9 +26,21 @@ function id2key (a){
 // [0.2] toolbox: test if two id Arrays are equal
 //
 function are_id_equal(id1,id2){
-  if(id1.length != id2.length){return false;}
+  if(id1 == undefined && id2 == undefined){
+    console.log("warning: are_id_equal has just compared two undefined ids (returns true), that may be unexpected...");
+    return true;
+  }
+  if(( id1 == undefined && id2 != undefined)
+    || id1 != undefined && id2 == undefined){
+    return false;
+  }
+  if(id1.length != id2.length){
+    return false;
+  }
   for(let i=0; i<id1.length; i++){
-    if(id1[i] != id2[i]){return false;}
+    if(id1[i] != id2[i]){
+      return false;
+    }
   }
   return true;
 }
@@ -152,7 +164,6 @@ function DupInfoOriented(ptype,type,id,index,potype,oid,oindex){
 // * an Array of Tile
 //
 function duplicatedMap(dupInfos,dupInfosOriented,tiles,tilesdict){
-  // TODO add dupInfosOriented
   // construct map
   var dup = new Map();
   // iterate tiles and fill dup
@@ -181,7 +192,8 @@ function duplicatedMap(dupInfos,dupInfosOriented,tiles,tilesdict){
       if(  tile.id[0] == dupInfo.ptype
         && tile.neighbors[dupInfo.index] != undefined
         && tile.neighbors[dupInfo.index][0] == dupInfo.potype
-        && are_id_equal(tile.id,tilesdict(id2key(tile.neighbors[dupInfo.index])).neighbors[dupInfo.nindex])){
+        && tilesdict.get(id2key(tile.neighbors[dupInfo.index])).neighbors[dupInfo.oindex] != undefined // toto
+        && are_id_equal(tile.id,tilesdict.get(id2key(tile.neighbors[dupInfo.index])).neighbors[dupInfo.oindex])){
         // construct duplicated tile id
         let dupid = JSON.parse(JSON.stringify(tile.id));
         dupid[0]=dupInfo.type;
@@ -523,6 +535,7 @@ function substitute(iterations,tiles,ratio,mysubstitution,mydupinfos,mydupinfoso
     // compute map of duplicated newtiles (idkey -> id)
     console.log("* compute map of duplicated tiles");
     let newdup = duplicatedMap(mydupinfos,mydupinfosoriented,tiles,tilesdict);
+    console.log(newdup);
     // set neighbors
     console.log("* compute neighbors (local)");
     myneighbors(tiles,tilesdict,newtiles,newtilesdict,newdup);
