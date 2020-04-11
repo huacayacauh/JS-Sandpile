@@ -428,6 +428,11 @@ neighbors2boundsP2.set('dart',default_neighbors2bounds(4));
 // [7] construct base tilings and call substitute
 //
 
+// prepare decoration
+decorateP2 = new Map();
+decorateP2.set('kite',0);
+decorateP2.set('dart',1);
+
 //
 // [7.1] construct "P2 (kite-dart) Sun by subst" tiling by substitution
 // 
@@ -455,7 +460,8 @@ Tiling.P2sunbysubst = function({iterations}={}){
     duplicatedP2,
     duplicatedP2oriented,
     neighborsP2,
-    neighbors2boundsP2
+    neighbors2boundsP2,
+    decorateP2
   );
   // construct tiling
   return new Tiling(tiles);
@@ -488,7 +494,8 @@ Tiling.P2starbysubst = function({iterations}={}){
     duplicatedP2,
     duplicatedP2oriented,
     neighborsP2,
-    neighbors2boundsP2
+    neighbors2boundsP2,
+    decorateP2
   );
   // construct tiling
   return new Tiling(tiles);

@@ -669,6 +669,11 @@ neighbors2boundsP3.set('thin',default_neighbors2bounds(4));
 // [7] construct base tilings and call substitute
 //
 
+// prepare decoration
+decorateP3 = new Map();
+decorateP3.set('fat',0);
+decorateP3.set('thin',1);
+
 //
 // [7.1] construct "P3 (rhomb) Star1 by subst" tiling by substitution
 // 
@@ -696,7 +701,8 @@ Tiling.P3star1bysubst = function({iterations}={}){
     duplicatedP3,
     duplicatedP3oriented,
     neighborsP3,
-    neighbors2boundsP3
+    neighbors2boundsP3,
+    decorateP3
   );
   // construct tiling
   return new Tiling(tiles);
@@ -730,7 +736,8 @@ Tiling.P3star2bysubst = function({iterations}={}){
     duplicatedP3,
     duplicatedP3oriented,
     neighborsP3,
-    neighbors2boundsP3
+    neighbors2boundsP3,
+    decorateP3
   );
   // construct tiling
   return new Tiling(tiles);
@@ -773,8 +780,10 @@ Tiling.P3sunbysubst = function({iterations}={}){
     duplicatedP3,
     duplicatedP3oriented,
     neighborsP3,
-    neighbors2boundsP3
+    neighbors2boundsP3,
+    decorateP3
   );
   // construct tiling
   return new Tiling(tiles);
 }
+

@@ -640,6 +640,11 @@ neighbors2boundsA5.set('rhombus',default_neighbors2bounds(4));
 // [7] construct base tilings and call substitute
 //
 
+// prepare decoration
+decorateA5 = new Map();
+decorateA5.set('square',0);
+decorateA5.set('rhombus',1);
+
 //
 // [7.1] construct "Ammann-Beenker by subst" tiling by substitution
 // 
@@ -667,7 +672,8 @@ Tiling.A5bysubst = function({iterations}={}){
     duplicatedA5,
     duplicatedA5oriented,
     neighborsA5,
-    neighbors2boundsA5
+    neighbors2boundsA5,
+    decorateA5
   );
   // construct tiling
   return new Tiling(tiles);
