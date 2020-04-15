@@ -414,12 +414,10 @@ function findNeighbors(tiles,tilesdict,n2b){
   // * segmentsMap = segmentkey -> tile id, neighbors' index
   var segments = [];
   var segmentsMap = new Map();
-  var fn = 0;
   tiles.forEach(function(tile){
     for(let i=0; i<tile.neighbors.length; i++){
       if(tile.neighbors[i] == undefined){
         // found an undefined neighbor
-        fn++;
         // caution: segment points need to be ordered (up to p_error)
         //          so that [x,y,x',y']=[x',y',x,y].
         //          smallest x first, and if x ~equal then smallest y first
@@ -462,11 +460,13 @@ function findNeighbors(tiles,tilesdict,n2b){
   });
   // check if consecutive elements are identical => new neighbors!
   // (hypothesis: no three consecutive elements are identical)
+  var fn = 0;
   for(let i=0; i<segments.length-1; i++){
     // check if points are identical (up to p_error)
     if(  distance(segments[i][0],segments[i][1],segments[i+1][0],segments[i+1][1])<p_error
       && distance(segments[i][2],segments[i][3],segments[i+1][2],segments[i+1][3])<p_error){
       // found two identical segments => set neighbors
+      fn++;
       let ts1=segmentsMap.get(segment2key(segments[i]));
       let ts2=segmentsMap.get(segment2key(segments[i+1]));
       tilesdict.get(id2key(ts1.id)).neighbors[ts1.nindex] = ts2.id;
@@ -483,10 +483,10 @@ function findNeighbors(tiles,tilesdict,n2b){
 // [6.4] set undefined neighbors for lazy user, by side effet
 //
 function resetAllNeighbors(tiles){
-  for(let tile in tiles){
+  for(let tile of tiles){
     // guess the length of neighbors from the length of bounds
-    let n=tile.bounds/2
-    tile.neighbors=[]
+    let n=tile.bounds.length/2;
+    tile.neighbors=[];
     for(let i=0; i<n; i++){
       tile.neighbors.push(undefined);
     }
@@ -540,7 +540,7 @@ function substitute(iterations,tiles,ratio,mysubstitution,mydupinfos,mydupinfoso
   if(typeof(myneighbors)=="string"){
     // check that findNeighbors_option is set
     if(findNeighbors_option==false){
-      console.log("error: I am a program, not a wizard, please provide findNeighbors even if you are lazy.");
+      console.log("error: please provide some neighbors2bounds according to your dupinfos/dupinfosoriented, even if you are lazy.");
       return tiles;
     }
     console.log("lazy: compute base neighbors");
@@ -551,9 +551,7 @@ function substitute(iterations,tiles,ratio,mysubstitution,mydupinfos,mydupinfoso
     console.log("  found "+fn);
   }
   // scale the base tiling all at once
-  for(tile of tiles){
-    tile.scale(0,0,ratio**iterations);
-  }
+  tiles.forEach(tile => tile.scale(0,0,ratio**iterations));
   // iterate substitution
   for(let i=0; i < iterations; i++){
     console.log("starting substitution "+(i+1)+"/"+iterations+"...");
@@ -595,8 +593,7 @@ function substitute(iterations,tiles,ratio,mysubstitution,mydupinfos,mydupinfoso
     tiles.forEach(tile => tile.sand=mydecoration_option.get(tile.id[0]));
   }
   // done
+  console.log("done");
   return tiles;
 }
-
-
 
