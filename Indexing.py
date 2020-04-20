@@ -17,7 +17,7 @@ for file in files:
     for line in lines:
         if not index:
             # Look for the beginning of an indexing
-            begin = re.match("(?!\w+)\s*//(?!\w+)(\s*\[.*\d+\.\d+.*\].*|.*\[.*\d+.*\].*)", line)
+            begin = re.match("(?!\w+)\s*//(?!\s*\w)(\s*\[.*\d+\.\d+.*\].*|.*\[.*\d+.*\].*)", line)
             if begin:
                 if "Something" in begin.group(1):
                     # Don't take into account the explanations at the beginning of the files
