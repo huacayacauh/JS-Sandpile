@@ -2,6 +2,11 @@
 // CC-BY Valentin Darrigo, Jeremy Fersula, Kevin Perrot
 
 //
+// See the wiki page for a description of this API:
+// https://github.com/huacayacauh/JS-Sandpile/wiki/Substitution-API
+//
+
+//
 // [0] Substitution API
 // 
 // tile ids are arrays of strings, where:
