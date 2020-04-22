@@ -48,7 +48,7 @@ function generators_to_grid(G){
 // * S: an Array of length n giving the shifts
 // * k: an integer bounding the absolute value of indices considered
 //      for each family of hyperplane
-// Returns the list of elements [[i,j],[k1,k2,...,kp]]
+// Returns the list of elements [[i,j],[k1,k2,...,kn]]
 // with [i,j] the rhomb type and kl the index in the l-th direction
 // i.e., number of lines of type l before the intersection
 function dual2(V,S,k){
@@ -131,13 +131,13 @@ function cropn(tiles_info,xmax){
 // [5] Cut and project tilings :
 // * Penrose,
 // * Ammann-Beenker,
-// * golden octagonal,
 // * 12-fold,
+// * Golden octagonal,
 // * Rauzy
 //
 
 // [5.1] Penrose
-Tiling.Penrosecutandproject = function({size}={}){
+Tiling.PenroseCutandproject = function({size}={}){
   console.log("Generating Penrose P3 cut and project via multigrid...");
   let phi=(1+Math.sqrt(5))/2;
   // use grassmannian coordinates
@@ -164,11 +164,11 @@ Tiling.Penrosecutandproject = function({size}={}){
   console.log("* find neighbors (using findNeighbors from SubstitutionAPI)");
   resetAllNeighbors(tiles);
   let tilesdict = new Map(tiles.map(i => [id2key(i.id), i]));
-  let neighbors2boundsPenrose = new Map();
+  let neighbors2bounds = new Map();
   for(let t of combinations(Array.from(Array(5).keys()),2)){
-    neighbors2boundsPenrose.set(id2key(t),default_neighbors2bounds(4));
+    neighbors2bounds.set(id2key(t),default_neighbors2bounds(4));
   }
-  let fn=findNeighbors(tiles,tilesdict,neighbors2boundsPenrose);
+  let fn=findNeighbors(tiles,tilesdict,neighbors2bounds);
   console.log("  found "+fn);
   // decorate tiles
   console.log("* decorate tiles");
@@ -183,38 +183,205 @@ Tiling.Penrosecutandproject = function({size}={}){
   return new Tiling(tiles);
 }
 
-//TODO
+// [5.2] Ammann-Beenker
+Tiling.AmmannBeenkerCutandproject = function({size}={}){
+  console.log("Generating Ammann-Beenker cut and project via multigrid...");
+  let a=Math.sqrt(2);
+  // use grassmannian coordinates
+  // for each line: 2 coordinates of normal vector, shift, number of lines
+  console.log("* set directions and shift");
+  let ab_dir = generators_to_grid([[-1,0,1,a],[0,1,a,1]]);
+  let ab_shift = [1/2,1/2,1/2,1/2];
+  let ab_draw = ab_dir;
+  // construct tiles information
+  console.log("* compute tiles information as multigrid dual");
+  let tiles_info = dual2(ab_dir,ab_shift,size);
+  console.log("  "+tiles_info.length+" tiles");
+  // crop to the projection of the hypercude +-size^4
+  console.log("* crop to the projection of the hypercube +-size^4");
+  let tiles_info_croped = cropn(tiles_info,size);
+  console.log("  "+tiles_info_croped.length+" tiles");
+  // construct tiles
+  console.log("* compute 2d tiles");
+  let tiles = draw2(ab_draw,tiles_info_croped);
+  // find neighbors with findNeighbors from SubstitutionAPI
+  console.log("* find neighbors (using findNeighbors from SubstitutionAPI)");
+  resetAllNeighbors(tiles);
+  let tilesdict = new Map(tiles.map(i => [id2key(i.id), i]));
+  let neighbors2bounds = new Map();
+  for(let t of combinations(Array.from(Array(4).keys()),2)){
+    neighbors2bounds.set(id2key(t),default_neighbors2bounds(4));
+  }
+  let fn=findNeighbors(tiles,tilesdict,neighbors2bounds);
+  console.log("  found "+fn);
+  // decorate tiles
+  console.log("* decorate tiles");
+  let idkey_colored = [[0,2],[1,3]].map(t => id2key(t));
+  tiles.forEach(tile => {
+    if(idkey_colored.includes(tile.id[0])){
+      tile.sand=1;
+    }
+  });
+  // done
+  console.log("done");
+  return new Tiling(tiles);
+}
 
-//# définit la couleur d'un losange de côtés vi et vj
-//#def couleur(i,j): return '#9999ff' if (i,j) in [(0,1),(0,2),(1,3),(2,3)] else '#ffffff'
-//
-//# carrés bleus, losanges blancs
-//#def couleur(i,j): return '#ffffff' if (i,j) in [(0,1),(1,2),(2,3),(0,3)] else '#9999ff'
-//
-//# dodeca
-//#def couleur(i,j): return '#9999ff' if (i,j) in [(0,2),(1,3),(2,4),(3,5),(0,4),(1,5)] else '#ffffff'
-//
-//# rauzy
-//#couleur=lambda i,j: '#9999ff' if (i,j)==(0,1) else '#ccccff' if (i,j)==(1,2) else '#ffffff'
-//
+// [5.3] 12-fold
+Tiling.TwelveFoldCutandproject = function({size}={}){
+  console.log("Generating 12-fold cut and project via multigrid...");
+  let b=Math.sqrt(3);
+  // use grassmannian coordinates
+  // for each line: 2 coordinates of normal vector, shift, number of lines
+  console.log("* set directions and shift");
+  let tf_dir = generators_to_grid([[2,b,1,0,-1,-b],[0,1,b,2,b,1]]);
+  let tf_shift = [1/3,1/3,1/3,1/3,1/3,1/3];
+  let tf_draw = tf_dir;
+  // construct tiles information
+  console.log("* compute tiles information as multigrid dual");
+  let tiles_info = dual2(tf_dir,tf_shift,size);
+  console.log("  "+tiles_info.length+" tiles");
+  // crop to the projection of the hypercude +-size^6
+  console.log("* crop to the projection of the hypercube +-size^6");
+  let tiles_info_croped = cropn(tiles_info,size);
+  console.log("  "+tiles_info_croped.length+" tiles");
+  // construct tiles
+  console.log("* compute 2d tiles");
+  let tiles = draw2(tf_draw,tiles_info_croped);
+  // find neighbors with findNeighbors from SubstitutionAPI
+  console.log("* find neighbors (using findNeighbors from SubstitutionAPI)");
+  resetAllNeighbors(tiles);
+  let tilesdict = new Map(tiles.map(i => [id2key(i.id), i]));
+  let neighbors2bounds = new Map();
+  for(let t of combinations(Array.from(Array(6).keys()),2)){
+    neighbors2bounds.set(id2key(t),default_neighbors2bounds(4));
+  }
+  let fn=findNeighbors(tiles,tilesdict,neighbors2bounds);
+  console.log("  found "+fn);
+  // decorate tiles
+  console.log("* decorate tiles");
+  let idkey_colored1 = [[0,2],[1,3],[2,4],[3,5],[0,4],[1,5]].map(t => id2key(t));
+  let idkey_colored2 = [[0,3],[1,4],[2,5]].map(t => id2key(t));
+  tiles.forEach(tile => {
+    if(idkey_colored1.includes(tile.id[0])){
+      tile.sand=1;
+    }
+    else if(idkey_colored2.includes(tile.id[0])){
+      tile.sand=2;
+    }
+  });
+  // done
+  console.log("done");
+  return new Tiling(tiles);
+}
 
-//# golden octagonal
-//o=AA((1+sqrt(5))/2)
-//golden_dir=generators_to_grid([[-1,0,o,o],[0,1,o,1]])
-//golden_shift=[random() for i in range(4)]
-//
-//# beenker
-//a=AA(sqrt(2))
-//beenker_dir=generators_to_grid([[-1,0,1,a],[0,1,a,1]])
-//beenker_shift=[0.5,0.5,0.5,0.5]
-//
-//# 12-fold
-//o=AA(sqrt(3))
-//dodeca_dir=generators_to_grid([[2,o,1,0,-1,-o],[0,1,o,2,o,1]])
-//dodeca_shift=[1/3,1/3,1/3,1/3,1/3,1/3]
-//
-//# Rauzy
-//a=PolynomialRing(QQ,x)(x^3-x^2-x-1).roots(AA)[0][0]
-//rauzy_dir=generators_to_grid([[a-1,-1,0],[a^2-a-1,0,-1]])
-//rauzy_shift=[random() for i in range(3)]
-//
+// [5.4] Golden octogonal
+Tiling.GoldenOctogonalCutandproject = function({size}={}){
+  console.log("Generating Golden octogonal cut and project via multigrid...");  
+  let phi=(1+Math.sqrt(5))/2;
+  // use grassmannian coordinates
+  // for each line: 2 coordinates of normal vector, shift, number of lines
+  console.log("* set directions and shift");
+  let go_dir = generators_to_grid([[-1,0,phi,phi],[0,1,phi,1]]);
+  let go_shift = [];
+  for(let i=0; i<4; i++){
+    go_shift.push(Math.random());
+  }
+  let go_draw = go_dir;
+  // construct tiles information
+  console.log("* compute tiles information as multigrid dual");
+  let tiles_info = dual2(go_dir,go_shift,size);
+  console.log("  "+tiles_info.length+" tiles");
+  // crop to the projection of the hypercude +-size^4
+  console.log("* crop to the projection of the hypercube +-size^4");
+  let tiles_info_croped = cropn(tiles_info,size);
+  console.log("  "+tiles_info_croped.length+" tiles");
+  // construct tiles
+  console.log("* compute 2d tiles");
+  let tiles = draw2(go_draw,tiles_info_croped);
+  // find neighbors with findNeighbors from SubstitutionAPI
+  console.log("* find neighbors (using findNeighbors from SubstitutionAPI)");
+  resetAllNeighbors(tiles);
+  let tilesdict = new Map(tiles.map(i => [id2key(i.id), i]));
+  let neighbors2bounds = new Map();
+  for(let t of combinations(Array.from(Array(4).keys()),2)){
+    neighbors2bounds.set(id2key(t),default_neighbors2bounds(4));
+  }
+  let fn=findNeighbors(tiles,tilesdict,neighbors2bounds);
+  console.log("  found "+fn);
+  // decorate tiles
+  console.log("* decorate tiles");
+  let idkey_colored1 = [[0,2],[1,3]].map(t => id2key(t));
+  let idkey_colored2 = [[1,2]].map(t => id2key(t));
+  tiles.forEach(tile => {
+    if(idkey_colored1.includes(tile.id[0])){
+      tile.sand=1;
+    }
+    else if(idkey_colored2.includes(tile.id[0])){
+      tile.sand=2;
+    }
+  });
+  // done
+  console.log("done");
+  return new Tiling(tiles);
+}
+
+// [5.5] Rauzy
+Tiling.RauzyCutandproject = function({size}={}){
+  console.log("Generating Rauzy cut and project via multigrid...");  
+  let c=1.839286755214161; // the unique real root of x^3-x^2-x-1
+  // use grassmannian coordinates
+  // for each line: 2 coordinates of normal vector, shift, number of lines
+  console.log("* set directions and shift");
+
+  // BUG: the line below gives an inexact result, maybe from the approximation on c?
+  //let rauzy_dir = generators_to_grid([[c-1,-1,0],[c^2-c-1,0,-1]]);
+  // PATCH: obtained from sagemath <3
+  let rauzy_dir=[[ 0.6428717165532278, 0.2944757308436576],
+                 [-0.7659738612093146, 0.2471495806290921],
+                 [ 0,                 -0.9231474035813336]];
+
+  console.log(rauzy_dir);
+  let rauzy_shift = [];
+  for(let i=0; i<3; i++){
+    rauzy_shift.push(Math.random());
+  }
+  let rauzy_draw = rauzy_dir;
+  // construct tiles information
+  console.log("* compute tiles information as multigrid dual");
+  let tiles_info = dual2(rauzy_dir,rauzy_shift,size);
+  console.log("  "+tiles_info.length+" tiles");
+  // crop to the projection of the hypercude +-size^3
+  console.log("* crop to the projection of the hypercube +-size^3");
+  let tiles_info_croped = cropn(tiles_info,size);
+  console.log("  "+tiles_info_croped.length+" tiles");
+  // construct tiles
+  console.log("* compute 2d tiles");
+  let tiles = draw2(rauzy_draw,tiles_info_croped);
+  // find neighbors with findNeighbors from SubstitutionAPI
+  console.log("* find neighbors (using findNeighbors from SubstitutionAPI)");
+  resetAllNeighbors(tiles);
+  let tilesdict = new Map(tiles.map(i => [id2key(i.id), i]));
+  let neighbors2bounds = new Map();
+  for(let t of combinations(Array.from(Array(3).keys()),2)){
+    neighbors2bounds.set(id2key(t),default_neighbors2bounds(4));
+  }
+  let fn=findNeighbors(tiles,tilesdict,neighbors2bounds);
+  console.log("  found "+fn);
+  // decorate tiles
+  console.log("* decorate tiles");
+  let idkey_colored1 = [[0,1]].map(t => id2key(t));
+  let idkey_colored2 = [[1,2]].map(t => id2key(t));
+  tiles.forEach(tile => {
+    if(idkey_colored1.includes(tile.id[0])){
+      tile.sand=1;
+    }
+    else if(idkey_colored2.includes(tile.id[0])){
+      tile.sand=2;
+    }
+  });
+  // done
+  console.log("done");
+  return new Tiling(tiles);
+}
+
