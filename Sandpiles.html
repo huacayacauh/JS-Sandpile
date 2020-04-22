@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <head>
 	<meta charset="UTF-8">
-	<title>Sandpiles</title>
+	<title>JS-Sandpile</title>
 	<link rel="icon" href="favicon.ico" />
 	
 	<!-- ####################################################### CSS IMPORTS -->
@@ -15,7 +15,7 @@
 <body>
 	<!-- ################################################################ UPPER BAR -->
 	<header>
-		<p style="margin:0; font-size:35px; font-weight:bold;">JS-Sandpiles</p>
+		<p style="margin:0; font-size:35px; font-weight:bold;">JS-Sandpile</p>
 
 		Zoom :
 			<input type="number" id="zoomLevel" oninput="set_zoom(this)" value="100" max="9999" step="10"/>
@@ -243,7 +243,13 @@
 			<span style="position:absolute; bottom:50px; left:10px;"> Animate roundness : </span>
 			<input type="checkbox" style="position:absolute; bottom:52px; right:80px;" id="roundShow" checked = "true">
 			  
-			<span style="bottom:-40px;position:absolute;left:10px">2019 JS-Sandpiles, CCBY</span>
+            <span style="bottom:-90px;position:absolute;left:10px">
+              <img src="./css/cc-heart.png" style="height: 16px">
+              <a href="https://creativecommons.org/licenses/by/4.0/">CC-BY</a><br />
+              Valentin Darrigo<br />
+              Jeremy Fersula<br />
+              Kevin Perrot
+            </span>
 		</div>
 
 	</nav> <!-- ######################################################### End of Control bar -->		
