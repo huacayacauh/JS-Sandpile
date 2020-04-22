@@ -17,16 +17,13 @@
 	<header>
 		<p style="margin:0; font-size:35px; font-weight:bold;">JS-Sandpile</p>
 
-		Zoom :
-			<input type="number" id="zoomLevel" oninput="set_zoom(this)" value="100" max="9999" step="10"/>
-		%&emsp;
-		
+		Zoom (%) :
+			<input type="number" id="zoomLevel" style="margin-right:20px" oninput="set_zoom(this)" value="100" max="9999" step="10"/>
 		Delay (ms) :
 			<input type="number" id="delay" style="margin-right:20px" value="100" oninput="changeDelay(this);" min="0"/>
-			
-		Iterations per frame :
-			<input type="number" id="IPF" style="margin-right:40px" value="1" oninput="changeIPS(this);" min="0" max="999"/>
-			<button id="playButton" onclick="playPause(this)" class="btn btn-default" style="margin-right:40px; font-weight:bold;">Play</button>
+		Refresh rate :
+			<input type="number" id="IPF" style="margin-right:80px" value="1" oninput="changeIPS(this);" min="1" max="999"/>
+			<button id="playButton" onclick="playPause(this)" class="btn btn-default" style="margin-right:20px; font-weight:bold;">Play</button>
 			<button onclick="step()" style="margin-right:20px" class="btn btn-default">Step</button>
 			
 		<!-- <button id="stabilizeButton"  onclick="stabTiling()" class="btn btn-primary">Stabilize</button> -->
@@ -106,7 +103,7 @@
 				<!--<form id="postCustom" enctype="multipart/form-data" action="/upload/image" method="post">
 					<input type="file" id="inputCustom" accept=".png,.jpg,.jpeg,.bmp" style="display:none;" />
 				</form>-->
-			<button onclick='drawTiling()' style="margin-left:25px;" class="btn btn-default ">Make Tiling</button>
+			<button onclick='drawTiling()' style="margin-left:25px; font-weight:bold;" class="btn btn-default">Make Tiling</button>
 			<br>
 			
 
