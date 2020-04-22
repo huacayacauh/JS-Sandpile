@@ -563,6 +563,7 @@ function substitute(iterations,tiles,ratio,mysubstitution,mydupinfos,mydupinfoso
     // substitute (scaling already done)
     console.log("* create (new) tiles");
     let newtiles = tiles.flatMap(mysubstitution);
+    console.log("  "+newtiles.length+" tiles");
     // convert tiles array to map with id as key (for convenient access)
     let tilesdict = new Map(tiles.map(i => [id2key(i.id), i]));
     // convert newtiles array to map with id as key (for convenient access)
