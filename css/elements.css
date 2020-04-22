@@ -3,7 +3,7 @@ header{
 	background:#33b5e5;
 	padding:5px;
 	color:#ffffff;
-	text-align:center;
+	text-align: left;
 	right:0;
 	left:0;
 	top:0;
@@ -12,14 +12,14 @@ header{
 body{
 	margin:0;
 	background-color: #bbbbbb;
-    white-space: nowrap;
+        white-space: nowrap;
 	overflow:auto;
 }
 
 nav{
 	width: 270px;
 	position: fixed;
-	top: 110px;
+	top: 70px;
 	bottom: 10px;
 	left:10px;
 	margin: 0;
@@ -39,7 +39,7 @@ nav{
 
 .canvasDiv{
 	position: fixed;
-	top : 110px;
+	top : 70px;
 	left : 290px;
 	bottom:0;
 	right:0;
