@@ -157,8 +157,8 @@ Tiling.prototype.get_roundness = function(){
 		}
 		posX *= 2.0 / this.tiles[circle[i]].bounds.length;
 		posY *= 2.0 / this.tiles[circle[i]].bounds.length;
-		rad += (posX - this.massCenter[0])**2;
-		rad += (posY - this.massCenter[1])**2;
+		rad += (posX - this.center[0])**2;
+		rad += (posY - this.center[1])**2;
 		rad = Math.sqrt(rad);
 		if(rad > max_radius){
 			max_radius = rad;

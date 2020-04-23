@@ -10,7 +10,7 @@ Tiling.cairoPenta = function({width, height}={}){
 		}	
 	}
 
-	return new Tiling(tils);
+	return new Tiling(tils, false, true);
 }
 
 

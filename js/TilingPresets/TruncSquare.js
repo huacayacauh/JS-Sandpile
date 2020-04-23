@@ -11,7 +11,7 @@ Tiling.truncSq = function({width, height}={}){
 		}	
 	}
 
-	return new Tiling(tils);
+	return new Tiling(tils, false, true);;
 }
 
 Tile.truncSqTile = function(x, y){
@@ -31,8 +31,10 @@ Tile.truncSqTile = function(x, y){
 	bounds.push(dist*x+1, dist*y);
 	bounds.push(dist*x+1, dist*y+1);
 	bounds.push(dist*x, dist*y+1);
-				
-	return new Tile(id, neighbors, bounds, 4);
+	
+	let tile = new Tile(id, neighbors, bounds, 4);
+	tile.sand = 1;
+	return tile ;
 }
 
 

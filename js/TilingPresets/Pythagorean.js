@@ -10,7 +10,7 @@ Tiling.pythagorean = function({width, height}={}){
 		}	
 	}
 
-	return new Tiling(tils);
+	return new Tiling(tils, false, true);
 }
 
 Tile.pythBig = function(x, y){
@@ -57,6 +57,8 @@ Tile.pythSmall = function(x, y){
 	bounds.push(x_new+0.5, y_new);
 	bounds.push(x_new+0.5, y_new+0.5);
 	bounds.push(x_new, y_new+0.5);
-				
-	return new Tile(id, neighbors, bounds, 4);
+	
+	let tile = new Tile(id, neighbors, bounds, 4);
+	tile.sand = 1;
+	return tile;
 }

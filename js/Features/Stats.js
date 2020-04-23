@@ -39,79 +39,90 @@
 //
 // ################################################
 Tiling.prototype.get_stats = function(){
-	var mean = 0;
-	var std = 0;
-	
-	var populations = {};
+	var population = {};
 	for(var i = 0; i<this.tiles.length; i++){
-		mean += this.tiles[i].sand;
-		if(!populations[this.tiles[i].sand])
-			populations[this.tiles[i].sand] = 1;
+		if(!population[this.tiles[i].sand])
+			population[this.tiles[i].sand] = 1;
 		else 
-			populations[this.tiles[i].sand]++ ;
+			population[this.tiles[i].sand]++ ;
 	}
-	var len = this.tiles.length;
-	Object.keys(populations).forEach(function(key) {
-		populations[key] = populations[key]/len;
-	});
-	mean = mean / this.tiles.length;
-	for(var i = 0; i<this.tiles.length; i++){
-		std += Math.pow((this.tiles[i].sand - mean), 2);
-	}
-	std = std / this.tiles.length;
-	std = Math.sqrt(std);
 	
-	return {"Mean":mean, "Std":Math.round(std * 100000)/100000, "Population":populations};
+	return population;
 }
 
 function makeStatsFile(Tiling){
-	var arr_mean = [];
-	var arr_std = [];
-	var arr_populations = [];
+	var pops = [];
+	
 	var done = false;
+	var max_sand = 0;
 	while(!done){
 		var stat = Tiling.get_stats();
-		arr_mean.push(stat["Mean"]);
-		arr_std.push(stat["Std"]);
-		arr_populations.push(stat["Population"]);
+		pops.push(stat);
+		Object.keys(stat).forEach(function(key) {
+			if(key > max_sand)
+				max_sand = key;
+		});
 		done = Tiling.iterate();
 	}
 	Tiling.colorTiles();
 	
-	var text1 = "";
-	for(var i = 0; i<arr_mean.length; i++){
-		text1 += arr_mean[i] + " "
-	}
-	var text2	= "";
-	for(var i = 0; i<arr_std.length; i++){
-		text2 += arr_std[i] + " "
-	}
-	var text3 = "";
-	
-	for(var i = 0; i<arr_populations.length; i++){
-		Object.keys(arr_populations[i]).forEach(function(key) {
-			text3 += arr_populations[i][key] + " ";
-		});
-		text3 += "\n"
+	var text1 = "" + Tiling.tiles.length + " - " + Tiling.lastChange;
+	for(var i = 0; i<pops.length; i++){
+		for(var j=0; j<max_sand; j++){
+			if(pops[i][j] !== undefined){
+				text1 += pops[i][j] + " ";
+			} else {
+				text1 += "0 ";
+			}
+		}
+		text1 += "\n"
 	}
 	
 
     var data1 = new Blob([text1], {type: 'text/plain'});
-    var data2 = new Blob([text2], {type: 'text/plain'});
-    var data3 = new Blob([text3], {type: 'text/plain'});
 
     // If we are replacing a previously generated file we need to
     // manually revoke the object URL to avoid memory leaks.
 
+	if (textFile1 !== null) {
+      window.URL.revokeObjectURL(textFile1);
+    }
+
+
     var textFile1 = window.URL.createObjectURL(data1);
-
-    var textFile2 = window.URL.createObjectURL(data2);
-
-    var textFile3 = window.URL.createObjectURL(data3);
-
-
 	
-	return [textFile1, textFile2, textFile3]; 
+	return textFile1; 
+}
+
+// ------------------------------------------------
+// 	[ 1.1 ] 	Display various measures
+//				of the current Tiling.
+//
+// ------------------------------------------------
+function show_stats(){
+	if(currentTiling){
+		var population = currentTiling.get_stats();
+		var disp = document.getElementById("statsInfo");
+		
+		var mean = 0;
+		var std = 0;
+		for(var i=0; i<population.length; i++){
+			mean += population[i] * i
+		}
+		
+		
+		var text_stats = "Number of tiles : " + currentTiling.tiles.length + "<br>Mean : " + mean + "<br> Standard deviation : " + std + "<br> Population : <br>";
+		var jump_line = false;
+		Object.keys(population).forEach(function(key) {
+				text_stats += " " + key + " : " + population[key];
+			if(jump_line)
+				text_stats += "<br>";
+			else
+				text_stats += " - ";
+			jump_line = !jump_line;
+		});
+		disp.innerHTML = text_stats ;
+	}
 }
 
 // ################################################
@@ -126,18 +137,10 @@ handleDownloadStats = function(evt){
     if(currentTiling === undefined) return
     var link = document.getElementById('downloadlink');
 	
-	var textFiles = makeStatsFile(currentTiling);
+	var textFile = makeStatsFile(currentTiling);
 	
-	link.setAttribute('download', "Sandpile_means.txt");
-    link.href = textFiles[0];
-	link.click();
-	
-	link.setAttribute('download', "Sandpile_deviation.txt");
-	link.href = textFiles[1];
-	link.click();
-	
-	link.setAttribute('download', "Sandpile_population.txt");
-	link.href = textFiles[2];
+	link.setAttribute('download', "SandpileEvolution.txt");
+    link.href = textFile;
 	link.click();
 }
 

@@ -5,10 +5,10 @@ Tiling.sqTiling = function({width, height}={}){
 
 	for(var j = 0; j < width; j++){
 		for(var i = 0; i < height; i++){
-			tils.push(Tile.squareTile(j, i));
+			tils.push(Tile.squareTile(j, i, width, height));
 		}	
 	}
-
+	
 	return new Tiling(tils);
 }
 
@@ -44,7 +44,7 @@ Tiling.sqTilingMoore = function({width, height}={}){
 
 	for(var j = 0; j < width; j++){
 		for(var i = 0; i < height; i++){
-			tils.push(Tile.sqMooreTile(j, i));
+			tils.push(Tile.sqMooreTile(j, i, width, height));
 		}	
 	}
 
@@ -52,7 +52,7 @@ Tiling.sqTilingMoore = function({width, height}={}){
 }
 
 
-Tile.squareTile = function(x, y){
+Tile.squareTile = function(x, y, width, height){
 	// Creates the Tile in position x, y of a square Tiling
 
 	var id = [x, y];
@@ -70,10 +70,10 @@ Tile.squareTile = function(x, y){
 	neighbors.push([x, y+1]);
 	
 	var bounds = [];
-	bounds.push(x, y);
-	bounds.push(x+1, y);
-	bounds.push(x+1, y+1);
-	bounds.push(x, y+1);
+	bounds.push(x - width/2, y - height/2);
+	bounds.push(x+1 - width/2, y - height/2);
+	bounds.push(x+1 - width/2, y+1 - height/2);
+	bounds.push(x - width/2, y+1 - height/2);
 				
 	return new Tile(id, neighbors, bounds, 4);
 }
@@ -95,10 +95,10 @@ Tile.sqD2Tile = function(x, y, Max){
 	if(x==0 && y==0) neighbors = [[0, 0], [0, 0], [0, 1], [1, 0]];
 	
 	var bounds = [];
-	bounds.push(x, y);
-	bounds.push(x+1, y);
-	bounds.push(x+1, y+1);
-	bounds.push(x, y+1);
+	bounds.push(x - Max/2, y - Max/2);
+	bounds.push(x+1 - Max/2, y - Max/2);
+	bounds.push(x+1 - Max/2, y+1 - Max/2);
+	bounds.push(x - Max/2, y+1 - Max/2);
 				
 	return new Tile(id, neighbors, bounds, 4);
 }
@@ -120,15 +120,15 @@ Tile.sqD4Tile = function(x, y, Max){
 	if(x==y) neighbors.push([x, y-1]);
 	
 	var bounds = [];
-	bounds.push(x, y);
-	bounds.push(x+1, y);
-	bounds.push(x+1, y+1);
-	bounds.push(x, y+1);
+	bounds.push(x - Max/2, y - Max/2);
+	bounds.push(x+1 - Max/2, y - Max/2);
+	bounds.push(x+1 - Max/2, y+1 - Max/2);
+	bounds.push(x - Max/2, y+1 - Max/2);
 				
 	return new Tile(id, neighbors, bounds, 4);
 }
 	
-Tile.sqMooreTile = function(x, y){
+Tile.sqMooreTile = function(x, y, width, height){
 	// Creates the Tile in position x, y of a square Tiling
 
 	var id = [x, y];
@@ -146,10 +146,10 @@ Tile.sqMooreTile = function(x, y){
 	neighbors.push([x-1, y-1]);
 	
 	var bounds = [];
-	bounds.push(x, y);
-	bounds.push(x+1, y);
-	bounds.push(x+1, y+1);
-	bounds.push(x, y+1);
+	bounds.push(x - width/2, y - height/2);
+	bounds.push(x+1 - width/2, y - height/2);
+	bounds.push(x+1 - width/2, y+1 - height/2);
+	bounds.push(x - width/2, y+1 - height/2);
 				
 	return new Tile(id, neighbors, bounds, 8);
 }

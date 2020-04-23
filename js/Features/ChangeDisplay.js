@@ -69,32 +69,6 @@ $(document).on('keyup', 'input', function () {
 });
 
 
-// ------------------------------------------------
-// 	[ 1.1 ] 	Display various measures
-//				of the current Tiling.
-//
-//		See Stats.js [ 1.0 ]
-//
-// ------------------------------------------------
-function show_stats(){
-	if(currentTiling){
-		var infos = currentTiling.get_stats();
-		var info_disp = document.getElementById("statsInfo");
-		
-		var text_stats = "Number of tiles : " + currentTiling.tiles.length + "<br>Mean : " + infos["Mean"] + "<br> Standard deviation : " + infos["Std"] + "<br> Population : <br>";
-		var jump_line = false;
-		Object.keys(infos["Population"]).forEach(function(key) {
-				text_stats += " " + key + " : " + (Math.round(infos["Population"][key]*1000000)/10000).toFixed(2) + " %";
-			if(jump_line)
-				text_stats += "<br>";
-			else
-				text_stats += " - ";
-			jump_line = !jump_line;
-		});
-		info_disp.innerHTML = text_stats ;
-	}
-}
-
 
 // ################################################
 //
@@ -347,6 +321,33 @@ window.onclick = function(event) {
   if (event.target == modal) {
     modal.style.display = "none";
   }
+}
+
+
+function toSphere(){
+	if(currentTiling){
+		var tils = currentTiling.tiles;
+		var maxi=0;
+		for(var i =0; i<tils.length; i++){
+			for(var j=0; j<tils[i].bounds.length; j++){
+				if(tils[i].bounds[j] > maxi){
+					maxi = tils[i].bounds[j];
+				}
+			}
+		}
+		maxi = maxi/10;
+		for(var i =0; i<tils.length; i++){
+			for(var j=0; j<tils[i].bounds.length; j+=2){
+				var x = tils[i].bounds[j] - currentTiling.center[0];
+				var y = tils[i].bounds[j+1] - currentTiling.center[1];
+				var r = Math.atan(Math.sqrt(x*x + y*y)/maxi) +0.00000001;
+				var theta = Math.atan2(y+0.000000001, x);
+				tils[i].bounds[j] = 20*r * Math.cos(theta);
+				tils[i].bounds[j+1] = 20*r * Math.sin(theta);
+			}
+		}
+	}
+
 }
 
 

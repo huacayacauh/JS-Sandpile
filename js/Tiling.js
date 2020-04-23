@@ -132,7 +132,7 @@ class Tiling{
 	//	the limits of the Tiles (called the WireFrame).
 	//
 	// ------------------------------------------------
-	constructor(tiles, hide=false){
+	constructor(tiles, hide=false, recenter=false){
 		
 		this.tiles = tiles;
 		
@@ -229,22 +229,25 @@ class Tiling{
 			
 			// Centering -----------------------------------------------------
 			
-			this.massCenter = [0, 0];
-			var count = 0;
-			for(var i = 0; i<tiles.length; i++){
-				if(tiles[i].bounds){
-					for(var j=0; j< tiles[i].bounds.length; j+=2){
-						this.massCenter[0] += tiles[i].bounds[j];
-						this.massCenter[1] += tiles[i].bounds[j+1];
-						count++;
+			this.center = [0, 0];
+			if(recenter){
+				var count = 0;
+				for(var i = 0; i<tiles.length; i++){
+					if(tiles[i].bounds){
+						for(var j=0; j< tiles[i].bounds.length; j+=2){
+							this.center[0] += tiles[i].bounds[j];
+							this.center[1] += tiles[i].bounds[j+1];
+							count++;
+						}
 					}
 				}
+				this.center[0] /= count;
+				this.center[1] /= count;
+				
 			}
-			this.massCenter[0] /= count;
-			this.massCenter[1] /= count;
 			
-			this.mesh.position.set(-this.massCenter[0], -this.massCenter[1], 0); 
-			this.wireFrame.position.set(-this.massCenter[0], -this.massCenter[1], 0);
+			this.mesh.position.set(-this.center[0], -this.center[1], 0); 
+			this.wireFrame.position.set(-this.center[0], -this.center[1], 0);
 		}
 		
 	}

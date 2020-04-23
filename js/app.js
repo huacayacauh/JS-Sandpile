@@ -253,6 +253,8 @@ function complexOperationAdd(){
 	// Apply the selected operation, additively
 
 	if(currentTiling){
+		
+		currentTiling.lastChange = 0;
 		var operationType = document.getElementById("complexOperationValue").value;
 		var operationTimes = document.getElementById("complexOperationRepeat").valueAsNumber;
 		switch(operationType) {
@@ -294,6 +296,7 @@ function complexOperationSet(){
 	// Apply the selected operation, and set the Tiling accordingly
 
 	if(currentTiling){
+		currentTiling.lastChange = 0;
 		var operationType = document.getElementById("complexOperationValue").value;
 		var operationTimes = document.getElementById("complexOperationRepeat").valueAsNumber;
 		switch(operationType) {
@@ -342,6 +345,7 @@ function complexOperationSub(){
 	// Apply the selected operation, subtractively
 
 	if(currentTiling){
+		currentTiling.lastChange = 0;
 		var operationType = document.getElementById("complexOperationValue").value;
 		var operationTimes = document.getElementById("complexOperationRepeat").valueAsNumber;
 		switch(operationType) {
@@ -509,6 +513,47 @@ function drawTiling(){
 	render();
 }
 
+function redraw(){
+	while(app.scene.children.length > 0){
+		app.scene.remove(app.scene.children[0]);
+		console.log("cleared");
+	}
+	
+	check_stable = 0;
+	
+	cW = document.getElementById("cW").value;
+	cH = document.getElementById("cH").value;
+	
+	var size = document.getElementById("size").value;
+
+	selectedTile = null;
+	
+	currentIdentity = null;
+
+	var nbIt = document.getElementById("penroseIt").value;
+	
+	currentTiling.cmap = cmap;
+	
+	app.controls.zoomCamera();
+	app.controls.object.updateProjectionMatrix();
+
+	app.scene.add(currentTiling.mesh);
+	
+	currentTiling.colorTiles();
+	//console.log(currentTiling);
+	
+	enableWireFrame(document.getElementById("wireFrameToggle"));
+
+	playWithDelay();
+
+	var render = function () {
+		requestAnimationFrame( render );
+		app.controls.update();
+		app.renderer.render( app.scene, app.camera );
+	};
+	render();
+}
+
 // ################################################
 //
 // 	[ 5.0 ]		Misc Functions
@@ -591,6 +636,7 @@ app.renderer.domElement.addEventListener('click', function( event ) {
 			
 			switch(mouseTODO){
 				case "rmOne":
+					currentTiling.lastChange = 0;
 					currentTiling.remove(currentTiling.indexDict[face.faceIndex*3], nbTimes);
 					break;
 
@@ -605,6 +651,7 @@ app.renderer.domElement.addEventListener('click', function( event ) {
 					break;
 
 				default:
+					currentTiling.lastChange = 0;
 					currentTiling.add(currentTiling.indexDict[face.faceIndex*3], nbTimes);
 					break;
 			}
