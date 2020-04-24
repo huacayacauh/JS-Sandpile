@@ -210,8 +210,8 @@ btn.onclick = function() {
 				default_para = null;
 			}
 		}
-		var black4_array = ["#ffffff", "#cccccc", "#666666", "#000000", "#ff1a1a", "#ff751a", "#ffbb33", "#ffff4d", "#99ff66"];
-		var black3_array = ["#ffffff", "#aaaaaa", "#000000", "#ff1a1a", "#ff9933", "#ffff4d", "#99ff66"];
+		var black4_array = ["#ffffff", "#cccccc", "#666666", "#000000", "#ff1a1a", "#ff751a", "#ffbb33", "#ffff4d", "#99ff66", "#44ff11", "#22ffaa", "#00ffff", "#0077ff",  "#0000ff"];
+		var black3_array = ["#ffffff", "#aaaaaa", "#000000", "#ff1a1a", "#ff9933", "#ffff4d", "#99ff66", "#44ff11", "#22ffaa", "#00ffff", "#0077ff",  "#0000ff"];
 		var grey_array = ["#ffffff", "#dddddd", "#bbbbbb", "#999999", "#777777", "#555555", "#eeee00"];
 		var lava_array = ["#cccccc", "#888888", "#444444", "#553333", "#772222", "#aa1111", "#ff1100", "#ff8800", "#eeee00"];
 		var blue_array = ["#000055", "#000088", "#0022aa", "#0044ff", "#0099ff", "#00ccff", "#00ffff", "#aaffff", "#ffffff"];
