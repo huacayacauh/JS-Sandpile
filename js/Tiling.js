@@ -282,6 +282,11 @@ class Tiling{
 		this.colorTile(id);
 	}
 	
+	set(id, amount){
+		this.tiles[id].sand = amount;
+		this.colorTile(id);
+	}
+	
 	remove(id, amount){
 		this.tiles[id].sand -= amount;
 		if(this.tiles[id].sand < 0) this.tiles[id].sand = 0;

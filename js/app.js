@@ -653,7 +653,18 @@ function CanvasClick(event, force){
 			switch(mouseTODO){
 				case "rmOne":
 					currentTiling.lastChange = 0;
-					currentTiling.remove(lastTile, nbTimes);
+					var brush_t = zone(lastTile, document.getElementById("brushRange").value)
+					for(var k=0; k<brush_t.length; k++){
+						currentTiling.remove(brush_t[k], nbTimes);
+					}
+					break;
+				
+				case "setOne":
+					currentTiling.lastChange = 0;
+					var brush_t = zone(lastTile, document.getElementById("brushRange").value)
+					for(var k=0; k<brush_t.length; k++){
+						currentTiling.set(brush_t[k], nbTimes);
+					}
 					break;
 
 				case "select":
@@ -668,7 +679,11 @@ function CanvasClick(event, force){
 
 				default:
 					currentTiling.lastChange = 0;
-					currentTiling.add(lastTile, nbTimes);
+					// currentTiling.add(lastTile, nbTimes);
+					var brush_t = zone(lastTile, document.getElementById("brushRange").value)
+					for(var k=0; k<brush_t.length; k++){
+						currentTiling.add(brush_t[k], nbTimes);
+					}
 					break;
 			}
 
@@ -685,6 +700,17 @@ holdMouse = true;
 document.body.onmouseup = function() {
 holdMouse = false;
 
+}
+
+function zone(index, size, shared=[]){
+	if(size==0)
+		return []
+	if(!shared.includes(index))
+		shared.push(index);
+	for(var i=0; i<currentTiling.tiles[index].neighbors.length; i++){
+		zone(currentTiling.tiles[index].neighbors[i], size-1, shared);
+	}
+	return shared
 }
 
 var holdMouse = false;

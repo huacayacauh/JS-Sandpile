@@ -139,13 +139,18 @@
 		<div id="mouse controls" class="controlGroup">
 			<p class="groupTitle">Mouse controls</p>
 			<select id="mouseOperation">
-			  <option value="addOne">Add One</option>
-			  <option value="rmOne">Remove One</option>
+			  <option value="addOne">Add</option>
+			  <option value="rmOne">Remove</option>
+			  <option value="setOne">Set</option>
 			  <option value="select">Select</option>
 			</select>
 			<div id="maskMouseRepeat" style="display:inline;">
 			&nbsp;&nbsp;times&nbsp;&nbsp;
 			<input type="number" id="mouseOperationRepeat" value="1" min="0" max="999999"style="width: 70px;" />
+			</div>
+			<div>
+			  Brush size :
+			  <input type="range" min="1" max="6" value="1" step="1" id="brushRange">
 			</div>
 		</div> <!-- Mouse controls -->
 
@@ -273,6 +278,7 @@
     <script src="./js/Utils/Geometry.js"></script>
     <script src="./js/Utils/Matrix.js"></script>
     <script src="./js/Utils/Combinatorics.js"></script>
+	<script src="./js/Utils/gpu-browser.min.js"></script>
 
 	<script src="./js/Tiling.js"></script>
 
