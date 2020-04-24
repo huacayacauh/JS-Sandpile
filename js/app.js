@@ -606,8 +606,21 @@ function saveConfiguration(){
 var mouse = new THREE.Vector2(); // un Vector2 contient un attribut x et un attribut y
 var raycaster = new THREE.Raycaster(); // rayon qui va intersecter la pile de sable
 
-app.renderer.domElement.addEventListener('click', function( event ) {
+app.renderer.domElement.addEventListener('mousemove', function( event ) {
+	if(holdMouse){
+		CanvasClick(event, false);
+	}
+  }, false);
+  
 
+app.renderer.domElement.addEventListener('mousedown', function( event ) {
+	CanvasClick(event, true);
+  }, false);
+ 
+  
+function CanvasClick(event, force){
+	
+	
 	//on calcule un ration entre -1 et 1 pour chaque coordonées x et y du clique
 	//si mouse.x == -1 alors on a cliqué tout à gauche
 	//si mouse.x ==  1 alors on a cliqué tout à droite
@@ -633,17 +646,20 @@ app.renderer.domElement.addEventListener('click', function( event ) {
 			var nbTimes = document.getElementById("mouseOperationRepeat").valueAsNumber;
 
 			var mouseTODO = document.getElementById("mouseOperation").value;
-			
+			previousTile = lastTile;
+			lastTile =  currentTiling.indexDict[face.faceIndex*3];
+			if(!force && previousTile == lastTile)
+				return
 			switch(mouseTODO){
 				case "rmOne":
 					currentTiling.lastChange = 0;
-					currentTiling.remove(currentTiling.indexDict[face.faceIndex*3], nbTimes);
+					currentTiling.remove(lastTile, nbTimes);
 					break;
 
 				case "select":
 					if(currentTiling.selectedIndex)
 						currentTiling.colorTile(currentTiling.selectedIndex);
-					selectedTile = currentTiling.indexDict[face.faceIndex*3];
+					selectedTile = lastTile;
 					
 					console.log(currentTiling.tiles[selectedTile]);
 					tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentTiling.tiles[selectedTile].sand;
@@ -652,14 +668,28 @@ app.renderer.domElement.addEventListener('click', function( event ) {
 
 				default:
 					currentTiling.lastChange = 0;
-					currentTiling.add(currentTiling.indexDict[face.faceIndex*3], nbTimes);
+					currentTiling.add(lastTile, nbTimes);
 					break;
 			}
 
 		}
 	}
+}
+  
+app.renderer.domElement.onmousedown = function() {
 
-  }, false);
+holdMouse = true;
+
+}
+
+document.body.onmouseup = function() {
+holdMouse = false;
+
+}
+
+var holdMouse = false;
+var lastTile = 0;
+var previousTile = -1;
 
 // ################################################
 //
