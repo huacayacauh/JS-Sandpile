@@ -33,7 +33,7 @@
 //
 // 	[ 1.0 ] 	GUI Functions
 //
-//		Used directly by Sandpiles.html
+//		Used directly by JS-Sandpile.html
 //
 // ################################################
 function changeIPS(val){
@@ -355,7 +355,7 @@ function toSphere(){
 //
 // 	[ 3.0 ] 	Misc display Functions
 //
-//		Used directly by Sandpiles.html
+//		Used directly by JS-Sandpile.html
 //
 // ################################################
 

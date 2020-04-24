@@ -9,4 +9,4 @@ It is running here: https://huacayacauh.github.io/JS-Sandpile/
 # Local install
 
 1. Clone.
-2. Open ``Sandpiles.html`` in a browser.
+2. Open ``JS-Sandpile.html`` in a browser.
