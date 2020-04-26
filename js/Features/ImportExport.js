@@ -127,22 +127,24 @@ tilingToSvg = function(sandpile){
 		}
     }
 	
-	 var svg = ['<?xml version="1.0" standalone="no"?> \n<svg width="' + (x_max - x_min)*2 + '" height="' + (y_max-y_min)*2 + '" version="1.1" xmlns="http://www.w3.org/2000/svg">\n\n'];
+    var svg = ['<?xml version="1.0" standalone="no"?> \n<svg width="' + ((x_max - x_min)*2).toFixed(3) + '" height="' + ((y_max-y_min)*2).toFixed(3) + '" version="1.1" xmlns="http://www.w3.org/2000/svg">\n'];
+
+    if(wireFrameEnabled)
+    	svg += '<g stroke="black" stroke-width=".1">\n';
+    else
+    	svg += '<g stroke="black" stroke-width="0">\n';
 
     for(var i = 0; i < sandpile.tiles.length; i++){
         var tile = sandpile.tiles[i];
 		var poly = '<polygon points="';
 		for(var j=0; j<tile.bounds.length; j+=2){
-			poly += " " + (tile.bounds[j] - x_min)*2 + " " + (tile.bounds[j+1] - y_min)*2;
+			poly += " " + ((tile.bounds[j] - x_min)*2).toFixed(3) + " " + ((tile.bounds[j+1] - y_min)*2).toFixed(3);
 		}
-		
-		if(wireFrameEnabled)
-			poly += '" stroke="black" fill="#'+tile.svg_color+'" stroke-width=".1"/>\n';
-		else
-			poly += '" stroke="black" fill="#'+tile.svg_color+'" stroke-width="0"/>\n';
+		poly += '" fill="#'+tile.svg_color+'"/>\n';
 		svg += poly;
     }
-    svg += "\n</svg>";
+    svg += "</g>\n";
+    svg += "</svg>";
 
     var data = new Blob([svg], {type: 'text/plain'});
 
