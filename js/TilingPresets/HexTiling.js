@@ -19,15 +19,15 @@ function hexTile(x, y, z){
 	var id = [x, y, z];
 	
 	var neighbors =  [];
-	for(var i=-1; i<=1; i++){
-		for(var j=-1; j<=1; j++){
-			for(var k=-1; k<=1; k++){
-				if(i!=j && i!=k && j!=k){
-					neighbors.push([x-i, y-j, z-k]);
-				}
-			}
-		}
-	}
+	//for(var i=-1; i<=1; i++){
+	//	for(var j=-1; j<=1; j++){
+	//		for(var k=-1; k<=1; k++){
+	//			if(i!=j && i!=k && j!=k){
+	//				neighbors.push([x-i, y-j, z-k]);
+	//			}
+	//		}
+	//	}
+	//}
 	neighbors.push([x-1, y,   z+1]);
 	neighbors.push([x-1, y+1, z  ]);
 	neighbors.push([x,   y+1, z-1]);
