@@ -159,7 +159,7 @@ function substitutionP3(tile){
       // new thin 1
       var newthin1 = tile.myclone();
       newthin1.id.push('thin1');
-      newthin1.rotate(tile.bounds[0],tile.bounds[1],-6*Math.PI/10);
+      newthin1.rotate(tile.bounds[0],tile.bounds[1],-3*Math.PI/5);
       newthin1.scale(tile.bounds[0],tile.bounds[1],1/phi);
       newthin1.shift(tile.bounds[4]-tile.bounds[0],tile.bounds[5]-tile.bounds[1]);
       newtiles.push(newthin1);
@@ -167,7 +167,7 @@ function substitutionP3(tile){
       // new thin 2
       var newthin2 = tile.myclone();
       newthin2.id.push('thin2');
-      newthin2.rotate(tile.bounds[0],tile.bounds[1],6*Math.PI/10);
+      newthin2.rotate(tile.bounds[0],tile.bounds[1],3*Math.PI/5);
       newthin2.scale(tile.bounds[0],tile.bounds[1],1/phi);
       newthin2.shift(tile.bounds[4]-tile.bounds[0],tile.bounds[5]-tile.bounds[1]);
       newtiles.push(newthin2);
