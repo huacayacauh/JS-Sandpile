@@ -153,7 +153,14 @@ function tilingToTIKZ (sandpile){
         }
     }
     color_map.forEach(function (counter,color,map){
-        tikz += "\\definecolor{c"+counter+"}{HTML}{"+color+"}\n";
+        // caution: in order to avoid confusion with a white pdflatex background
+        // we replace color ffffff with eeeeee
+        if(color=="ffffff"){
+          tikz += "\\definecolor{c"+counter+"}{HTML}{eeeeee}\n";
+        }
+        else{
+          tikz += "\\definecolor{c"+counter+"}{HTML}{"+color+"}\n";
+        }
     });
     // start tikzpicture
     tikz += "\\begin{tikzpicture}";
