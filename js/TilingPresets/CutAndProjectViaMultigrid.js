@@ -114,12 +114,14 @@ function draw2(directions,tiles_info){
 }
 
 // [4]
-// Crop tiling (as tiles_info) in order to keep only tiles living
+// Crop tiling (as tiles_info) in order to keep only tiles "living"
 // within the hypercube +-xmax^n
+// where "living" is relative to the corresponding intersection point
 function cropn(tiles_info,xmax){
   tiles_info_croped = [];
   for(let tile of tiles_info){
-    let outside = tile[1].filter(coord => Math.abs(coord)>xmax);
+    // note that coord are integers
+    let outside = tile[1].filter(coord => Math.abs(coord+0.5)>xmax-1);
     if(outside.length==0){
       tiles_info_croped.push(tile);
     }
