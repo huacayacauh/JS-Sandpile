@@ -702,16 +702,29 @@ holdMouse = false;
 
 }
 
-function zone(index, size, shared=[]){
+function depth_first(index, size, shared=[]){
 	if(size==0)
 		return []
 	if(!shared.includes(index))
 		shared.push(index);
 	for(var i=0; i<currentTiling.tiles[index].neighbors.length; i++){
-		zone(currentTiling.tiles[index].neighbors[i], size-1, shared);
+		if(!shared.includes(currentTiling.tiles[index].neighbors[i]))
+			shared.push(currentTiling.tiles[index].neighbors[i]);
+	}
+	for(var i=0; i<currentTiling.tiles[index].neighbors.length; i++){
+		depth_first(currentTiling.tiles[index].neighbors[i], size-1, shared)
 	}
 	return shared
 }
+
+function zone(index, size){
+	if(size == 1){
+		return [index];
+	} else{
+		return depth_first(index, size-1);
+	}
+}
+
 
 var holdMouse = false;
 var lastTile = 0;

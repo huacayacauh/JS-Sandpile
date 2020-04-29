@@ -39,11 +39,6 @@
 //				or by measuring from the center
 //				of canvas space.
 //
-//		This section could be improved.
-//			-> Make a better center estimation
-//			-> Let the user choose or not to compute the estimated center
-//			-> Apply direclty max_stable + identity
-//
 // ################################################
 
 var bound_set = [];			// Out of the circle
@@ -62,42 +57,25 @@ Tiling.prototype.get_roundness = function(){
 	if(!init_bounds){ // Wait until a circle appear
 		round_delay = 0;
 		for(var i = 0; i<this.tiles.length; i++){
-			if(this.tiles[i].neighbors.length < this.tiles[i].limit){ // If tile on the ledge
+			if(this.tiles[i].neighbors.length < this.tiles[i].limit){ // If tile on the edge
 				if(this.tiles[i].sand != this.tiles[i].limit - 1){    // Not at the limit
-					return {"Min":0, "Max":0};											  // -> There is no circle yet
+					return {"Min":0, "Max":0};						  		// -> There is no circle yet, return
 				}
 				if(!bound_set.includes(this.tiles[i].id)){
-					bound_set.push(this.tiles[i].id);                 // This tile is both on the ledge and at the limit, add it to the bound set
+					bound_set.push(this.tiles[i].id);                 // This tile is both on the edge and at the limit, add it to the bound set
 				}
 			}
 		}
-		var one_added = true;
-		while(one_added){ // We have added the ledge, but there still are more tiles to add in order to encapsulate the circle
-			one_added = false;
-			for(var i = 0; i<this.tiles.length; i++){
-				if(!bound_set.includes(this.tiles[i].id)){ 							// if not in bounds
-					if(this.tiles[i].sand < this.tiles[i].limit){ 					// if it can be added
-						for(var j=0; j<this.tiles[i].neighbors.length; j++){ 		// check its neighbors
-							if(bound_set.includes(this.tiles[i].neighbors[j].id)){ 	// if it should be added
-								bound_set.push(this.tiles[i].id); 					// add it
-								one_added = true; 									// keep adding until there are no more tiles to add
-								break;
-							}
-						}
-					}
-				}
-			}
-		}
-		// leftovers
+		// We have added the edge, but there still are more tiles to add in order to encapsulate the circle
 		var added_tiles = [];
 		do{
 			added_tiles = [];
 			for(var i = 0; i<this.tiles.length; i++){
 				if(this.tiles[i].sand == this.tiles[i].limit-1){
-					if(!bound_set.includes(this.tiles[i].id)) {											// This tile is in the disk
+					if(!bound_set.includes(this.tiles[i].id)) {											// This tile is in the current disk, and at the limit
 						for(var j=0; j<this.tiles[i].neighbors.length; j++){
-							if(bound_set.includes(this.tiles[this.tiles[i].neighbors[j]].id)){					// This tile qualifies to be added to the bounds
-								added_tiles.push(this.tiles[i].id);											// Add it, and calculate its distance to the center of the canvas
+							if(bound_set.includes(this.tiles[this.tiles[i].neighbors[j]].id)){			// This tile qualifies to be added to the bounds
+								added_tiles.push(this.tiles[i].id);										// Add it
 								break;
 							}
 						}
@@ -109,8 +87,19 @@ Tiling.prototype.get_roundness = function(){
 			}
 		} while(added_tiles.length >0);
 		
-		
 		init_bounds = true;  	// reachable only when all bounds that are < limit are in bound_set
+		var circle = []  // Any tile that has a tile in the bound set as a neighbor and is not itself in the bound set 
+		for(var i = 0; i<bound_set.length; i++){	
+			for(var j=0; j<this.tiles[bound_set[i]].neighbors.length; j++){
+				if(!bound_set.includes(this.tiles[this.tiles[bound_set[i]].neighbors[j]].id)){		
+					if(show_round){
+						this.colorTile(bound_set[i], new THREE.Color(0xFF0000));	
+					}
+					circle.push(bound_set[i]);
+					break;
+				}
+			}
+		}
 		return; 				// next iteration, there will be circles.
 	}
 	
@@ -119,10 +108,10 @@ Tiling.prototype.get_roundness = function(){
 	var added_tiles = [];
 	for(var i = 0; i<this.tiles.length; i++){
 		if(this.tiles[i].sand == this.tiles[i].limit-1){
-			if(!bound_set.includes(this.tiles[i].id)) {											// This tile is in the disk
+			if(!bound_set.includes(this.tiles[i].id)) {												// This tile is in the current disk, and at the limit
 				for(var j=0; j<this.tiles[i].neighbors.length; j++){
-					if(bound_set.includes(this.tiles[this.tiles[i].neighbors[j]].id)){					// This tile qualifies to be added to the bounds
-						added_tiles.push(this.tiles[i].id);											// Add it, and calculate its distance to the center of the canvas
+					if(bound_set.includes(this.tiles[this.tiles[i].neighbors[j]].id)){	
+						added_tiles.push(this.tiles[i].id);											// Add it
 						break;
 					}
 				}
@@ -132,13 +121,10 @@ Tiling.prototype.get_roundness = function(){
 	for(var i = 0; i<added_tiles.length; i++){
 		bound_set.push(added_tiles[i]);			// Add the new found bounds to the bounds set
 	}
-	var circle = []
+	var circle = []  // Any tile that has a tile in the bound set as a neighbor and is not itself in the bound set 
 	for(var i = 0; i<bound_set.length; i++){	
 		for(var j=0; j<this.tiles[bound_set[i]].neighbors.length; j++){
-			if(!bound_set.includes(this.tiles[this.tiles[bound_set[i]].neighbors[j]].id)){		
-				if(show_round){
-					this.colorTile(bound_set[i], new THREE.Color(0xFF0000));	
-				}
+			if(!bound_set.includes(this.tiles[this.tiles[bound_set[i]].neighbors[j]].id)){
 				circle.push(bound_set[i]);
 				break;
 			}
@@ -147,7 +133,8 @@ Tiling.prototype.get_roundness = function(){
 	
 	var pos = this.mesh.geometry.attributes.position;
 	for(var i = 0; i<circle.length; i++){
-		this.colorTile(circle[i], new THREE.Color(0xFF0000));
+		if(show_round)
+			this.colorTile(circle[i], new THREE.Color(0xFF0000));
 		var rad = 0;
 		var posX = 0;
 		var posY = 0;
@@ -188,6 +175,7 @@ Tiling.prototype.get_roundness = function(){
 
 async function makeRoundnessFile(Tiling){
 	
+	Tiling.clear()
 	Tiling.addMaxStable();
 	if(!currentIdentity)
 		findIdentity();
@@ -199,24 +187,53 @@ async function makeRoundnessFile(Tiling){
 	var arr_max = [];
 	
 	var done = false;
+	
 	round_delay = delay;
+	
+	// Measure roundness and iterate until there is no more circle
+	var nb_it = 0;
+	var t_render = 0;
+	var t_iterate = 0;
+	var t_round = 0;
+	var temp = 0;
 	while(!done){
-		
+	
 		if(show_round){
+			temp = Date.now();
 			Tiling.colorTiles();
+			t_render += Date.now() - temp;
 		}
+		
+		temp = Date.now();
 		var stat = Tiling.get_roundness();
+		t_round += Date.now() - temp;
+		
 		if(stat != null){
 			arr_min.push(stat["Min"]);
 			arr_max.push(stat["Max"]);
 		}
-		
+		temp = Date.now();
 		done = Tiling.iterate();
+		t_iterate += Date.now() - temp;
+		
+		nb_it++;
+		if(nb_it%100 ==0){
+			console.log("Iteration :", nb_it, "Circles :", stat);
+			console.log("Time elapsed :")
+			console.log("Render :", t_render, "Iterate :", t_iterate, "Roundness :", t_round);
+			t_render = 0;
+			t_iterate = 0;
+			t_round = 0;
+			
+		}
+		
 		if(show_round){
 			await sleep(round_delay);
 		}
 	}
 	Tiling.colorTiles();
+	
+	// Make the file
 	
 	bound_set = [];
     init_bounds = false;

@@ -147,9 +147,20 @@
 			&nbsp;&nbsp;times&nbsp;&nbsp;
 			<input type="number" id="mouseOperationRepeat" value="1" min="0" max="999999"style="width: 70px;" />
 			</div>
-			<div>
-			  Brush size :
-			  <input type="range" min="1" max="6" value="1" step="1" id="brushRange">
+			<br><br>
+			<div style="display:flex;">
+			  Brush size : 
+			  <input type="range" min="1" max="8" value="1" step="1" id="brushRange" style="width:150px;margin-left:10px;" list="steplist">
+			  <datalist id="steplist">
+				<option>1</option>
+				<option>2</option>
+				<option>3</option>
+				<option>4</option>
+				<option>5</option>
+				<option>6</option>
+				<option>7</option>
+				<option>8</option>
+			</datalist>
 			</div>
 		</div> <!-- Mouse controls -->
 
