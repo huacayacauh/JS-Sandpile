@@ -88,19 +88,6 @@ Tiling.prototype.get_roundness = function(){
 		} while(added_tiles.length >0);
 		
 		init_bounds = true;  	// reachable only when all bounds that are < limit are in bound_set
-		var circle = []  // Any tile that has a tile in the bound set as a neighbor and is not itself in the bound set 
-		for(var i = 0; i<bound_set.length; i++){	
-			for(var j=0; j<this.tiles[bound_set[i]].neighbors.length; j++){
-				if(!bound_set.includes(this.tiles[this.tiles[bound_set[i]].neighbors[j]].id)){		
-					if(show_round){
-						this.colorTile(bound_set[i], new THREE.Color(0xFF0000));	
-					}
-					circle.push(bound_set[i]);
-					break;
-				}
-			}
-		}
-		return; 				// next iteration, there will be circles.
 	}
 	
 	var min_radius = Infinity;
