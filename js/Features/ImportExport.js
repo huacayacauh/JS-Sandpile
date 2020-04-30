@@ -211,7 +211,7 @@ handleFileSelect = function(evt) {
 }
 
 //cette fonction est appelé quand on clique sur le bouton create file
-handleDownload = function(evt){
+handleDownloadJSON = function(evt){
     if(currentTiling === undefined) return
     var link = document.getElementById('downloadlink');
     link.href = tillingToJson(currentTiling);
@@ -240,16 +240,16 @@ handleDownloadTIKZ = function(evt){
     link.click();
 }
 
-var create = document.getElementById('create')
-var textFile = null;
-
-create.addEventListener('click', handleDownload, false);
-
-document.getElementById('files').addEventListener('change', handleFileSelect, false);
+var createjson = document.getElementById('createjson')
+createjson.addEventListener('click', handleDownloadJSON, false);
 
 var createsvg = document.getElementById('createsvg');
 createsvg.addEventListener('click', handleDownloadSVG, false);
 
 var createtikz = document.getElementById('createtikz');
 createtikz.addEventListener('click', handleDownloadTIKZ, false);
+
+var textFile = null;
+
+document.getElementById('files').addEventListener('change', handleFileSelect, false);
 
