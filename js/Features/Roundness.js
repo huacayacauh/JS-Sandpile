@@ -252,7 +252,7 @@ async function makeRoundnessFile(Tiling){
 //
 // ################################################
 handleDownloadRoundness = async function(evt){
-	document.getElementById('create3').disabled = true;
+	document.getElementById('createRoundness').disabled = true;
 
     if(currentTiling === undefined) return
     var link = document.getElementById('downloadlink');
@@ -262,12 +262,12 @@ handleDownloadRoundness = async function(evt){
     link.href = textFile;
 	link.click();
 	
-	document.getElementById('create3').disabled = false;
+	document.getElementById('createRoundness').disabled = false;
 }
 
 
-var create3 = document.getElementById('create3');
-create3.addEventListener('click', handleDownloadRoundness, false);
+var createRoundness = document.getElementById('createRoundness');
+createRoundness.addEventListener('click', handleDownloadRoundness, false);
 
 // ################################################
 //
