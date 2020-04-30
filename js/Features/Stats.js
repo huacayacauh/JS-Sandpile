@@ -158,8 +158,8 @@ function download(filename, text) {
 }
 
 
-var create2 = document.getElementById('create2')
-create2.addEventListener('click', handleDownloadStats, false);
+var createStats = document.getElementById('createStats')
+createStats.addEventListener('click', handleDownloadStats, false);
 
 // ################################################
 //
