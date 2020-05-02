@@ -143,25 +143,24 @@ function tilingToSvg(sandpile){
 
 function tilingToTIKZ (sandpile){
     let tikz = "";
-    // construct color map (hexa colors as \definecolor{foo}{HTML}{hexa}
+    // construct color_map: sand -> svg_color
     let color_map = new Map();
-    let color_counter = 0;
     for(let tile of sandpile.tiles){
-        if(!color_map.has(tile.svg_color)){
-            color_map.set(tile.svg_color,color_counter);
-            color_counter++;
+        if(!color_map.has(tile.sand)){
+            color_map.set(tile.sand,tile.svg_color);
         }
     }
-    color_map.forEach(function (counter,color,map){
+    // define colors (hexa colors as \definecolor{foo}{HTML}{hexa})
+    for(let i of Array.from(color_map.keys()).sort()){
         // caution: in order to avoid confusion with a white pdflatex background
         // we replace color ffffff with eeeeee
-        if(color=="ffffff"){
-          tikz += "\\definecolor{c"+counter+"}{HTML}{eeeeee}\n";
+        if(color_map.get(i)=="ffffff"){
+          tikz += "\\definecolor{c"+i+"}{HTML}{eeeeee}\n";
         }
         else{
-          tikz += "\\definecolor{c"+counter+"}{HTML}{"+color+"}\n";
+          tikz += "\\definecolor{c"+i+"}{HTML}{"+color_map.get(i)+"}\n";
         }
-    });
+    }
     // start tikzpicture
     tikz += "\\begin{tikzpicture}";
     // draw tile edges?
@@ -171,7 +170,7 @@ function tilingToTIKZ (sandpile){
         tikz += "\n";
     // draw tiles
     for(let tile of sandpile.tiles){
-        let tikz_tile = "\\fill[fill=c"+ color_map.get(tile.svg_color) +"]";
+        let tikz_tile = "\\fill[fill=c"+ tile.sand +"]";
 	for(var j=0; j<tile.bounds.length; j+=2)
 	    tikz_tile += " ("+ tile.bounds[j].toFixed(3) +","+ tile.bounds[j+1].toFixed(3) +") --";
 	tikz_tile += " cycle;\n";
