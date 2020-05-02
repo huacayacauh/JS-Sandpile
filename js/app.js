@@ -195,23 +195,26 @@ function iterateTiling(){
 //		Tiling.js [ 2.4 ] [ 2.5 ]
 // ------------------------------------------------
 function findIdentity(){
-	var identity1 = currentTiling.hiddenCopy();
-	var identity2 = currentTiling.hiddenCopy();
-	identity1.clear();
-	identity2.clear();
-	console.log(identity1);
+        console.log("compute identity...");
+        console.log("* get max limit value");
 	var maxLimit = 0;
-	for(var id in currentTiling.tiles){
+	for(let id in currentTiling.tiles){
 		if(maxLimit < currentTiling.tiles[id].limit)
 			maxLimit = currentTiling.tiles[id].limit;
 	}
+        console.log("* compute (2*max-stable)^°");
+	var identity1 = currentTiling.hiddenCopy();
+	identity1.clear();
 	identity1.addEverywhere((maxLimit - 1) * 2);
-	identity2.addEverywhere((maxLimit - 1) * 2);
 	identity1.stabilize();
+        console.log("* compute ( 2*max-stable - (2*max-stable)^° )^°");
+	var identity2 = currentTiling.hiddenCopy();
+	identity2.clear();
+	identity2.addEverywhere((maxLimit - 1) * 2);
 	identity2.removeConfiguration(identity1);
-
 	identity2.stabilize();
 	
+        console.log("done");
 	currentIdentity = identity2;
 }
 
@@ -489,7 +492,11 @@ function drawTiling(){
 	
 	var command = "currentTiling = Tiling." + preset + "({height:cH, width:cW, iterations:nbIt, size:size})";
 	
+        console.log("BEGIN construct a new Tiling");
 	eval(command);
+        console.log("END construct a new Tiling");
+        console.log("INFO the current Tiling has "+currentTiling.tiles.length+" tiles:");
+        console.log(currentTiling);
 	
 	currentTiling.cmap = cmap;
 	
