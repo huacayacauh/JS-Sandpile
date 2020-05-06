@@ -1,36 +1,5 @@
-// 	#################  STATS.JS  ###################
-//	 		Authors : 	FERSULA Jérémy
-// 	################################################
-// 
-// 	To help you dig into this code, the main parts
-// 	in this file are indexed via comments.	
-//
-//		Ex:  [ 2.4 ] - Something
-//
-//	References to other parts of the app are linked
-//	via indexes.
-//
-//		### indexes a section
-//		--- indexes a sub-section
-//
-//	---
-//
-//	All relations between indexing in files can be
-// 	found on our GitHub :
-//
-// 		https://github.com/huacayacauh/JS-Sandpile
-//
-// 	---
-//
-//  This file is under CC-BY.
-//
-//	Feel free to edit it as long as you provide 
-// 	a link to its original source.
-//
-//  ################################################
-//
-//		This file could be improved.
-
+// This code is part of JS-Sandpile (https://github.com/huacayacauh/JS-Sandpile/)
+// CC-BY Valentin Darrigo, Jeremy Fersula, Kevin Perrot
 
 // ################################################
 //
@@ -160,10 +129,4 @@ function download(filename, text) {
 
 var createStats = document.getElementById('createStats')
 createStats.addEventListener('click', handleDownloadStats, false);
-
-// ################################################
-//
-// 	EOF
-//
-// ################################################
 
