@@ -22,8 +22,10 @@
 			<input type="number" id="delay" style="margin-right:20px" value="100" oninput="changeDelay(this);" min="0"/>
 		Refresh rate :
 			<input type="number" id="IPF" style="margin-right:80px" value="1" oninput="changeIPS(this);" min="1" max="999"/>
-			<button id="playButton" onclick="playPause(this)" class="btn btn-default" style="margin-right:20px; font-weight:bold;">Play</button>
-			<button onclick="step()" style="margin-right:20px" class="btn btn-default">Step</button>
+		<button id="playButton" onclick="playPause(this)" class="btn btn-default" style="margin-right:20px; font-weight:bold;">Play</button>
+		<button onclick="step()" style="margin-right:20px" class="btn btn-default">Step</button>
+        <span id="number_of_steps"></span>
+		<button onclick="reset_number_of_steps()" style="margin-right:20px" class="btn btn-default">Reset counter</button>
 			
 		<!-- <button id="stabilizeButton"  onclick="stabTiling()" class="btn btn-primary">Stabilize</button> -->
 		

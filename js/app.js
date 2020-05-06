@@ -125,6 +125,9 @@ var savedConfigs = [];
 
 var wireFrameEnabled = false;
 
+var number_of_steps = 0; // count the number of steps (manually reset by user)
+reset_number_of_steps();
+
 // ---------------------- Less important variables
 
 var color_hue_shift = 0.0; // Animation of selected tile color
@@ -158,12 +161,28 @@ function onWindowResize(){
 // ################################################
 
 // ------------------------------------------------
+// [ 3.0 ] number_of_steps set/reset
+//         incremented in [ 3.1 ] and [ 3.2 ]
+// ------------------------------------------------
+
+function reset_number_of_steps(){
+        number_of_steps = 0;
+        document.getElementById("number_of_steps").innerHTML = number_of_steps;
+}
+
+function increment_number_of_steps(){
+        number_of_steps++;
+        document.getElementById("number_of_steps").innerHTML = number_of_steps;
+}
+
+// ------------------------------------------------
 // 	[ 3.1 ] 	Apply one sandpile step
 //		Tiling.js [ 2.2 ] [ 2.6 ]
 // ------------------------------------------------
 function step(){
 	if(currentTiling){
 		currentTiling.iterate();
+                increment_number_of_steps()
 		currentTiling.colorTiles();
 		if(selectedTile)
 			tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentTiling.tiles[selectedTile].sand;
@@ -179,6 +198,9 @@ function iterateTiling(){
 	var is_stable = false;
 	for(var i = 0; i<it_per_frame; i++){
 		is_stable = currentTiling.iterate();
+                if(!is_stable){
+                        increment_number_of_steps()
+                }
 	}
 	
 	if(document.getElementById("pauseToggle").checked && is_stable)
