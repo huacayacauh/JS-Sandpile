@@ -20,6 +20,7 @@ var phi = (1+Math.sqrt(5))/2;
 var bounds = [];
 bounds.push(0,0);
 bounds.push(Math.sin(Math.PI/5),Math.cos(Math.PI/5));
+// remark that... 2*cos(pi/5) = phi
 bounds.push(0,2*Math.cos(Math.PI/5));
 bounds.push(-Math.sin(Math.PI/5),Math.cos(Math.PI/5));
 var fat = new Tile(['fat'],[],bounds,4);
@@ -28,6 +29,7 @@ var fat = new Tile(['fat'],[],bounds,4);
 var bounds = [];
 bounds.push(0,0);
 bounds.push(Math.sin(2*Math.PI/5),Math.cos(2*Math.PI/5));
+// remark that... 2*cos(2*pi/5) = phi-1
 bounds.push(0,2*Math.cos(2*Math.PI/5));
 bounds.push(-Math.sin(2*Math.PI/5),Math.cos(2*Math.PI/5));
 var thin = new Tile(['thin'],[],bounds,4);

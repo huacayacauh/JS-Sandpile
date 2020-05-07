@@ -20,6 +20,7 @@ var phi = (1+Math.sqrt(5))/2;
 var bounds = [];
 bounds.push(0,0);
 bounds.push(phi*Math.sin(Math.PI/5),phi*Math.cos(Math.PI/5));
+// remark that... phi*cos(pi/5)+sin(pi/10) = phi
 bounds.push(0,phi*Math.cos(Math.PI/5)+Math.sin(Math.PI/10));
 bounds.push(-phi*Math.sin(Math.PI/5),phi*Math.cos(Math.PI/5));
 var kite = new Tile(['kite'],[],bounds,4);
@@ -28,6 +29,7 @@ var kite = new Tile(['kite'],[],bounds,4);
 var bounds = [];
 bounds.push(0,0);
 bounds.push(phi*Math.sin(Math.PI/5),phi*Math.cos(Math.PI/5));
+// remark that... phi*cos(pi/5)-sin(pi/10) = 1
 bounds.push(0,phi*Math.cos(Math.PI/5)-Math.sin(Math.PI/10));
 bounds.push(-phi*Math.sin(Math.PI/5),phi*Math.cos(Math.PI/5));
 var dart = new Tile(['dart'],[],bounds,4);
