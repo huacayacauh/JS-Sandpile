@@ -119,7 +119,7 @@ function circles_radii(tiling){
 
 // side effect on:
 // * outerTiles
-// * frontierTiles (used in phase 2 only)
+// * frontierTiles
 // * innerTiles_touches_border (_previous)
 Tiling.prototype.get_roundness = function(){
   // the procedure is separated into two phases
@@ -140,23 +140,25 @@ Tiling.prototype.get_roundness = function(){
       }
     }
 
-    // update innerTiles_touches_border, frontierTiles
+    // set frontierTiles
+    frontierTiles = [];
+    for(let id of outerTiles){
+      let tile = this.tiles[id];
+      if(tile.neighbors.filter(nid => {
+          let ntile = this.tiles[nid];
+          return ntile.sand != ntile.limit-1;
+        }).length > 0){
+        // a neighbor in innerTiles
+        frontierTiles.push(id);
+      }
+    }
+
+    // update innerTiles_touches_border
     if(borderTiles.filter(id => !outerTiles.includes(id)).length == 0){
       // all borderTiles are outerTiles: transition to phase 2
       innerTiles_touches_border = false;
-      // set frontierTiles
-      frontierTiles = [];
-      for(let id of outerTiles){
-        let tile = this.tiles[id];
-        if(tile.neighbors.filter(nid => {
-            let ntile = this.tiles[nid];
-            return ntile.sand != ntile.limit-1;
-          }).length > 0){
-          // a neighbor in innerTiles
-          frontierTiles.push(id);
-        }
-      }
     }
+    
     // end of phase 1
   }
   else{
@@ -207,6 +209,7 @@ Tiling.prototype.get_roundness = function(){
       // some borderTiles are not outerTiles: transition to phase 1
       innerTiles_touches_border = true;
     }
+
     // end of phase 2
   }
 
@@ -218,14 +221,8 @@ Tiling.prototype.get_roundness = function(){
   }
   else{
     // compute smallest distance of outerTiles (upper bounded by inscribed circle)
-    // shortcut: among fontierTiles during phase 2
-    let outerTiles_smallest = null; // outTiles to consider
-    if(innerTiles_touches_border){
-      outerTiles_smallest = outerTiles;
-    }
-    else{
-      outerTiles_smallest = frontierTiles;
-    }
+    // shortcut: among fontierTiles only
+    let outerTiles_smallest = frontierTiles;
     let smallestDistances_outerTiles = outerTiles_smallest.map(id => smallestDistancedict.get(id));
     if(smallestDistances_outerTiles.length == 0){
       // when all tiles are outerTiles
