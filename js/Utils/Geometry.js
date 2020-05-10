@@ -1,3 +1,6 @@
+// This code is part of JS-Sandpile (https://github.com/huacayacauh/JS-Sandpile/)
+// CC-BY Valentin Darrigo, Jeremy Fersula, Kevin Perrot
+
 // [1.0] geometric transformations of points
 
 // [1.1] scale point A towards point B by factor f (homothecy)
@@ -27,5 +30,19 @@ function rotatePoint(xA, yA, xB, yB, a){
 // compute the Euclidean distance between two points
 function distance(xA, yA, xB, yB){
   return Math.sqrt((xA-xB)*(xA-xB)+(yA-yB)*(yA-yB));
+}
+
+// compute the Euclidean distance from a point to a segment
+function distancePointSegment(x,y,xA,yA,xB,yB){
+  //check if segment is a point
+  let d=distance(xA,yA,xB,yB);
+  if(d==0){
+    return distance(x,y,xA,yA);
+  }
+  // source : https://stackoverflow.com/a/1501725
+  let t = ((x-xA)*(xB-xA)+(y-yA)*(yB-yA))/(d*d);
+  t = Math.max(0,Math.min(1,t));
+  let res = distance(x,y,xA+t*(xB-xA),yA+t*(yB-yA));
+  return res;
 }
 

@@ -45,7 +45,7 @@ class App{
 
 		// Display
 		var container = document.getElementById("canvasHolder");
-		this.WIDTH = container.clientWidth- 10;
+		this.WIDTH = container.clientWidth - 10;
 		this.HEIGHT = container.clientHeight - 10;
 		
 		this.scene = new THREE.Scene();
@@ -77,7 +77,7 @@ class App{
 	
 	reset_size(){
 		var container = document.getElementById("canvasHolder");
-		this.WIDTH = container.clientWidth- 10;
+		this.WIDTH = container.clientWidth - 10;
 		this.HEIGHT = container.clientHeight - 10;
 
 		this.ratio = this.WIDTH / this.HEIGHT;
@@ -423,12 +423,12 @@ function complexOperationSub(){
 // ------------------------------------------------
 async function playWithDelay() {
 	if(currentTiling){
-	  while(true){
-		  if(play){
-		  iterateTiling ();
-		  }
-		await sleep(delay);
-	  }
+	       while(true){
+		       if(play){
+		               iterateTiling ();
+		       }
+		       await sleep(delay);
+	       }
 	}
 }
 

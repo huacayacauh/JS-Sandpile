@@ -40,13 +40,13 @@
 //
 // ################################################
 class Tile{
-	constructor(id, neighbors, bounds, lim){
+	constructor(id, neighbors, bounds, limit){
 		this.id = id; // unique identifier
 		this.neighbors = neighbors; // ids of adjacent tiles
 
-		this.limit = lim; // topples when sand > limit
+		this.limit = limit; // topples when sand >= limit
 		this.sand = 0; // sand content
-		if(lim < 0)
+		if(limit < 0)
 			this.sand = -1;
 		this.prevSand = 0; // "trick" variable to iterate the sand
 
@@ -228,6 +228,7 @@ class Tiling{
 			}
 			
 			// Centering -----------------------------------------------------
+                        // puts (0,0) at the barycenter of all tile bounds
 			
 			this.center = [0, 0];
 			if(recenter){
@@ -243,13 +244,10 @@ class Tiling{
 				}
 				this.center[0] /= count;
 				this.center[1] /= count;
-				
 			}
-			
 			this.mesh.position.set(-this.center[0], -this.center[1], 0); 
 			this.wireFrame.position.set(-this.center[0], -this.center[1], 0);
 		}
-		
 	}
 
 	// ------------------------------------------------
