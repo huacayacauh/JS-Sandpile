@@ -41,7 +41,6 @@ async function draw_custom(srcPIC){
 
 	selectedTile = null;
 	
-	currentIdentity = null;
 	currentTiling = new Tiling(tils);
 	currentTiling.cmap = cmap;
 	enableWireFrame(document.getElementById("wireFrameToggle"));
@@ -52,7 +51,6 @@ async function draw_custom(srcPIC){
 	
 	app.scene.add(currentTiling.mesh);
 	currentTiling.colorTiles();
-	//console.log(currentTiling);
 
 	playWithDelay();
 

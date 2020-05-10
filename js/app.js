@@ -111,8 +111,6 @@ var play = false;
 
 var currentTiling;
 
-var currentIdentity;
-
 var app = new App();
 
 var it_per_frame = 1;
@@ -211,37 +209,9 @@ function iterateTiling(){
 
 }
 
-// ------------------------------------------------
-// 	[ 3.3 ] 	Assign sandpile identity to
-//				the currentIdentity variable.
-//		Tiling.js [ 2.4 ] [ 2.5 ]
-// ------------------------------------------------
-function findIdentity(){
-        console.log("compute identity...");
-        console.log("* get max limit value");
-	var maxLimit = 0;
-	for(let id in currentTiling.tiles){
-		if(maxLimit < currentTiling.tiles[id].limit)
-			maxLimit = currentTiling.tiles[id].limit;
-	}
-        console.log("* compute (2*max-stable)^°");
-	var identity1 = currentTiling.hiddenCopy();
-	identity1.clear();
-	identity1.addEverywhere((maxLimit - 1) * 2);
-	identity1.stabilize();
-        console.log("* compute ( 2*max-stable - (2*max-stable)^° )^°");
-	var identity2 = currentTiling.hiddenCopy();
-	identity2.clear();
-	identity2.addEverywhere((maxLimit - 1) * 2);
-	identity2.removeConfiguration(identity1);
-	identity2.stabilize();
-	
-        console.log("done");
-	currentIdentity = identity2;
-}
 
 // ------------------------------------------------
-// 	[ 3.4 ] 	Stabilize the current Tiling
+// 	[ 3.3 ] 	Stabilize the current Tiling
 //		Tiling.js [ 2.5 ]
 // ------------------------------------------------
 function stabTiling(){
@@ -255,7 +225,7 @@ function stabTiling(){
 
 
 // ------------------------------------------------
-// 	[ 3.5 ] 	Empty the Tiling
+// 	[ 3.4 ] 	Empty the Tiling
 //		Tiling.js [ 2.4 ]
 // ------------------------------------------------
 function clearTiling(){
@@ -265,7 +235,7 @@ function clearTiling(){
 }
 
 // ------------------------------------------------
-// 	[ 3.6 ] 	Adding, Subtracting and setting
+// 	[ 3.5 ] 	Adding, Subtracting and setting
 //				complex operations over the
 //				current Tiling.
 //		
@@ -301,10 +271,8 @@ function complexOperationAdd(){
 			break;
 
 			case "Iden":
-				if(!currentIdentity)
-					findIdentity();
 				for(var i = 0; i< operationTimes; i++)
-					currentTiling.addConfiguration(currentIdentity);
+					currentTiling.addConfiguration(currentTiling.get_identity());
 			break;
 		}
 		if(operationType.substring(0, 4) == "CNFG"){
@@ -349,10 +317,8 @@ function complexOperationSet(){
 
 			case "Iden":
 				currentTiling.clear();
-				if(!currentIdentity)
-					findIdentity();
 				for(var i = 0; i< operationTimes; i++)
-					currentTiling.addConfiguration(currentIdentity);
+					currentTiling.addConfiguration(currentTiling.get_identity());
 			break;
 		}
 		if(operationType.substring(0, 4) == "CNFG"){
@@ -394,10 +360,8 @@ function complexOperationSub(){
 			break;
 
 			case "Iden":
-				if(!currentIdentity)
-					findIdentity();
 				for(var i = 0; i< operationTimes; i++)
-					currentTiling.removeConfiguration(currentIdentity);
+					currentTiling.removeConfiguration(currentTiling.get_identity());
 			break;
 		}
 		if(operationType.substring(0, 4) == "CNFG"){
@@ -506,8 +470,6 @@ function drawTiling(){
 
 	selectedTile = null;
 	
-	currentIdentity = null;
-	
 	preset = document.getElementById("TilingSelect").value;
 
 	var nbIt = document.getElementById("penroseIt").value;
@@ -518,7 +480,6 @@ function drawTiling(){
 	eval(command);
         console.log("END construct a new Tiling");
         console.log("INFO the current Tiling has "+currentTiling.tiles.length+" tiles:");
-        console.log(currentTiling);
 	
 	currentTiling.cmap = cmap;
 	
@@ -557,8 +518,6 @@ function redraw(){
 
 	selectedTile = null;
 	
-	currentIdentity = null;
-
 	var nbIt = document.getElementById("penroseIt").value;
 	
 	currentTiling.cmap = cmap;

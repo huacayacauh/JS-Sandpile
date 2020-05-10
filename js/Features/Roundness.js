@@ -21,7 +21,7 @@ handleDownloadRoundness = async function(evt){
     // begin: disable button
     document.getElementById('createRoundness').disabled = true;
 
-    if(currentTiling === undefined) return
+    if(currentTiling === undefined){return;}
     var link = document.getElementById('downloadlink');
     let textFile = await makeRoundnessFile(currentTiling);
     link.setAttribute('download', "JS-Sandpile_Roundness.txt");
@@ -279,8 +279,7 @@ async function makeRoundnessFile(tiling){
   // set up max-stable + identity
   tiling.clear()
   tiling.addMaxStable();
-  if(!currentIdentity){findIdentity();}
-  tiling.addConfiguration(currentIdentity);
+  tiling.addConfiguration(tiling.get_identity());
   tiling.colorTiles();
   reset_number_of_steps();
 
@@ -533,14 +532,12 @@ Tiling.prototype.get_roundness_version1 = function(){
 //
 // ################################################
 
-async function makeRoundnessFile_version1(Tiling){
+async function makeRoundnessFile_version1(tiling){
 	
         // set up max-stable + identity
-	Tiling.clear()
-	Tiling.addMaxStable();
-	if(!currentIdentity)
-		findIdentity();
-	Tiling.addConfiguration(currentIdentity);
+	tiling.clear()
+	tiling.addMaxStable();
+        tiling.addConfiguration(tiling.get_identity());
 	
 	// make a file out of the function [ 1.0 ]
         // toto
@@ -562,12 +559,12 @@ async function makeRoundnessFile_version1(Tiling){
 	
 		if(show_round){
 			temp = Date.now();
-			Tiling.colorTiles();
+			tiling.colorTiles();
 			t_render += Date.now() - temp;
 		}
 		
 		temp = Date.now();
-		var stat = Tiling.get_roundness();
+		var stat = tiling.get_roundness();
 		t_round += Date.now() - temp;
 		
 		if(stat != null){
@@ -575,7 +572,7 @@ async function makeRoundnessFile_version1(Tiling){
 			arr_max.push(stat["Max"]);
 		}
 		temp = Date.now();
-		done = Tiling.iterate();
+		done = tiling.iterate();
 		t_iterate += Date.now() - temp;
 		
 		nb_it++;
@@ -593,7 +590,7 @@ async function makeRoundnessFile_version1(Tiling){
 			await sleep(round_delay);
 		}
 	}
-	Tiling.colorTiles();
+	tiling.colorTiles();
 	
 	// Make the file
 	

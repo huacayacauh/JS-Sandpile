@@ -1,34 +1,11 @@
-// 	#################  TILING.JS  ##################
-//	 		Authors : 	FERSULA Jérémy
-// 	################################################
-// 
-// 	To help you dig into this code, the main parts
-// 	in this file are indexed via comments.	
-//
-//		Ex:  [ 2.4 ] - Something
-//
-//	References to other parts of the app are linked
-//	via indexes.
-//
-//		### indexes a section
-//		--- indexes a sub-section
-//
-//	---
-//
-//	All relations between indexing in files can be
-// 	found on our GitHub :
-//
-// 		https://github.com/huacayacauh/JS-Sandpile
-//
-// 	---
-//
-//  This file is under CC-BY.
-//
-//	Feel free to edit it as long as you provide 
-// 	a link to its original source.
-//
-// 	################################################
+// This code is part of JS-Sandpile (https://github.com/huacayacauh/JS-Sandpile/)
+// CC-BY Valentin Darrigo, Jeremy Fersula, Kevin Perrot
 
+//
+// [ 0 ]
+// Tile and Tiling objects
+// Contains most sandpile logics, in Tiling
+//
 
 // ################################################
 //
@@ -389,16 +366,14 @@ class Tiling{
 
 
 	stabilize(){
-		var t0 = performance.now();
-		var done = false;
-		while(!done){
-			done = this.iterate();
+                console.log("  stabilization...");
+		let t0 = performance.now();
+		let is_stable = false;
+		while(!is_stable){
+			is_stable = this.iterate();
 		}
-
-		console.log("Stabilized in : " + (performance.now() - t0) + " (ms)");
-		
+		console.log("  done in : " + (performance.now() - t0) + " (ms)");
 		this.colorTiles();
-
 	}
 	
 	// ------------------------------------------------
@@ -448,12 +423,34 @@ class Tiling{
 		}
 	}
 
-}
+	// ------------------------------------------------
+	// [ 2.7 ] Compute the sandpile identity
+	// ------------------------------------------------
+        get_identity(){
+                // check if it has already been computed
+                if(this.identity != null){
+                        return this.identity
+                }
+                // compute identity
+                console.log("compute identity...");
+                console.log("* get max limit value");
+        	var maxLimit = Math.max(...this.tiles.map(tile => tile.limit));
+                console.log("* compute (2*max-stable)^°");
+        	var identity1 = currentTiling.hiddenCopy();
+        	identity1.clear();
+        	identity1.addEverywhere((maxLimit - 1) * 2);
+        	identity1.stabilize();
+                console.log("* compute ( 2*max-stable - (2*max-stable)^° )^°");
+        	var identity2 = currentTiling.hiddenCopy();
+        	identity2.clear();
+        	identity2.addEverywhere((maxLimit - 1) * 2);
+        	identity2.removeConfiguration(identity1);
+        	identity2.stabilize();
+                console.log("done");
+        	this.identity = identity2;
+                return this.identity;
+        }
 
-// ################################################
-//
-// 	EOF
-//
-// ################################################
+}
 
 

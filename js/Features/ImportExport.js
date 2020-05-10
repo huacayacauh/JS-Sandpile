@@ -31,7 +31,6 @@ function jsonToTilling(json){
 	}
 	
 	selectedTile = null;
-	currentIdentity = null;
 	app.controls.zoomCamera();
 	app.controls.object.updateProjectionMatrix();
 
