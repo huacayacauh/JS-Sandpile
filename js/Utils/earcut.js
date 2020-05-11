@@ -1,3 +1,11 @@
+// This code is part of JS-Sandpile (https://github.com/huacayacauh/JS-Sandpile/)
+// CC-BY Valentin Darrigo, Jeremy Fersula, Kevin Perrot
+
+// The fastest and smallest JavaScript polygon triangulation library for your WebGL apps
+// source: https://github.com/mapbox/earcut
+// ISC License
+// Copyright (c) 2016, Mapbox
+
 'use strict';
 
 function earcut(data, holeIndices, dim) {
