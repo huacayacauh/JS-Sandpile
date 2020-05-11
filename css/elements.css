@@ -37,6 +37,12 @@ nav{
 	direction:ltr;
 }
 
+.credits{
+	padding: 10px;
+	color: #ffffff;
+	direction:ltr;
+}
+
 .canvasDiv{
 	position: fixed;
 	top : 70px;

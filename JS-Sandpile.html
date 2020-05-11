@@ -168,7 +168,7 @@
 
 		<!-- ############################################################ Operations / Secondary Controls -->		
 		<div id="secondary controls" class="controlGroup">
-			<p class="groupTitle">Tiling operations</p>
+			<p class="groupTitle">Sandpile operations</p>
 			<select id="complexOperationValue">
 			  <option value="MaxS">Max stable</option>
 			  <option value="OneE">One Everywhere</option>
@@ -192,19 +192,16 @@
 			<button id="saveConfig" onclick="saveConfiguration()" style="margin-top:10px;display: table;width: -webkit-fill-available;;" class="btn btn-default">Save Configuration</button>
 			
 			<!-- Random Seeding -->
-			<div id="seedMask" style="display:none;">
-				Seed :
-				<input id="randSeed" value="1" oninput="changeSeed(this);" style="width: 100px;" />
+			<div id="seedMask" style="margin-top:10px;">
+				Random seed : 
+				<input id="randSeed" value="1" oninput="changeSeed(this);" style="width: 60px;" />
 			</div>
 		</div> <!-- Operations controls -->
-
-		<!-- ############################################################ Misc Controls -->		
-		<div class="controlGroup">
-			<p class="groupTitle">Misc controls</p>
-			<button id="colorButton"  style="margin-left:auto;margin-right:auto;display:block;" class="btn btn-default">Change colors</button>
-			<br>
 			
+		<!-- ############################################################ Import/Export -->		
+		<div class="controlGroup">
 			<!-- File importing -->
+			<p class="groupTitle">Import/Export</p>
 			<div style="margin-left:auto; margin-right:auto; display:grid">
 				<label for="files" class="btn btn-default">
 					Import from JSON
@@ -223,10 +220,44 @@
 			<output id="list" style="display:none;"></output>
 
 			<a download="sandpile.json" id="downloadlink" style="display: none">Download</a>
-			<br>
+        </div>
 			
-			<!-- Experimental features -->
-			<p class="groupTitle">Experimental</p>
+		<!-- ############################################################ Misc Controls -->		
+		<div class="controlGroup">
+			<p class="groupTitle">Misc controls</p>
+			<button id="colorButton"  style="margin-left:auto;margin-right:auto;display:block;" class="btn btn-default">Change colors</button>
+        </div>
+
+		<!-- ############################################################ Informations -->		
+		<div  class="controlGroup" style="height:400px; position:relative;">
+			<p class="groupTitle">Informations</p>
+
+			<span id="tileInfo">Selected tile info</span>
+			  
+			<br>
+			<button id="statsButton" style="position:absolute; top:32px; right:10px;" onclick="show_stats()" class="btn btn-default"> Get stats </button>
+			<br>
+			<p id="statsInfo"></p>
+			  
+			<button id="createStats" style="position:absolute; bottom:10px; left:10px;" class="btn btn-default">Download stats</button>
+        </div>
+			  
+		<!-- ############################################################ Roundness -->		
+		<div class="controlGroup">
+			<p class="groupTitle">Roundness</p>
+            <!-- Roundness -->
+            <button id="createRoundness" style="margin-right:10px;" class="btn btn-default">Roundness (file)</button>
+			Animate :
+			<label class="switch" style="margin-top:10px">
+			  <input type="checkbox" id="roundShow" checked = "true">
+			  <span class="slider round"></span>
+			</label>
+        </div>
+
+		<!-- ############################################################ Harmonics -->		
+		<div class="controlGroup">
+			<p class="groupTitle">Harmonics</p>
+            <!-- Harmonics -->
 			<select id="harmonicValue" style="width:100px">
 			  <option value="1A">1A</option>
 			  <option value="1B">1B</option>
@@ -238,34 +269,18 @@
 			  <option value="4B">4B</option>
 			</select>
 			<button onclick='currentTiling.apply_harmonic()' style="margin-left:10px;" class="btn btn-default ">Apply Harmonic</button>
-		</div>  <!-- Misc controls -->
+            <br />
+        </div>
 
-
-		<!-- ############################################################ Informations -->		
-		<div  id="bottomGroup"  class="controlGroup" style="height:400px; position:relative;">
-			<p class="groupTitle">Informations</p>
-
-			<span id="tileInfo">Tile info</span>
-			  
-			<br>
-			<button id="statsButton" style="position:absolute; top:32px; right:10px;" onclick="show_stats()" class="btn btn-default"> Get stats </button>
-			<br>
-			<p id="statsInfo"></p>
-			  
-			<button id="createStats" style="position:absolute; bottom:10px; left:10px;" class="btn btn-default">Download stats</button>
-			<button id="createRoundness" style="position:absolute; bottom:10px; right:10px;" class="btn btn-default">(Roundness)</button>
-			
-			<span style="position:absolute; bottom:50px; left:10px;"> Animate roundness : </span>
-			<input type="checkbox" style="position:absolute; bottom:52px; right:80px;" id="roundShow" checked = "true">
-			  
-            <span style="bottom:-110px;position:absolute;left:10px">
-              <img src="./css/cc-heart.png" style="height: 16px">
-              <a href="https://creativecommons.org/licenses/by/4.0/">CC-BY</a><br />
-              Valentin Darrigo<br />
-              Jeremy Fersula<br />
-              Kevin Perrot<br />
-              <a href="https://github.com/huacayacauh/JS-Sandpile/">See the code on github</a>
-            </span>
+		<!-- ############################################################ Credits -->		
+		<div class="credits">
+          <img src="./css/cc-heart.png" style="height:16px">
+          <a href="https://creativecommons.org/licenses/by/4.0/">CC-BY</a><br />
+          Valentin Darrigo<br />
+          Jeremy Fersula<br />
+          Kevin Perrot<br />
+          See the <a href="https://github.com/huacayacauh/JS-Sandpile/wiki">wiki</a> 
+          and <a href="https://github.com/huacayacauh/JS-Sandpile/">code</a> on github
 		</div>
 
 	</nav> <!-- ######################################################### End of Control bar -->		
