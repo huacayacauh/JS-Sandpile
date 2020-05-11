@@ -10,3 +10,7 @@ It is running here: https://huacayacauh.github.io/JS-Sandpile/
 
 1. Clone.
 2. Open ``JS-Sandpile.html`` in a browser.
+
+# Documentation
+
+See the [wiki attached to this repository](https://github.com/huacayacauh/JS-Sandpile/wiki).
