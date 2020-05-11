@@ -48,9 +48,9 @@ class Tile{
         
         // [1.2] geometric transformations of a tile (scale, shift, rotate)
 
-        // scale tile (all points) towards point B by factor f
+        // scale tile (all bounds) towards point B by factor f
         scale(xB, yB, f){
-                // scale all points one by one with scalePoint
+                // scale all bounds one by one with scalePoint
                 var newpoint = [];
                 for(var i=0; i<this.bounds.length; i+=2){
                         newpoint = scalePoint(this.bounds[i], this.bounds[i+1], xB, yB, f);
@@ -61,7 +61,7 @@ class Tile{
 
         // shift tile by vector B
         shift(xB, yB){
-                // shift all points one by one with shiftPoint
+                // shift all bounds one by one with shiftPoint
                 var newpoint = [];
                 for(var i=0; i<this.bounds.length; i+=2){
                         newpoint = shiftPoint(this.bounds[i], this.bounds[i+1], xB, yB);
@@ -72,7 +72,7 @@ class Tile{
 
         // rotate tile around point B by angle a (in radian)
         rotate(xB, yB, a){
-                // rotate all points one by one with rotatePoint
+                // rotate all bounds one by one with rotatePoint
                 var newpoint = [];
                 for(var i=0; i<this.bounds.length; i+=2){
                         newpoint = rotatePoint(this.bounds[i], this.bounds[i+1], xB, yB, a);
