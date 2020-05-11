@@ -222,15 +222,13 @@ Tiling.prototype.get_roundness = function(){
   else{
     // compute smallest distance of outerTiles (upper bounded by inscribed circle)
     // shortcut: among fontierTiles only
-    let outerTiles_smallest = frontierTiles;
-    let smallestDistances_outerTiles = outerTiles_smallest.map(id => smallestDistancedict.get(id));
-    if(smallestDistances_outerTiles.length == 0){
-      // when all tiles are outerTiles
-      // then frontierTiles and outerTiles_smallest and smallestDistances_outerTiles are [],
-      // and Math.min returns Infinity...
+    if(frontierTiles.length == 0){
+      // when all tiles are outerTiles then frontierTiles is [],
+      // and Math.min returns -Infinity...
       outerRadius = 0;
     }
     else{
+      let smallestDistances_outerTiles = frontierTiles.map(id => smallestDistancedict.get(id));
       let smallestDistance_outerTiles = Math.min(...smallestDistances_outerTiles);
       outerRadius = Math.min(inscribedCircleRadius,smallestDistance_outerTiles);
     }
