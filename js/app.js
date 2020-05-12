@@ -449,7 +449,7 @@ function drawTiling(){
         console.log("BEGIN construct a new Tiling");
 	eval(command);
         console.log("END construct a new Tiling");
-        console.log("INFO the current Tiling has "+currentTiling.tiles.length+" tiles:");
+        console.log("INFO the current Tiling has "+currentTiling.tiles.length+" tiles");
 	
 	currentTiling.cmap = cmap;
 	

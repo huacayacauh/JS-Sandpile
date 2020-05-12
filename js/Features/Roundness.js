@@ -20,6 +20,7 @@
 handleDownloadRoundness = async function(evt){
     // begin: disable button
     document.getElementById('createRoundness').disabled = true;
+    document.getElementById('createRoundnessFast').disabled = true;
 
     if(currentTiling === undefined){return;}
     var link = document.getElementById('downloadlink');
@@ -30,11 +31,37 @@ handleDownloadRoundness = async function(evt){
 	
     // end: enable button
     document.getElementById('createRoundness').disabled = false;
+    document.getElementById('createRoundnessFast').disabled = false;
 }
 
 // event listener: click on createRoundness calls handleDownloadRoundness
 var createRoundness = document.getElementById('createRoundness');
 createRoundness.addEventListener('click', handleDownloadRoundness, false);
+
+//
+// [ 0.1 ] Same as [ 0.0 ], for Faster roundness
+// 
+
+handleDownloadRoundnessFast = async function(evt){
+    // begin: disable buttons
+    document.getElementById('createRoundness').disabled = true;
+    document.getElementById('createRoundnessFast').disabled = true;
+
+    if(currentTiling === undefined){return;}
+    var link = document.getElementById('downloadlink');
+    let textFile = await makeRoundnessFileFast(currentTiling);
+    link.setAttribute('download', "JS-Sandpile_RoundnessFast.txt");
+    link.href = textFile;
+    link.click();
+	
+    // end: enable button
+    document.getElementById('createRoundness').disabled = false;
+    document.getElementById('createRoundnessFast').disabled = false;
+}
+
+// event listener fast: click on createRoundnessFast calls handleDownloadRoundnessFast
+var createRoundnessFast = document.getElementById('createRoundnessFast');
+createRoundnessFast.addEventListener('click', handleDownloadRoundnessFast, false);
 
 //
 // [ 0.1 ] Global variables to be initialized by makeRoundnessFile
@@ -170,7 +197,7 @@ Tiling.prototype.get_roundness = function(){
     // update outerTiles, frontierTiles
     // use the fact that only frontierTiles can change their sand content
     let outerTiles_new = [];
-    if(frontierTiles.filter(id => this.tiles[id].sand == this.tiles[id].limit-1).length != frontierTiles.length){
+    if(frontierTiles.filter(id => this.tiles[id].sand != this.tiles[id].limit-1).length > 0){
       // some frontierTiles are not outerTiles anymore: recompute all as in phase 1
       innerTiles_touches_border = true;
       return this.get_roundness();
@@ -190,7 +217,7 @@ Tiling.prototype.get_roundness = function(){
       }
       // set frontierTiles
       // shortcut: among old frontierTiles and new outerTiles
-      frontierTiles_new = [];
+      let frontierTiles_new = [];
       for(let id of frontierTiles.concat(outerTiles_new)){
         let tile = this.tiles[id];
         if(tile.neighbors.filter(nid => {
@@ -282,11 +309,11 @@ async function makeRoundnessFile(tiling){
   reset_number_of_steps();
 
   // log (after identity)
-  console.log("compute roundness");
-
+  console.log("compute roundness...");
+  // measure time
+  let t0 = performance.now();
   // file text variable
   var roundness_file_text = "";
-
   // whether to animate roundness or not
   var show_roundness = document.getElementById('roundShow').checked;
 
@@ -329,7 +356,7 @@ async function makeRoundnessFile(tiling){
   innerTiles_touches_border_previous = true;
 
   // measure roundness, push to file, and iterate
-  console.log("* measure roundness at each step from m+e to e");
+  console.log("* measure roundness at each step from m+e to m");
   var is_stable = false;
   while(!is_stable){
     // get roundness
@@ -348,7 +375,7 @@ async function makeRoundnessFile(tiling){
 
     // iterate
     is_stable = tiling.iterate();
-    increment_number_of_steps()
+    if(!is_stable){increment_number_of_steps();}
     if(show_roundness){
       // configuration already iterated
       // 1. plot roundnesses
@@ -394,10 +421,236 @@ async function makeRoundnessFile(tiling){
   var roundness_file = window.URL.createObjectURL(roundness_data);
   
   // done
-  console.log("done");
+  console.log("done roundness in "+(performance.now()-t0)+" (ms)");
   tiling.colorTiles();
   return [roundness_file]; 
 }
+
+//
+// [ 1.2 ] Faster roundness
+//         CAUTION: only phase 2
+//         CAUTION: logs the starting step of phase 2 in the output file
+//         CAUTION: frontier regression is unexpected and may cause failures
+//                 (recorded in the log and output file)
+//
+
+async function makeRoundnessFileFast(tiling){
+  // set up max-stable + identity
+  tiling.clear()
+  tiling.addMaxStable();
+  tiling.addConfiguration(tiling.get_identity());
+  tiling.colorTiles();
+  reset_number_of_steps();
+
+  // log (after identity)
+  console.log("compute roundness fast (phase 2)...");
+  // measure time
+  let t0 = performance.now();
+  // file text variable
+  let roundness_file_text = "";
+  // whether to animate roundness or not
+  let show_roundness = document.getElementById('roundShow').checked;
+
+  // compute border tiles
+  console.log("* compute border tiles");
+  borderTiles = tiling.tiles.filter(tile =>
+    tile.neighbors.length != tile.bounds.length/2
+  ).map(tile => tile.id);
+
+  // precompute the biggest and smallest distance from (0,0) for all tiles
+  console.log("* precompute distances for all tiles");
+  smallestDistancedict = new Map();
+  biggestDistancedict = new Map();
+  tiling.tiles.forEach(tile => {
+    // compute an array of distances for all bounds and edges
+    let boundsDistances = [];
+    let edgesDistances = [];
+    for(let i=0; i<tile.bounds.length; i+=2){
+      boundsDistances.push(distance(0,0,tile.bounds[i],tile.bounds[i+1]));
+      edgesDistances.push(distancePointSegment(0,0,tile.bounds[i],tile.bounds[i+1],tile.bounds[(i+2)%tile.bounds.length],tile.bounds[(i+3)%tile.bounds.length]));
+    }
+    // smallest distance from edges
+    smallestDistancedict.set(tile.id,Math.min(...edgesDistances));
+    // biggest distance from bounds
+    biggestDistancedict.set(tile.id,Math.max(...boundsDistances));
+  });
+
+  // no need for in/circum-scribed circles radii
+
+  // iterate until phase 2
+  console.log("* iterate until phase 2");
+  let is_stable = false;
+  innerTiles_touches_border = true;
+  while(!is_stable && innerTiles_touches_border){
+    // iterate
+    is_stable = tiling.iterate();
+    if(!is_stable){increment_number_of_steps();}
+    if(show_roundness){
+      await sleep(delay);
+      tiling.colorTiles();
+    }
+    // check if phase 2 is reached
+    innerTiles_touches_border = (borderTiles.filter(id => tiling.tiles[id].sand != tiling.tiles[id].limit-1).length > 0);
+  }
+  // phase 2 reached
+  console.log("* phase 2 reached at step "+number_of_steps);
+  roundness_file_text += number_of_steps+"\n";
+
+  // initialize outerTiles
+  outerTiles = [];
+  let tileStack = Array.from(borderTiles);
+  while(tileStack.length != 0){
+    let id = tileStack.shift();
+    let tile = tiling.tiles[id];
+    if((!outerTiles.includes(id)) && (tile.sand == tile.limit-1)){
+      // new outerTile
+      outerTiles.push(id);
+      tileStack.push(...tile.neighbors);
+    }
+  }
+
+  // initialize frontierTiles
+  frontierTiles = [];
+  for(let id of outerTiles){
+    let tile = tiling.tiles[id];
+    if(tile.neighbors.filter(nid => {
+        let ntile = tiling.tiles[nid];
+        return ntile.sand != ntile.limit-1;
+      }).length > 0){
+      // a neighbor in innerTiles
+      frontierTiles.push(id);
+    }
+  }
+
+  // measure roundness, push to file, and iterate
+  while(!is_stable){
+    // -----------------
+    // compute roundness
+    // (phase 2: the circle slowly shrinks)
+    // -----------------
+    // add new outerTiles with a BFS from frontierTiles
+    let outerTiles_new = []
+    let tileStack = Array.from(frontierTiles.map(id => tiling.tiles[id].neighbors).flat(1));
+    tileStack = tileStack.filter(function(e,i,self){return i === self.indexOf(e);}) // remove duplicates
+    while(tileStack.length != 0){
+      let id = tileStack.shift();
+      let tile = tiling.tiles[id];
+      if((!outerTiles.includes(id)) && (tile.sand == tile.limit-1)){
+        // new outerTile
+        outerTiles.push(id);
+        outerTiles_new.push(id);
+        tileStack.push(...tile.neighbors);
+      }
+    }
+    // update frontierTiles
+    // shortcut: among old frontierTiles and new outerTiles
+    let frontierTiles_new = [];
+    for(let id of frontierTiles.concat(outerTiles_new)){
+      let tile = tiling.tiles[id];
+      if(tile.neighbors.filter(nid => {
+          let ntile = tiling.tiles[nid];
+          return ntile.sand != ntile.limit-1;
+        }).length > 0){
+        // a neighbor in innerTiles
+        frontierTiles_new.push(id);
+      }
+    }
+    frontierTiles = frontierTiles_new;
+    // compute outerRadius from frontierTiles
+    let outerRadius = 0;
+    if(frontierTiles.length == 0){
+      outerRadius = 0;
+    }
+    else{
+      let smallestDistances_outerTiles = frontierTiles.map(id => smallestDistancedict.get(id));
+      outerRadius = Math.min(...smallestDistances_outerTiles);
+    }
+    // compute innerRadius from neighbors of frontierTiles
+    let innerTiles_sub = [];
+    frontierTiles.forEach(id => {
+      let tile = tiling.tiles[id];
+      tile.neighbors.forEach(nid => {
+        let ntile = tiling.tiles[nid];
+        if(ntile.sand != ntile.limit-1){
+          innerTiles_sub.push(nid);
+        }
+      });
+    });
+    let innerRadius = 0;
+    if(innerTiles_sub.length == 0){
+      innerRadius = 0;
+    }
+    else{
+      let biggestDistances_innerTiles = innerTiles_sub.map(id => biggestDistancedict.get(id));
+      innerRadius = Math.max(...biggestDistances_innerTiles);
+    }
+    // roundness
+    let roundness = [outerRadius,innerRadius];
+
+    // push to file
+    roundness_file_text += roundness[0].toFixed(3)+"/"+
+                           roundness[1].toFixed(3)+"/"+
+                           (roundness[1]-roundness[0]).toFixed(3)+",\n";
+
+    // iterate
+    is_stable = tiling.iterate();
+    if(!is_stable){increment_number_of_steps();}
+    if(show_roundness){
+      // configuration already iterated
+      // 1. plot roundnesses
+      // caution: THREE.CircleGeometry does not like circles of radius 0...
+      if(roundness[0]>0){
+        // plot outer radius
+        let outerCircleGeometry = new THREE.CircleGeometry(roundness[0],64);
+        outerCircleGeometry.vertices.splice(0,1);
+        let outerCircleMaterial = new THREE.MeshBasicMaterial({color:0x0000ff});
+        // var for app.scene.remove
+        var outerCircle = new THREE.LineLoop(outerCircleGeometry,outerCircleMaterial);
+        app.scene.add(outerCircle);
+      }
+      if(roundness[1]>0){
+        // plot inner radius
+        let innerCircleGeometry = new THREE.CircleGeometry(roundness[1],64);
+        innerCircleGeometry.vertices.splice(0,1);
+        let innerCircleMaterial = new THREE.MeshBasicMaterial({color:0xff0000});
+        // var for app.scene.remove
+        var innerCircle = new THREE.LineLoop(innerCircleGeometry,innerCircleMaterial);
+        app.scene.add(innerCircle);
+      }
+      // 2. wait
+      await sleep(delay);
+      // 3. unplot roundnesses
+      app.scene.remove(outerCircle);
+      app.scene.remove(innerCircle);
+      // 4. update configuration
+      tiling.colorTiles();
+    }
+
+    // check regression of frontier
+    if(frontierTiles.filter(id => tiling.tiles[id].sand != tiling.tiles[id].limit-1).length > 0){
+      console.log("  warning: unexpected frontier regression at step "+number_of_steps);
+      roundness_file_text += "warning: unexpected frontier regression at step "+number_of_steps+"\n";
+    }
+  }
+
+  // stability reached
+  console.log("* roundness data (phase 2) is ready to create file");
+
+  // create file from roundness_file_text
+  var roundness_data = new Blob([roundness_file_text], {type: 'text/plain'});
+  // If we are replacing a previously generated file we need to
+  // manually revoke the object URL to avoid memory leaks.
+  if (roundness_file !== null) {
+          window.URL.revokeObjectURL(roundness_file);
+  }
+  var roundness_file = window.URL.createObjectURL(roundness_data);
+  
+  // done
+  console.log("done roundness in "+(performance.now()-t0)+" (ms)");
+  tiling.colorTiles();
+  return [roundness_file]; 
+}
+
 
 
 
@@ -562,7 +815,7 @@ async function makeRoundnessFile_version1(tiling){
 		}
 		
 		temp = Date.now();
-		var stat = tiling.get_roundness();
+		var stat = tiling.get_roundness_version1();
 		t_round += Date.now() - temp;
 		
 		if(stat != null){

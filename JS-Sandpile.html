@@ -245,13 +245,19 @@
 		<!-- ############################################################ Roundness -->		
 		<div class="controlGroup">
 			<p class="groupTitle">Roundness</p>
-            <!-- Roundness -->
-            <button id="createRoundness" style="margin-right:10px;" class="btn btn-default">Roundness (file)</button>
+            <!-- Animate -->
 			Animate :
-			<label class="switch" style="margin-top:10px">
+			<label class="switch" style="margin-top:5px">
 			  <input type="checkbox" id="roundShow" checked = "true">
 			  <span class="slider round"></span>
 			</label>
+            <!-- Roundness buttons-->
+			<div style="margin-left:auto; margin-right:auto; display:grid">
+              <!-- Roundness -->
+              <button id="createRoundness" style="margin-top:5px;" class="btn btn-default">Compute roundness file</button>
+              <!-- Roundness fast -->
+              <button id="createRoundnessFast" style="margin-top:5px;" class="btn btn-default">Fast (circle shrink only)</button>
+          </div>
         </div>
 
 		<!-- ############################################################ Harmonics -->		
