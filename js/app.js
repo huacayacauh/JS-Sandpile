@@ -244,6 +244,9 @@ function complexOperationAdd(){
 				for(var i = 0; i< operationTimes; i++)
 					currentTiling.addConfiguration(currentTiling.get_identity());
 			break;
+			case "Inve":
+				currentTiling.addConfiguration(currentTiling.get_inverse());
+			break;
 		}
 		if(operationType.substring(0, 4) == "CNFG"){
 			for(var i = 0; i<operationTimes; i++)
@@ -280,15 +283,21 @@ function complexOperationSet(){
 			break;
 
 			case "Dual":
-				var newTiling = currentTiling.getHiddenDual();
+				let newTilingDual = currentTiling.getHiddenDual();
 				currentTiling.clear();
-				currentTiling.addConfiguration(newTiling);
+				currentTiling.addConfiguration(newTilingDual);
 			break;
 
 			case "Iden":
 				currentTiling.clear();
 				for(var i = 0; i< operationTimes; i++)
 					currentTiling.addConfiguration(currentTiling.get_identity());
+			break;
+
+			case "Inve":
+                                let newTilingInve = currentTiling.get_inverse();
+				currentTiling.clear();
+				currentTiling.addConfiguration(newTilingInve);
 			break;
 		}
 		if(operationType.substring(0, 4) == "CNFG"){
@@ -332,6 +341,10 @@ function complexOperationSub(){
 			case "Iden":
 				for(var i = 0; i< operationTimes; i++)
 					currentTiling.removeConfiguration(currentTiling.get_identity());
+			break;
+
+			case "Inve":
+				currentTiling.removeConfiguration(currentTiling.get_inverse());
 			break;
 		}
 		if(operationType.substring(0, 4) == "CNFG"){

@@ -429,19 +429,19 @@ class Tiling{
         get_identity(){
                 // check if it has already been computed
                 if(this.identity != null){
-                        return this.identity
+                        return this.identity;
                 }
                 // compute identity
-                console.log("compute identity...");
-                console.log("* get max limit value");
+                console.log("compute identity e...");
+                console.log("* get max limit value m");
         	var maxLimit = Math.max(...this.tiles.map(tile => tile.limit));
-                console.log("* compute (2*max-stable)^°");
-        	var identity1 = currentTiling.hiddenCopy();
+                console.log("* compute (2m)°");
+        	var identity1 = this.hiddenCopy();
         	identity1.clear();
         	identity1.addEverywhere((maxLimit - 1) * 2);
         	identity1.stabilize();
-                console.log("* compute ( 2*max-stable - (2*max-stable)^° )^°");
-        	var identity2 = currentTiling.hiddenCopy();
+                console.log("* compute e=(2m-(2m)°)°");
+        	var identity2 = this.hiddenCopy();
         	identity2.clear();
         	identity2.addEverywhere((maxLimit - 1) * 2);
         	identity2.removeConfiguration(identity1);
@@ -451,6 +451,38 @@ class Tiling{
                 return this.identity;
         }
 
+	// ------------------------------------------------
+	// [ 2.8 ] Compute the inverse of the current configuration
+	// ------------------------------------------------
+        get_inverse(){
+                console.log("compute inverse i...");
+                console.log("* (assumes the current configuration to be recurrent without verification)");
+                // stabilize the configuration
+                console.log("* stabilize c");
+                this.stabilize();
+                // compute inverse
+                console.log("* get max limit value m");
+        	let maxLimit = Math.max(...this.tiles.map(tile => tile.limit));
+                console.log("* get super identity 3m-(3m)°");
+                // check if it has already been computed
+                if(this.super_identity == null){
+                        console.log("  compute it...");
+                        let stable3m = this.hiddenCopy();
+                        stable3m.clear();
+        	        stable3m.addEverywhere(3*(maxLimit-1));
+                        stable3m.stabilize();
+                        this.super_identity = this.hiddenCopy();
+                        this.super_identity.clear();
+                        this.super_identity.addEverywhere(3*(maxLimit-1));
+                        this.super_identity.removeConfiguration(stable3m);
+                }
+                console.log("* compute i=(3m-(3m)°-c)°");
+                let inverse = this.super_identity.hiddenCopy();
+                inverse.removeConfiguration(this);
+                inverse.stabilize();
+                console.log("done");
+                return inverse;
+        }
 }
 
 
