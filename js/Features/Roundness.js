@@ -409,6 +409,7 @@ async function makeRoundnessFile(tiling){
     }
   }
   // stability reached
+  console.log("* stabilized to m at step "+number_of_steps);
   console.log("* roundness data is ready to create file");
 
   // create file from roundness_file_text
@@ -521,28 +522,61 @@ async function makeRoundnessFileFast(tiling){
       frontierTiles.push(id);
     }
   }
+  
+  // shortcut (main): initialize outerTiles_sub
+  // the subset of outerTiles being frontierTiles or neighbors of frontierTiles
+  let outerTiles_sub = Array.from(frontierTiles);
+  frontierTiles.forEach(id =>
+    outerTiles_sub.push(...tiling.tiles[id].neighbors.filter(nid => 
+      tiling.tiles[nid].sand == tiling.tiles[nid].limit-1
+    ))
+  );
+  // remove duplicates
+  outerTiles_sub = outerTiles_sub.filter(function(e,i,self){return i === self.indexOf(e);});
+
+  ////TIME: log times to find which part of the code requires optimization
+  //let time_outerTiles = 0; //TIME
+  //let time_frontierTiles = 0; //TIME
+  //let time_outerRadius = 0; //TIME
+  //let time_innerRadius = 0; //TIME
+  //let time_iterate = 0; //TIME
+  //let time_regression = 0; //TIME
+  //let ctime = 0; // current time //TIME
 
   // measure roundness, push to file, and iterate
+  // (plus check regression of frontierTiles)
   while(!is_stable){
     // -----------------
     // compute roundness
     // (phase 2: the circle slowly shrinks)
     // -----------------
     // add new outerTiles with a BFS from frontierTiles
-    let outerTiles_new = []
-    let tileStack = Array.from(frontierTiles.map(id => tiling.tiles[id].neighbors).flat(1));
-    tileStack = tileStack.filter(function(e,i,self){return i === self.indexOf(e);}) // remove duplicates
-    while(tileStack.length != 0){
+    // shortcut (main): use outerTiles_sub (a subset) instead of (all) outerTiles
+    //ctime = performance.now(); //TIME
+    let outerTiles_new = [];
+    // shortcut: start with frontierTiles and their neighbors
+    let tileStack = Array.from(frontierTiles.map(id => tiling.tiles[id].neighbors.concat(id)).flat(1));
+    // shortcut: remove duplicates
+    tileStack = tileStack.filter(function(e,i,self){return i === self.indexOf(e);});
+    // shortcut: remove outerTiles_sub 1/3
+    // (includes removal of frontierTiles, checked during regression)
+    tileStack = tileStack.filter(nid => !outerTiles_sub.includes(nid));
+    // go
+    while(tileStack.length > 0){
       let id = tileStack.shift();
       let tile = tiling.tiles[id];
-      if((!outerTiles.includes(id)) && (tile.sand == tile.limit-1)){
+      // shortcut: we have no outerTiles(_sub) tile in tileStack 2/3
+      if(tile.sand == tile.limit-1){
         // new outerTile
-        outerTiles.push(id);
+        outerTiles_sub.push(id);
         outerTiles_new.push(id);
-        tileStack.push(...tile.neighbors);
+        // shortcut: do not push outerTiles(_sub) to tileStack 3/3
+        tileStack.push(...tile.neighbors.filter(nid => !outerTiles_sub.includes(nid)));
       }
     }
+    //time_outerTiles += performance.now()-ctime;//TIME
     // update frontierTiles
+    //ctime = performance.now();//TIME
     // shortcut: among old frontierTiles and new outerTiles
     let frontierTiles_new = [];
     for(let id of frontierTiles.concat(outerTiles_new)){
@@ -556,7 +590,19 @@ async function makeRoundnessFileFast(tiling){
       }
     }
     frontierTiles = frontierTiles_new;
+    //time_frontierTiles += performance.now()-ctime;//TIME
+    // shortcut (main): update outerTiles_sub
+    //ctime = performance.now();//TIME
+    outerTiles_sub = Array.from(frontierTiles);
+    frontierTiles.forEach(id =>
+      outerTiles_sub.push(...tiling.tiles[id].neighbors.filter(nid => 
+        tiling.tiles[nid].sand == tiling.tiles[nid].limit-1
+      ))
+    );
+    outerTiles_sub = outerTiles_sub.filter(function(e,i,self){return i === self.indexOf(e);});
+    //time_outerTiles += performance.now()-ctime;//TIME
     // compute outerRadius from frontierTiles
+    //ctime = performance.now();//TIME
     let outerRadius = 0;
     if(frontierTiles.length == 0){
       outerRadius = 0;
@@ -565,7 +611,9 @@ async function makeRoundnessFileFast(tiling){
       let smallestDistances_outerTiles = frontierTiles.map(id => smallestDistancedict.get(id));
       outerRadius = Math.min(...smallestDistances_outerTiles);
     }
+    //time_outerRadius += performance.now()-ctime;//TIME
     // compute innerRadius from neighbors of frontierTiles
+    //ctime = performance.now();//TIME
     let innerTiles_sub = [];
     frontierTiles.forEach(id => {
       let tile = tiling.tiles[id];
@@ -584,33 +632,35 @@ async function makeRoundnessFileFast(tiling){
       let biggestDistances_innerTiles = innerTiles_sub.map(id => biggestDistancedict.get(id));
       innerRadius = Math.max(...biggestDistances_innerTiles);
     }
-    // roundness
-    let roundness = [outerRadius,innerRadius];
+    //time_innerRadius += performance.now()-ctime;//TIME
+    // roundness is ready
 
     // push to file
-    roundness_file_text += roundness[0].toFixed(3)+"/"+
-                           roundness[1].toFixed(3)+"/"+
-                           (roundness[1]-roundness[0]).toFixed(3)+",\n";
+    roundness_file_text += outerRadius.toFixed(3)+"/"+
+                           innerRadius.toFixed(3)+"/"+
+                           (innerRadius-outerRadius).toFixed(3)+",\n";
 
     // iterate
+    //ctime = performance.now();//TIME
     is_stable = tiling.iterate();
     if(!is_stable){increment_number_of_steps();}
+    //time_iterate += performance.now()-ctime;//TIME
     if(show_roundness){
       // configuration already iterated
       // 1. plot roundnesses
       // caution: THREE.CircleGeometry does not like circles of radius 0...
-      if(roundness[0]>0){
+      if(outerRadius>0){
         // plot outer radius
-        let outerCircleGeometry = new THREE.CircleGeometry(roundness[0],64);
+        let outerCircleGeometry = new THREE.CircleGeometry(outerRadius,64);
         outerCircleGeometry.vertices.splice(0,1);
         let outerCircleMaterial = new THREE.MeshBasicMaterial({color:0x0000ff});
         // var for app.scene.remove
         var outerCircle = new THREE.LineLoop(outerCircleGeometry,outerCircleMaterial);
         app.scene.add(outerCircle);
       }
-      if(roundness[1]>0){
+      if(innerRadius>0){
         // plot inner radius
-        let innerCircleGeometry = new THREE.CircleGeometry(roundness[1],64);
+        let innerCircleGeometry = new THREE.CircleGeometry(innerRadius,64);
         innerCircleGeometry.vertices.splice(0,1);
         let innerCircleMaterial = new THREE.MeshBasicMaterial({color:0xff0000});
         // var for app.scene.remove
@@ -627,13 +677,16 @@ async function makeRoundnessFileFast(tiling){
     }
 
     // check regression of frontier
+    //ctime = performance.now();//TIME
     if(frontierTiles.filter(id => tiling.tiles[id].sand != tiling.tiles[id].limit-1).length > 0){
       console.log("  warning: unexpected frontier regression at step "+number_of_steps);
       roundness_file_text += "warning: unexpected frontier regression at step "+number_of_steps+"\n";
     }
+    //time_regression += performance.now()-ctime;//TIME
   }
 
   // stability reached
+  console.log("* stabilized to m at step "+number_of_steps);
   console.log("* roundness data (phase 2) is ready to create file");
 
   // create file from roundness_file_text
@@ -647,6 +700,12 @@ async function makeRoundnessFileFast(tiling){
   
   // done
   console.log("done roundness in "+(performance.now()-t0)+" (ms)");
+  //console.log("TIME updating outerTiles: "+time_outerTiles); //TIME
+  //console.log("TIME updating frontierTiles: "+time_frontierTiles); //TIME
+  //console.log("TIME computing outerRadius: "+time_outerRadius); //TIME
+  //console.log("TIME computing innerRadius: "+time_innerRadius); //TIME
+  //console.log("TIME iterating tiling: "+time_iterate); //TIME
+  //console.log("TIME checking regression: "+time_regression); //TIME
   tiling.colorTiles();
   return [roundness_file]; 
 }
@@ -791,7 +850,6 @@ async function makeRoundnessFile_version1(tiling){
         tiling.addConfiguration(tiling.get_identity());
 	
 	// make a file out of the function [ 1.0 ]
-        // toto
 	show_round = document.getElementById('roundShow').checked;
 	var arr_min = [];
 	var arr_max = [];
