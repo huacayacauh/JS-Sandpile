@@ -228,7 +228,7 @@ class Tiling{
 	}
 
 	// ------------------------------------------------
-	// 	[ 2.2 ] 	Apply one sandpile step
+	// 	[ 2.2 ] 	Apply sandpile steps
 	// ------------------------------------------------
 	iterate(){
 		// Topple any tile that has more than the limit of sand
@@ -247,6 +247,17 @@ class Tiling{
 			}
 		}
 		return is_stable;
+	}
+	
+	stabilize(){
+                console.log("  stabilization...");
+		let t0 = performance.now();
+		let is_stable = false;
+		while(!is_stable){
+			is_stable = this.iterate();
+		}
+		console.log("  done in : " + (performance.now() - t0) + " (ms)");
+		this.colorTiles();
 	}
 	
 	// ------------------------------------------------
@@ -327,10 +338,12 @@ class Tiling{
 	// ------------------------------------------------
 	// 	[ 2.5 ] 	Complex operations
 	// ------------------------------------------------
-	addConfiguration(otherTiling){
+
+        // add configuration n times
+	addConfiguration(otherTiling,n=1){
 		if(otherTiling.tiles.length != this.tiles.length) alert("Can't add configurations ! Different number of tiles.");
 		for(var i = 0; i<this.tiles.length; i++){
-			this.tiles[i].sand += otherTiling.tiles[i].sand;
+			this.tiles[i].sand += n*otherTiling.tiles[i].sand;
 		}
 		this.colorTiles();
 	}
@@ -364,18 +377,6 @@ class Tiling{
 		return newTiling;
 	}
 
-
-	stabilize(){
-                console.log("  stabilization...");
-		let t0 = performance.now();
-		let is_stable = false;
-		while(!is_stable){
-			is_stable = this.iterate();
-		}
-		console.log("  done in : " + (performance.now() - t0) + " (ms)");
-		this.colorTiles();
-	}
-	
 	// ------------------------------------------------
 	// 	[ 2.6 ] 	Coloring and display
 	// ------------------------------------------------
@@ -424,7 +425,16 @@ class Tiling{
 	}
 
 	// ------------------------------------------------
-	// [ 2.7 ] Compute the sandpile identity
+	// [ 2.7 ] Compute the maximum stable configuration
+	// ------------------------------------------------
+        get_maxStable(){
+                let max_stable = this.hiddenCopy();
+                max_stable.tiles.forEach(tile => tile.sand = tile.limit-1);
+                return max_stable;
+        }
+
+	// ------------------------------------------------
+	// [ 2.8 ] Compute the sandpile identity
 	// ------------------------------------------------
         get_identity(){
                 // check if it has already been computed
@@ -433,26 +443,22 @@ class Tiling{
                 }
                 // compute identity
                 console.log("compute identity e...");
-                console.log("* get max limit value m");
-        	var maxLimit = Math.max(...this.tiles.map(tile => tile.limit));
                 console.log("* compute (2m)°");
-        	var identity1 = this.hiddenCopy();
-        	identity1.clear();
-        	identity1.addEverywhere((maxLimit - 1) * 2);
-        	identity1.stabilize();
+                let stable2m = this.hiddenCopy();
+                stable2m.clear();
+                stable2m.addConfiguration(this.get_maxStable(),2);
+                let identity = stable2m.hiddenCopy();
+        	stable2m.stabilize();
                 console.log("* compute e=(2m-(2m)°)°");
-        	var identity2 = this.hiddenCopy();
-        	identity2.clear();
-        	identity2.addEverywhere((maxLimit - 1) * 2);
-        	identity2.removeConfiguration(identity1);
-        	identity2.stabilize();
+        	identity.removeConfiguration(stable2m);
+        	identity.stabilize();
                 console.log("done");
-        	this.identity = identity2;
+        	this.identity = identity;
                 return this.identity;
         }
 
 	// ------------------------------------------------
-	// [ 2.8 ] Compute the inverse of the current configuration
+	// [ 2.9 ] Compute the inverse of the current configuration
 	// ------------------------------------------------
         get_inverse(){
                 console.log("compute inverse i...");
@@ -461,19 +467,15 @@ class Tiling{
                 console.log("* stabilize c");
                 this.stabilize();
                 // compute inverse
-                console.log("* get max limit value m");
-        	let maxLimit = Math.max(...this.tiles.map(tile => tile.limit));
                 console.log("* get super identity 3m-(3m)°");
                 // check if it has already been computed
                 if(this.super_identity == null){
                         console.log("  compute it...");
                         let stable3m = this.hiddenCopy();
                         stable3m.clear();
-        	        stable3m.addEverywhere(3*(maxLimit-1));
+                        stable3m.addConfiguration(this.get_maxStable(),3);
+                        this.super_identity = stable3m.hiddenCopy();
                         stable3m.stabilize();
-                        this.super_identity = this.hiddenCopy();
-                        this.super_identity.clear();
-                        this.super_identity.addEverywhere(3*(maxLimit-1));
                         this.super_identity.removeConfiguration(stable3m);
                 }
                 console.log("* compute i=(3m-(3m)°-c)°");
