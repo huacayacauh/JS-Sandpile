@@ -442,6 +442,7 @@ class Tiling{
                         return this.identity;
                 }
                 // compute identity
+                let ctime_identity = performance.now();
                 console.log("compute identity e...");
                 console.log("* compute (2m)°");
                 let stable2m = this.hiddenCopy();
@@ -452,7 +453,7 @@ class Tiling{
                 console.log("* compute e=(2m-(2m)°)°");
         	identity.removeConfiguration(stable2m);
         	identity.stabilize();
-                console.log("done");
+                console.log("done identity in "+(performance.now()-ctime_identity)+" (ms)");
         	this.identity = identity;
                 return this.identity;
         }

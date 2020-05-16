@@ -68,6 +68,7 @@ createRoundnessFast.addEventListener('click', handleDownloadRoundnessFast, false
 //
 
 // computed once
+let r_error=0.001; // take into account rounding error in coordinates
 var borderTiles = null; // tiles touching the border, ids only
 var smallestDistancedict = null; // smallest distance of each tile to (0,0)
 var biggestDistancedict = null; // biggest distance of each tile to (0,0)
@@ -75,8 +76,13 @@ var inscribedCircleRadius = 0; // radius of inscribed circle
 var circumscribedCircleRadius = 0; // radius of circumscribed circle
 
 // updated at each step
-var innerTiles_touches_border = true; // get_roundness is separated into two phases according to this
-var innerTiles_touches_border_previous = true; // to log phase transitions only once
+var phase = 1; // get_roundness is separated into three subsequent phases according to this:
+               // phase 1: erratic behvior
+               // phase 2: innerRadius \leq inscribed radius
+               // phase 3: borderTiles \subseteq outerTiles
+               // remark: we can intuitively expect a direct transition from phase 1 to phase 3
+               //         when the condition of phase 2 is met (because tiles are polygons, but r_error may mess it up?)
+var phase_previous = 1; // to log phase transitions only once
 var outerTiles = null; // tiles at max-stable connected to the border, ids only
 var frontierTiles = null; // outerTiles having a neighbor in innerTiles (used in phase 2 only)
 
@@ -87,7 +93,6 @@ var frontierTiles = null; // outerTiles having a neighbor in innerTiles (used in
 function circles_radii(tiling){
   // get border bounds
   let borderEdges = []; // pairs of points (pairs of coordinates)
-  let r_error=0.01;
   for(let id of borderTiles){
     // check which edges are on the border:
     // iff they are not shared with a neighbor tile (up to r_error)
@@ -147,12 +152,11 @@ function circles_radii(tiling){
 // side effect on:
 // * outerTiles
 // * frontierTiles
-// * innerTiles_touches_border (_previous)
+// * phase
 Tiling.prototype.get_roundness = function(){
   // the procedure is separated into two phases
-  if(innerTiles_touches_border){
-    // phase 1: roundness measure is messy:
-    // recompute from the border at each step
+  if(phase != 3){
+    // phase 1 and 2: recompute from the border at each step
 
     // reset outerTiles
     outerTiles = [];
@@ -180,16 +184,10 @@ Tiling.prototype.get_roundness = function(){
       }
     }
 
-    // update innerTiles_touches_border
-    if(borderTiles.filter(id => !outerTiles.includes(id)).length == 0){
-      // all borderTiles are outerTiles: transition to phase 2
-      innerTiles_touches_border = false;
-    }
-    
     // end of phase 1
   }
   else{
-    // phase 2: the circle slowly shrinks
+    // phase 3: the circle slowly shrinks
     // check and exploit the assumption that outerTiles only grows
     // (otherwise an outerTiles (from frontierTiles) receives some grain
     // and triggers the toppling of all outerTiles)
@@ -198,8 +196,8 @@ Tiling.prototype.get_roundness = function(){
     // use the fact that only frontierTiles can change their sand content
     let outerTiles_new = [];
     if(frontierTiles.filter(id => this.tiles[id].sand != this.tiles[id].limit-1).length > 0){
-      // some frontierTiles are not outerTiles anymore: recompute all as in phase 1
-      innerTiles_touches_border = true;
+      // some frontierTiles are not outerTiles anymore: recompute all as in phase 1+2
+      phase = 2;
       return this.get_roundness();
     }
     else{
@@ -231,12 +229,6 @@ Tiling.prototype.get_roundness = function(){
       frontierTiles = frontierTiles_new;
     }
 
-    // update innerTiles_touches_border (check regression to phase 1)
-    if(borderTiles.filter(id => !outerTiles.includes(id)).length > 0){
-      // some borderTiles are not outerTiles: transition to phase 1
-      innerTiles_touches_border = true;
-    }
-
     // end of phase 2
   }
 
@@ -265,7 +257,7 @@ Tiling.prototype.get_roundness = function(){
   // from a subset of innerTiles only
   let innerTiles_sub = [];
   // 1. borderTiles (if some inner tiles touch the border)
-  if(innerTiles_touches_border){
+  if(phase < 3){
      innerTiles_sub.push(...borderTiles.filter(id => !outerTiles.includes(id)));
   }
   // 2. neighbors of frontierTiles
@@ -290,6 +282,39 @@ Tiling.prototype.get_roundness = function(){
     innerRadius = Math.max(...biggestDistances_innerTiles);
   }
 
+  // update phase
+  if(phase == 1){
+    // check transition to phase 2 (with rounding error)
+    if(innerRadius <= inscribedCircleRadius+r_error){
+      // transition to phase 2
+      phase = 2;
+    }
+  }
+  if(phase == 2){
+    // check transition to phase 3
+    if(borderTiles.filter(id => !outerTiles.includes(id)).length == 0){
+      // transition to phase 3 (all borderTiles are outerTiles)
+      phase = 3;
+    }
+    // check regression to phase 1 (with rounding error)
+    if(innerRadius > inscribedCircleRadius+r_error){
+      // regression to phase 1
+      phase = 1;
+    }
+  }
+  if(phase == 3){
+    // check regression to phase 2
+    if(borderTiles.filter(id => !outerTiles.includes(id)).length > 0){
+      // regression to phase 3 (some borderTiles are not outerTiles)
+      phase = 2;
+      // check regression to phase 1 (with rounding error)
+      if(innerRadius > inscribedCircleRadius+r_error){
+        // regression to phase 1
+        phase = 1;
+      }
+    }
+  }
+    
   return [outerRadius,innerRadius];
 }
 
@@ -352,21 +377,21 @@ async function makeRoundnessFile(tiling){
   // initialize tile sets
   outerTiles = [];
   frontierTiles = [];
-  innerTiles_touches_border = true;
-  innerTiles_touches_border_previous = true;
+  phase = 1;
+  phase_previous = 1;
 
   // measure roundness, push to file, and iterate
   console.log("* measure roundness at each step from m+e to m");
   var is_stable = false;
   while(!is_stable){
     // get roundness
-    // (side effect on outerTiles, frontierTiles, innerTiles_touches_border)
+    // (side effect on outerTiles, frontierTiles, phase)
     let roundness = tiling.get_roundness();
 
-    // log phase transition
-    if(innerTiles_touches_border != innerTiles_touches_border_previous){
-      console.log("  phase transition at step "+number_of_steps+": innerTiles touches border="+innerTiles_touches_border);
-      innerTiles_touches_border_previous = innerTiles_touches_border;
+    // log phase transitions
+    if(phase != phase_previous){
+      console.log("  phase transition at step "+number_of_steps+": phase="+phase);
+      phase_previous = phase;
     }
     // push to file
     roundness_file_text += roundness[0].toFixed(3)+"/"+
@@ -476,13 +501,29 @@ async function makeRoundnessFileFast(tiling){
     biggestDistancedict.set(tile.id,Math.max(...boundsDistances));
   });
 
-  // no need for in/circum-scribed circles radii
+  // compute inscribed and circumscribed circle radii
+  console.log("* compute radii");
+  let radii = circles_radii(tiling);
+  inscribedCircleRadius = radii[0];
+  circumscribedCircleRadius = radii[1];
+  console.log("  inscribed radius="+inscribedCircleRadius);
+  console.log("  circumscribed radius="+circumscribedCircleRadius);
 
   // iterate until phase 2
-  console.log("* iterate until phase 2");
+  console.log("* phase 1: iterate until phase 2");
   let is_stable = false;
-  innerTiles_touches_border = true;
-  while(!is_stable && innerTiles_touches_border){
+  phase = 1;
+  // prepare quick pre-check of transition to phase 2
+  let inscribedTiles = []; // a subset of tiles required to be outerTiles in order to have innerRadius <= inscribedCircleRadius
+  tiling.tiles.forEach(tile => {
+    // tiles intersecting the circle of radius inscribedCircleRadius+r_error
+    if(  (smallestDistancedict.get(tile.id) <= inscribedCircleRadius+r_error)
+      && (biggestDistancedict.get(tile.id) >= inscribedCircleRadius+r_error)){
+      inscribedTiles.push(tile.id);
+    }
+  });
+  // go
+  while(!is_stable && phase==1){
     // iterate
     is_stable = tiling.iterate();
     if(!is_stable){increment_number_of_steps();}
@@ -491,11 +532,36 @@ async function makeRoundnessFileFast(tiling){
       tiling.colorTiles();
     }
     // check if phase 2 is reached
-    innerTiles_touches_border = (borderTiles.filter(id => tiling.tiles[id].sand != tiling.tiles[id].limit-1).length > 0);
+    // quick pre-check from inscribedTiles
+    if(inscribedTiles.filter(id => tiling.tiles[id].sand != tiling.tiles[id].limit-1).length == 0){
+      // we may have innerRadius <= inscribedCircleRadius
+      console.log("  pre-check transition to phase 2 passed at step "+number_of_steps);
+      // full check with .get_roundness()
+      outerTiles = [];
+      frontierTiles = [];
+      tiling.get_roundness(); // side effect on phase
+    }
   }
   // phase 2 reached
-  console.log("* phase 2 reached at step "+number_of_steps);
+  console.log("  done phase 1 in "+(performance.now()-t0)+" (ms)");
+  let t1 = performance.now();
+  console.log("* phase 2: reached at step "+number_of_steps);
   roundness_file_text += number_of_steps+"\n";
+
+  // expect a direct transition from phase 2 to phase 3
+  console.log("* direct transition to phase 3 expected...");
+  if(phase == 3){
+    // phase 3 reached
+    console.log("  OK");
+    console.log("* phase 3: reached at step "+number_of_steps);
+    phase = 3;
+  }
+  else{
+    // phase 3 not reached
+    console.log("  KO");
+    console.log("error: a direct transition to phase 3 was expected (for the moment we abort, complete this code if this case needs to be handled)");
+    return;
+  }
 
   // initialize outerTiles
   outerTiles = [];
@@ -686,6 +752,7 @@ async function makeRoundnessFileFast(tiling){
   }
 
   // stability reached
+  console.log("  done phase 3 in "+(performance.now()-t1)+" (ms)");
   console.log("* stabilized to m at step "+number_of_steps);
   console.log("* roundness data (phase 2) is ready to create file");
 
