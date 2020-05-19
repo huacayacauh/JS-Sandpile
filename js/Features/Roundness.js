@@ -340,7 +340,7 @@ async function makeRoundnessFile(tiling){
   // file text variable
   var roundness_file_text = "";
   // whether to animate roundness or not
-  var show_roundness = document.getElementById('roundShow').checked;
+  var show_roundness = document.getElementById('roundAnimate').checked;
 
   // compute border tiles
   console.log("* compute border tiles");
@@ -475,7 +475,7 @@ async function makeRoundnessFileFast(tiling){
   // file text variable
   let roundness_file_text = "";
   // whether to animate roundness or not
-  let show_roundness = document.getElementById('roundShow').checked;
+  let show_roundness = document.getElementById('roundAnimate').checked;
 
   // compute border tiles
   console.log("* compute border tiles");
@@ -777,10 +777,169 @@ async function makeRoundnessFileFast(tiling){
   return [roundness_file]; 
 }
 
+//
+// [2.0] function displaying infos directly in app
+//
 
+// 
+// [2.1] compute, display and show
+//       inscribed and circumscrined radii
+//       of the current tiling
+//
 
+var inscribedCircle // to add/remove inscribed from app.scene
+var circumscribedCircle // to add/remove circumscribed from app.scene
 
+function radii(elem){
+  // TODO: compute radii once and store the results
+  // boring...
+  if(!currentTiling){return;}
+  // called to checked or unchecked?
+  if(!elem.checked){
+    // unchecked: remove circles
+    app.scene.remove(inscribedCircle);
+    app.scene.remove(circumscribedCircle);
+    return;
+  }
+  // checked: go
+  let tiling = currentTiling;
+  console.log("compute radii...");
+  // compute border tiles
+  console.log("* compute border tiles");
+  borderTiles = tiling.tiles.filter(tile =>
+    tile.neighbors.length != tile.bounds.length/2
+  ).map(tile => tile.id);
+  // precompute the biggest and smallest distance from (0,0) for all tiles
+  console.log("* precompute distances for all tiles");
+  smallestDistancedict = new Map();
+  biggestDistancedict = new Map();
+  tiling.tiles.forEach(tile => {
+    // compute an array of distances for all bounds and edges
+    let boundsDistances = [];
+    let edgesDistances = [];
+    for(let i=0; i<tile.bounds.length; i+=2){
+      boundsDistances.push(distance(0,0,tile.bounds[i],tile.bounds[i+1]));
+      edgesDistances.push(distancePointSegment(0,0,tile.bounds[i],tile.bounds[i+1],tile.bounds[(i+2)%tile.bounds.length],tile.bounds[(i+3)%tile.bounds.length]));
+    }
+    // smallest distance from edges
+    smallestDistancedict.set(tile.id,Math.min(...edgesDistances));
+    // biggest distance from bounds
+    biggestDistancedict.set(tile.id,Math.max(...boundsDistances));
+  });
+  // compute radii
+  let radii = circles_radii(tiling);
+  let inscribed = radii[0];
+  let circumscribed = radii[1];
+  console.log("* inscribed radius="+inscribed);
+  console.log("* circumscribed radius="+circumscribed);
+  // display
+  let disp = document.getElementById("radiiInfo");
+  disp.innerHTML = "inscribed radius : "+inscribed.toFixed(3)+"<br>"
+                  +"circumscribed radius : "+circumscribed.toFixed(3);
+  // show
+  if(inscribed>0){
+    let inscribedCircleGeometry = new THREE.CircleGeometry(inscribed,64);
+    inscribedCircleGeometry.vertices.splice(0,1);
+    let inscribedCircleMaterial = new THREE.MeshBasicMaterial({color:0x0000ff});
+    inscribedCircle = new THREE.LineLoop(inscribedCircleGeometry,inscribedCircleMaterial);
+    app.scene.add(inscribedCircle);
+  }
+  if(circumscribed>0){
+    let circumscribedCircleGeometry = new THREE.CircleGeometry(circumscribed,64);
+    circumscribedCircleGeometry.vertices.splice(0,1);
+    let circumscribedCircleMaterial = new THREE.MeshBasicMaterial({color:0xff0000});
+    circumscribedCircle = new THREE.LineLoop(circumscribedCircleGeometry,circumscribedCircleMaterial);
+    app.scene.add(circumscribedCircle);
+  }
+}
+                      
+// 
+// [2.2] compute, display and show
+//       the current roundness
+//
 
+var outerCircle // to add/remove inner from app.scene
+var innerCircle // to add/remove outer from app.scene
+
+function roundness(elem){
+  // TODO: not working as expected on any configuration...
+  // boring...
+  if(!currentTiling){return;}
+  // called to checked or unchecked?
+  if(!elem.checked){
+    // unchecked: remove circles and info
+    let disp = document.getElementById("roundInfo");
+    disp.innerHTML = "<br><br>";
+    app.scene.remove(outerCircle);
+    app.scene.remove(innerCircle);
+    return;
+  }
+  // checked: go
+  let tiling = currentTiling;
+  console.log("compute roundness...");
+  // compute border tiles
+  console.log("* compute border tiles");
+  borderTiles = tiling.tiles.filter(tile =>
+    tile.neighbors.length != tile.bounds.length/2
+  ).map(tile => tile.id);
+  // precompute the biggest and smallest distance from (0,0) for all tiles
+  console.log("* precompute distances for all tiles");
+  smallestDistancedict = new Map();
+  biggestDistancedict = new Map();
+  tiling.tiles.forEach(tile => {
+    // compute an array of distances for all bounds and edges
+    let boundsDistances = [];
+    let edgesDistances = [];
+    for(let i=0; i<tile.bounds.length; i+=2){
+      boundsDistances.push(distance(0,0,tile.bounds[i],tile.bounds[i+1]));
+      edgesDistances.push(distancePointSegment(0,0,tile.bounds[i],tile.bounds[i+1],tile.bounds[(i+2)%tile.bounds.length],tile.bounds[(i+3)%tile.bounds.length]));
+    }
+    // smallest distance from edges
+    smallestDistancedict.set(tile.id,Math.min(...edgesDistances));
+    // biggest distance from bounds
+    biggestDistancedict.set(tile.id,Math.max(...boundsDistances));
+  });
+  // compute inscribed and circumscribed circle radii
+  console.log("* compute radii");
+  let radii = circles_radii(tiling);
+  inscribedCircleRadius = radii[0];
+  circumscribedCircleRadius = radii[1];
+  console.log("  inscribed radius="+inscribedCircleRadius);
+  console.log("  circumscribed radius="+circumscribedCircleRadius);
+  // initialize global variables
+  outerTiles = [];
+  frontierTiles = [];
+  phase = 1;
+  // compute roundness
+  let roundness = tiling.get_roundness();
+  let outerRadius = roundness[0];
+  let innerRadius = roundness[1];
+  console.log("* outer radius="+outerRadius);
+  console.log("* inner radius="+innerRadius);
+  // display
+  let disp = document.getElementById("roundInfo");
+  disp.innerHTML = "outer radius : "+outerRadius.toFixed(3)+"<br>"
+                  +"inner radius : "+innerRadius.toFixed(3)+"<br>"
+                  +"roundness : "+(innerRadius-outerRadius).toFixed(3);
+  // show
+  if(outerRadius>0){
+    let outerCircleGeometry = new THREE.CircleGeometry(outerRadius,64);
+    outerCircleGeometry.vertices.splice(0,1);
+    let outerCircleMaterial = new THREE.MeshBasicMaterial({color:0x0000ff});
+    outerCircle = new THREE.LineLoop(outerCircleGeometry,outerCircleMaterial);
+    app.scene.add(outerCircle);
+  }
+  if(innerRadius>0){
+    let innerCircleGeometry = new THREE.CircleGeometry(innerRadius,64);
+    innerCircleGeometry.vertices.splice(0,1);
+    let innerCircleMaterial = new THREE.MeshBasicMaterial({color:0xff0000});
+    innerCircle = new THREE.LineLoop(innerCircleGeometry,innerCircleMaterial);
+    app.scene.add(innerCircle);
+  }
+}
+                      
+                      
+                      
 // ################################################
 // ################################################
 // ################################################
@@ -917,7 +1076,7 @@ async function makeRoundnessFile_version1(tiling){
         tiling.addConfiguration(tiling.get_identity());
 	
 	// make a file out of the function [ 1.0 ]
-	show_round = document.getElementById('roundShow').checked;
+	show_round = document.getElementById('roundAnimate').checked;
 	var arr_min = [];
 	var arr_max = [];
 	

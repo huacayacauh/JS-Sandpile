@@ -253,10 +253,12 @@ class Tiling{
                 console.log("  stabilization...");
 		let t0 = performance.now();
 		let is_stable = false;
+                let n=-1;
 		while(!is_stable){
 			is_stable = this.iterate();
+                        n++;
 		}
-		console.log("  done in : " + (performance.now() - t0) + " (ms)");
+		console.log("  done after "+n+" steps in "+(performance.now()-t0)+" (ms)");
 		this.colorTiles();
 	}
 	

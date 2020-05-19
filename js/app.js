@@ -150,13 +150,28 @@ function increment_number_of_steps(){
 function step(){
 	if(currentTiling){
 		currentTiling.iterate();
-                increment_number_of_steps()
+                increment_number_of_steps();
 		currentTiling.colorTiles();
 		if(selectedTile)
 			tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentTiling.tiles[selectedTile].sand;
 	}
 }
 
+function steps(){
+        // get number of steps
+	let n = document.getElementById("stepsRepeat").valueAsNumber;
+	if(currentTiling){
+                let is_stable = false;
+                // perform n steps
+                for(let i=0; i<n && !is_stable; i++){
+		        currentTiling.iterate();
+                        increment_number_of_steps();
+                }
+		currentTiling.colorTiles();
+		if(selectedTile)
+			tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentTiling.tiles[selectedTile].sand;
+	}
+}
 
 // ------------------------------------------------
 // 	[ 3.2 ] 	Apply multiple steps and color

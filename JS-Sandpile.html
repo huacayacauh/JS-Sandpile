@@ -40,7 +40,7 @@
 		<span style="position:absolute; top:30px; right:50px"> Draw-tiles : </span>
 			<label class="switch" style="position:absolute; top:32px; right:10px">
 			  <input type="checkbox" id="wireFrameToggle" oninput="enableWireFrame(this);" checked = "false">
-			  <span class="slider round "></span>
+			  <span class="slider round"></span>
 			</label>
 		
 	</header>
@@ -199,6 +199,18 @@
 			</div>
 		</div> <!-- Operations controls -->
 			
+		<!-- ############################################################ Stabilization -->
+		<div class="controlGroup">
+			<p class="groupTitle">Sandpile process</p>
+		    <button onclick="steps()" class="btn btn-default">Step</button>
+			&nbsp;&nbsp;times&nbsp;&nbsp;
+			<input type="number" id="stepsRepeat" value="1" min="1" max="999999"style="width: 70px;" />
+            <br>
+			<div style="margin-left:auto; margin-right:auto; margin-top:10px; display:grid">
+		        <button onclick="stabTiling()" class="btn btn-default">Stabilize</button>
+            </div>
+        </div>
+
 		<!-- ############################################################ Import/Export -->		
 		<div class="controlGroup">
 			<!-- File importing -->
@@ -240,25 +252,46 @@
 			<br>
 			<p id="statsInfo"></p>
 			  
-			<button id="createStats" style="position:absolute; bottom:10px; left:10px;" class="btn btn-default">Download stats</button>
+			<button id="createStats" style="position:absolute; bottom:10px; left:10px;" class="btn btn-default">Stabilization stats file</button>
         </div>
 			  
 		<!-- ############################################################ Roundness -->		
-		<div class="controlGroup">
+		<div class="controlGroup" style="height:350px;">
 			<p class="groupTitle">Roundness</p>
             <!-- Animate -->
 			Animate :
 			<label class="switch" style="margin-top:5px">
-			  <input type="checkbox" id="roundShow" checked = "true">
+			  <input type="checkbox" id="roundAnimate" checked = "true">
 			  <span class="slider round"></span>
 			</label>
             <!-- Roundness buttons-->
 			<div style="margin-left:auto; margin-right:auto; display:grid">
-              <!-- Roundness -->
+              <!-- Roundness file -->
               <button id="createRoundness" style="margin-top:5px;" class="btn btn-default">Compute roundness file</button>
               <!-- Roundness fast -->
               <button id="createRoundnessFast" style="margin-top:5px;" class="btn btn-default">Fast (circle shrink only)</button>
-          </div>
+            </div>
+            <!-- Show radii and current roundness -->
+            <div style="margin-top:10px;">
+              <!-- Radii -->
+              Show Xscribed radii :
+			  <label class="switch" style="">
+			    <input type="checkbox" id="radiiShow" oninput="radii(this);">
+			    <span class="slider round"></span>
+			  </label>
+              <br>
+              <!-- Roundness now -->
+              Show current roundness :
+			  <label class="switch" style="">
+			    <input type="checkbox" id="roundShow" oninput="roundness(this);">
+			    <span class="slider round"></span>
+			  </label>
+              <br>
+              <br>
+              <p id="radiiInfo"><br><br></p>
+              <p id="roundInfo"><br><br></p>
+              <br>
+            </div>
         </div>
 
 		<!-- ############################################################ Harmonics -->		
