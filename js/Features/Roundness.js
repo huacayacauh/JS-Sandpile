@@ -1007,9 +1007,49 @@ function export_frontierTikz(){
       }
     }
   }
+  // precompute the biggest and smallest distance from (0,0) for all tiles
+  compute_Distancedicts(tiling);
+  // compute radii
+  compute_radii(tiling);
+  // compute outerRadius
+  let outerRadius = 0;
+  if(outerTiles.length == 0){
+    outerRadius = inscribedCircleRadius;
+  }
+  else{
+    if(frontierTiles.length == 0){
+      outerRadius = 0;
+    }
+    else{
+      let smallestDistances_outerTiles = frontierTiles.map(id => smallestDistancedict.get(id));
+      let smallestDistance_outerTiles = Math.min(...smallestDistances_outerTiles);
+      outerRadius = Math.min(inscribedCircleRadius,smallestDistance_outerTiles);
+    }
+  }
+  // compute innerRadius
+  let innerTiles_sub = [];
+  innerTiles_sub.push(...borderTiles.filter(id => !outerTiles.includes(id)));
+  frontierTiles.forEach(id => {
+    let tile = tiling.tiles[id];
+    tile.neighbors.forEach(nid => {
+      let ntile = tiling.tiles[nid];
+      if(ntile.sand != ntile.limit-1){
+        innerTiles_sub.push(nid);
+      }
+    });
+  });
+  let innerRadius = 0;
+  if(innerTiles_sub.length == 0){
+    innerRadius = 0;
+  }
+  else{
+    let biggestDistances_innerTiles = innerTiles_sub.map(id => biggestDistancedict.get(id));
+    innerRadius = Math.max(...biggestDistances_innerTiles);
+  }
   // construct tikz from frontierEdges
   let tikz = "";
   tikz += "\\begin{tikzpicture}\n";
+  // tikz edges
   for(let edge of frontierEdges){
     let x1 = edge[0][0];
     let y1 = edge[0][1];
@@ -1017,6 +1057,9 @@ function export_frontierTikz(){
     let y2 = edge[1][1];
     tikz += "\\draw ("+x1+","+y1+") -- ("+x2+","+y2+");\n";
   }
+  // tikz circles
+  tikz += "\\draw[blue] (0,0) circle ("+outerRadius.toFixed(3)+");\n";
+  tikz += "\\draw[red] (0,0) circle ("+innerRadius.toFixed(3)+");\n";
   tikz += "\\end{tikzpicture}\n";
   // create file
   let data = new Blob([tikz], {type: 'text/plain'});
