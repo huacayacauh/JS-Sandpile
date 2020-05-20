@@ -781,8 +781,50 @@ async function makeRoundnessFileFast(tiling){
 // [2.0] function displaying infos directly in app
 //
 
+//
+// [2.1] factorize parts of the code
+//
+
+// compute borderTiles
+function compute_borderTiles(tiling){
+  console.log("* compute border tiles");
+  borderTiles = tiling.tiles.filter(tile =>
+    tile.neighbors.length != tile.bounds.length/2
+  ).map(tile => tile.id);
+}
+
+// compute smallestDistancedict and biggestDistancedict
+function compute_Distancedicts(tiling){
+  console.log("* precompute distances for all tiles");
+  smallestDistancedict = new Map();
+  biggestDistancedict = new Map();
+  tiling.tiles.forEach(tile => {
+    // compute an array of distances for all bounds and edges
+    let boundsDistances = [];
+    let edgesDistances = [];
+    for(let i=0; i<tile.bounds.length; i+=2){
+      boundsDistances.push(distance(0,0,tile.bounds[i],tile.bounds[i+1]));
+      edgesDistances.push(distancePointSegment(0,0,tile.bounds[i],tile.bounds[i+1],tile.bounds[(i+2)%tile.bounds.length],tile.bounds[(i+3)%tile.bounds.length]));
+    }
+    // smallest distance from edges
+    smallestDistancedict.set(tile.id,Math.min(...edgesDistances));
+    // biggest distance from bounds
+    biggestDistancedict.set(tile.id,Math.max(...boundsDistances));
+  });
+}
+
+// compute inscribedRadius and circumscribedRadius
+function compute_radii(tiling){
+  console.log("* compute radii");
+  let radii = circles_radii(tiling);
+  inscribedCircleRadius = radii[0];
+  circumscribedCircleRadius = radii[1];
+  console.log("  inscribed radius="+inscribedCircleRadius);
+  console.log("  circumscribed radius="+circumscribedCircleRadius);
+}
+
 // 
-// [2.1] compute, display and show
+// [2.2] compute, display and show
 //       inscribed and circumscrined radii
 //       of the current tiling
 //
@@ -805,47 +847,25 @@ function radii(elem){
   let tiling = currentTiling;
   console.log("compute radii...");
   // compute border tiles
-  console.log("* compute border tiles");
-  borderTiles = tiling.tiles.filter(tile =>
-    tile.neighbors.length != tile.bounds.length/2
-  ).map(tile => tile.id);
+  compute_borderTiles(tiling);
   // precompute the biggest and smallest distance from (0,0) for all tiles
-  console.log("* precompute distances for all tiles");
-  smallestDistancedict = new Map();
-  biggestDistancedict = new Map();
-  tiling.tiles.forEach(tile => {
-    // compute an array of distances for all bounds and edges
-    let boundsDistances = [];
-    let edgesDistances = [];
-    for(let i=0; i<tile.bounds.length; i+=2){
-      boundsDistances.push(distance(0,0,tile.bounds[i],tile.bounds[i+1]));
-      edgesDistances.push(distancePointSegment(0,0,tile.bounds[i],tile.bounds[i+1],tile.bounds[(i+2)%tile.bounds.length],tile.bounds[(i+3)%tile.bounds.length]));
-    }
-    // smallest distance from edges
-    smallestDistancedict.set(tile.id,Math.min(...edgesDistances));
-    // biggest distance from bounds
-    biggestDistancedict.set(tile.id,Math.max(...boundsDistances));
-  });
+  compute_Distancedicts(tiling);
   // compute radii
-  let radii = circles_radii(tiling);
-  let inscribed = radii[0];
-  let circumscribed = radii[1];
-  console.log("* inscribed radius="+inscribed);
-  console.log("* circumscribed radius="+circumscribed);
+  compute_radii(tiling);
   // display
   let disp = document.getElementById("radiiInfo");
-  disp.innerHTML = "inscribed radius : "+inscribed.toFixed(3)+"<br>"
-                  +"circumscribed radius : "+circumscribed.toFixed(3);
+  disp.innerHTML = "inscribed radius : "+inscribedCircleRadius.toFixed(3)+"<br>"
+                  +"circumscribed radius : "+circumscribedCircleRadius.toFixed(3);
   // show
-  if(inscribed>0){
-    let inscribedCircleGeometry = new THREE.CircleGeometry(inscribed,64);
+  if(inscribedCircleRadius>0){
+    let inscribedCircleGeometry = new THREE.CircleGeometry(inscribedCircleRadius,64);
     inscribedCircleGeometry.vertices.splice(0,1);
     let inscribedCircleMaterial = new THREE.MeshBasicMaterial({color:0x0000ff});
     inscribedCircle = new THREE.LineLoop(inscribedCircleGeometry,inscribedCircleMaterial);
     app.scene.add(inscribedCircle);
   }
-  if(circumscribed>0){
-    let circumscribedCircleGeometry = new THREE.CircleGeometry(circumscribed,64);
+  if(circumscribedCircleRadius>0){
+    let circumscribedCircleGeometry = new THREE.CircleGeometry(circumscribedCircleRadius,64);
     circumscribedCircleGeometry.vertices.splice(0,1);
     let circumscribedCircleMaterial = new THREE.MeshBasicMaterial({color:0xff0000});
     circumscribedCircle = new THREE.LineLoop(circumscribedCircleGeometry,circumscribedCircleMaterial);
@@ -854,7 +874,7 @@ function radii(elem){
 }
                       
 // 
-// [2.2] compute, display and show
+// [2.3] compute, display and show
 //       the current roundness
 //
 
@@ -862,7 +882,6 @@ var outerCircle // to add/remove inner from app.scene
 var innerCircle // to add/remove outer from app.scene
 
 function roundness(elem){
-  // TODO: not working as expected on any configuration...
   // boring...
   if(!currentTiling){return;}
   // called to checked or unchecked?
@@ -878,34 +897,11 @@ function roundness(elem){
   let tiling = currentTiling;
   console.log("compute roundness...");
   // compute border tiles
-  console.log("* compute border tiles");
-  borderTiles = tiling.tiles.filter(tile =>
-    tile.neighbors.length != tile.bounds.length/2
-  ).map(tile => tile.id);
+  compute_borderTiles(tiling);
   // precompute the biggest and smallest distance from (0,0) for all tiles
-  console.log("* precompute distances for all tiles");
-  smallestDistancedict = new Map();
-  biggestDistancedict = new Map();
-  tiling.tiles.forEach(tile => {
-    // compute an array of distances for all bounds and edges
-    let boundsDistances = [];
-    let edgesDistances = [];
-    for(let i=0; i<tile.bounds.length; i+=2){
-      boundsDistances.push(distance(0,0,tile.bounds[i],tile.bounds[i+1]));
-      edgesDistances.push(distancePointSegment(0,0,tile.bounds[i],tile.bounds[i+1],tile.bounds[(i+2)%tile.bounds.length],tile.bounds[(i+3)%tile.bounds.length]));
-    }
-    // smallest distance from edges
-    smallestDistancedict.set(tile.id,Math.min(...edgesDistances));
-    // biggest distance from bounds
-    biggestDistancedict.set(tile.id,Math.max(...boundsDistances));
-  });
+  compute_Distancedicts(tiling);
   // compute inscribed and circumscribed circle radii
-  console.log("* compute radii");
-  let radii = circles_radii(tiling);
-  inscribedCircleRadius = radii[0];
-  circumscribedCircleRadius = radii[1];
-  console.log("  inscribed radius="+inscribedCircleRadius);
-  console.log("  circumscribed radius="+circumscribedCircleRadius);
+  compute_radii(tiling);
   // initialize global variables
   outerTiles = [];
   frontierTiles = [];
