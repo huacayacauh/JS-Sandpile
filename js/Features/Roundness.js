@@ -934,7 +934,108 @@ function roundness(elem){
   }
 }
                       
-                      
+//
+// [3.0] export frontier (edges between inner and outer tiles) to tikz
+//
+
+function export_frontierTikz(){
+  // boring...
+  if(!currentTiling){return;}
+  // go
+  console.log("export frontier to tikz");
+  tiling = currentTiling;
+  // compute border tiles
+  compute_borderTiles(tiling);
+  // compute outer tiles
+  outerTiles = [];
+  let tileStack = Array.from(borderTiles);
+  while(tileStack.length != 0){
+    let id = tileStack.shift();
+    let tile = tiling.tiles[id];
+    if((!outerTiles.includes(id)) && (tile.sand == tile.limit-1)){
+      // new outerTile
+      outerTiles.push(id);
+      tileStack.push(...tile.neighbors);
+    }
+  }
+  // compute frontierTiles
+  frontierTiles = [];
+  for(let id of outerTiles){
+    let tile = tiling.tiles[id];
+    if(tile.neighbors.filter(nid => {
+        let ntile = tiling.tiles[nid];
+        return ntile.sand != ntile.limit-1;
+      }).length > 0){
+      // a neighbor in innerTiles
+      frontierTiles.push(id);
+    }
+  }
+  // compute frontier bounds
+  frontierEdges = []; // pairs of points (pairs of coordinates)
+  for(let id of frontierTiles){
+    // check which edges are on the frontier:
+    // iff they are shared with an inner tile (up to r_error)
+    let tile = tiling.tiles[id];
+    for(let i=0; i<tile.bounds.length; i+=2){
+      let x1 = tile.bounds[i];
+      let y1 = tile.bounds[i+1];
+      let x2 = tile.bounds[(i+2)%tile.bounds.length];
+      let y2 = tile.bounds[(i+3)%tile.bounds.length];
+      // find the neighbor along this edge
+      let found_neighbor = false;
+      for(let nid of tile.neighbors){
+        let ntile = tiling.tiles[nid];
+        for(let j=0; j<ntile.bounds.length; j+=2){
+          let x3 = ntile.bounds[j];
+          let y3 = ntile.bounds[j+1];
+          let x4 = ntile.bounds[(j+2)%ntile.bounds.length];
+          let y4 = ntile.bounds[(j+3)%ntile.bounds.length];
+          // up to r_error
+          if( ( distance(x1,y1,x3,y3)<r_error && distance(x2,y2,x4,y4)<r_error )
+           || ( distance(x1,y1,x4,y4)<r_error && distance(x2,y2,x3,y3)<r_error ) ){
+            // found the neighbor
+            found_neighbor = true;
+            // check if it is an inner tile
+            if(ntile.sand != ntile.limit-1){
+              // yes: new frontier edge
+              frontierEdges.push([[x1,y1],[x2,y2]]);
+            }
+            break;
+          }
+        }
+        if(found_neighbor){break;} // shortcut
+      }
+    }
+  }
+  // construct tikz from frontierEdges
+  let tikz = "";
+  tikz += "\\begin{tikzpicture}\n";
+  for(let edge of frontierEdges){
+    let x1 = edge[0][0];
+    let y1 = edge[0][1];
+    let x2 = edge[1][0];
+    let y2 = edge[1][1];
+    tikz += "\\draw ("+x1+","+y1+") -- ("+x2+","+y2+");\n";
+  }
+  tikz += "\\end{tikzpicture}\n";
+  // create file
+  let data = new Blob([tikz], {type: 'text/plain'});
+  if (textFile !== null) {
+    // If we are replacing a previously generated file we need to
+    // manually revoke the object URL to avoid memory leaks.
+    window.URL.revokeObjectURL(textFile);
+  }
+  textFile = window.URL.createObjectURL(data);
+  let link = document.getElementById('downloadlink');
+  link.setAttribute('download', "JS-Sandpile_frontier.tex");
+  link.href = textFile;
+  link.click();
+  // done
+  console.log("done");
+}
+
+
+
                       
 // ################################################
 // ################################################

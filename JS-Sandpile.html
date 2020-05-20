@@ -256,7 +256,7 @@
         </div>
 			  
 		<!-- ############################################################ Roundness -->		
-		<div class="controlGroup" style="height:320px;">
+		<div class="controlGroup" style="height:360px;">
 			<p class="groupTitle">Roundness</p>
             <!-- Animate -->
 			Animate :
@@ -270,6 +270,8 @@
               <button id="createRoundness" style="margin-top:5px;" class="btn btn-default">Compute roundness file</button>
               <!-- Roundness fast -->
               <button id="createRoundnessFast" style="margin-top:5px;" class="btn btn-default">Fast (circle shrink only)</button>
+              <!-- Export frontier to tikz -->
+              <button id="export_frontierTikz" onclick="export_frontierTikz()" style="margin-top:5px;" class="btn btn-default">Export frontier to TIKZ</button>
             </div>
             <!-- Show radii and current roundness -->
             <div style="margin-top:10px;">
