@@ -1048,18 +1048,18 @@ function export_frontierTikz(){
   }
   // construct tikz from frontierEdges
   let tikz = "";
-  tikz += "\\begin{tikzpicture}\n";
+  tikz += "\\begin{tikzpicture}[every path/.style={very thick}]\n";
   // tikz edges
   for(let edge of frontierEdges){
     let x1 = edge[0][0];
     let y1 = edge[0][1];
     let x2 = edge[1][0];
     let y2 = edge[1][1];
-    tikz += "\\draw ("+x1+","+y1+") -- ("+x2+","+y2+");\n";
+    tikz += "\\draw ("+x1.toFixed(3)+","+y1.toFixed(3)+") -- ("+x2.toFixed(3)+","+y2.toFixed(3)+");\n";
   }
   // tikz circles
-  tikz += "\\draw[blue] (0,0) circle ("+outerRadius.toFixed(3)+");\n";
-  tikz += "\\draw[red] (0,0) circle ("+innerRadius.toFixed(3)+");\n";
+  tikz += "\\draw[blue,thin] (0,0) circle ("+outerRadius.toFixed(3)+");\n";
+  tikz += "\\draw[red,thin] (0,0) circle ("+innerRadius.toFixed(3)+");\n";
   tikz += "\\end{tikzpicture}\n";
   // create file
   let data = new Blob([tikz], {type: 'text/plain'});

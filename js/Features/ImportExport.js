@@ -13,7 +13,7 @@
 
 // [1.1] Import from JSON
 
-function jsonToTilling(json){
+function jsonToTiling(json){
 
 	var tiles = [];
     for(var i = 0; i < json.tiles.length; i++){
@@ -49,7 +49,7 @@ function jsonToTilling(json){
 
 // [1.1] Export to JSON
 
-function tillingToJson(sandpile){
+function tilingToJson(sandpile){
 
     var json = {};
 	
@@ -204,7 +204,7 @@ handleFileSelect = function(evt) {
         var fileString = evt.target.result;
         var json = JSON.parse(fileString);
         //app.sandpile = json;
-        jsonToTilling(json);
+        jsonToTiling(json);
     }
 }
 
@@ -212,7 +212,7 @@ handleFileSelect = function(evt) {
 handleDownloadJSON = function(evt){
     if(currentTiling === undefined) return
     var link = document.getElementById('downloadlink');
-    link.href = tillingToJson(currentTiling);
+    link.href = tilingToJson(currentTiling);
 	link.setAttribute('download', "JS-Sandpile.json");
     //link.style.display = 'block';
 	link.click();
