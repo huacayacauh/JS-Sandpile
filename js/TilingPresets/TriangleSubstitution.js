@@ -87,6 +87,9 @@ function incenterSubstitution(tile){
 	bounds5.push(midpointCAx, midpointCAy);
 	bounds5.push(incenterx, incentery);
 	
+	
+	
+	
 
 	// tile <-> id, neighbors, bounds, topple limit
 	t0 = new Tile(ids[0], [], bounds0, 3);
@@ -163,3 +166,38 @@ Tiling.TriangleIncenter = function({iterations}={}){
   return new Tiling(tiles);
 }
 
+
+// This substitution was inspired by Butler, Steve, and Ron Graham.
+// "Subdivision by bisectors is dense in the space of all triangles.", 2010
+//	
+// triangles renders one in front of the other, but here is the original subsitution
+//
+// var bounds0 = [];
+// bounds0.push(tile.bounds[0], tile.bounds[1]);
+// bounds0.push(midpointBCx, midpointBCy);
+// bounds0.push(midpointCAx, midpointCAy);
+
+// var bounds1 = [];
+// bounds1.push(tile.bounds[0], tile.bounds[1]);
+// bounds1.push(midpointABx, midpointABy);
+// bounds1.push(midpointBCx, midpointBCy);
+
+// var bounds2 = [];
+// bounds2.push(tile.bounds[2], tile.bounds[3]);
+// bounds2.push(midpointABx, midpointABy);
+// bounds2.push(midpointCAx, midpointCAy);
+
+// var bounds3 = [];
+// bounds3.push(tile.bounds[2], tile.bounds[3]);
+// bounds3.push(midpointBCx, midpointBCy);
+// bounds3.push(midpointCAx, midpointCAy);
+
+// var bounds4 = [];
+// bounds4.push(tile.bounds[4], tile.bounds[5]);
+// bounds4.push(midpointABx, midpointABy);
+// bounds4.push(midpointBCx, midpointBCy);
+
+// var bounds5 = [];
+// bounds5.push(tile.bounds[4], tile.bounds[5]);
+// bounds5.push(midpointABx, midpointABy);
+// bounds5.push(midpointCAx, midpointCAy);
