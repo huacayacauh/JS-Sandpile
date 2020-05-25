@@ -1,9 +1,7 @@
 // This code is part of JS-Sandpile (https://github.com/huacayacauh/JS-Sandpile/)
 // CC-BY Valentin Darrigo, Jeremy Fersula, Kevin Perrot
 
-// Triangle Incerter substitution
-// substitution inspired by Butler, Steve, and Ron Graham.
-// "Subdivision by bisectors is dense in the space of all triangles.", 2010
+// Triangle Incenter substitution
 
 
 //
@@ -97,6 +95,7 @@ function incenterSubstitution(tile){
 	t3 = new Tile(ids[3], [], bounds3, 3);
 	t4 = new Tile(ids[4], [], bounds4, 3);
 	t5 = new Tile(ids[5], [], bounds5, 3);
+	
 	
 	// add sand to ease the visualization of the subsitution
 	t0.sand = 0;
