@@ -578,7 +578,7 @@ function substitute(iterations,tiles,ratio,mysubstitution,mydupinfos,mydupinfoso
     }
     else{
       console.log("* lazy: reset neighbors");
-      newtiles.forEach(newtile => newtile.resetNeighbors());
+      resetAllNeighbors(newtiles);
     }
     // remove duplicated tiles
     console.log("* clean duplicated tiles");
