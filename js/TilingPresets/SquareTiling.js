@@ -153,3 +153,18 @@ Tile.sqMooreTile = function(x, y, width, height){
 				
 	return new Tile(id, neighbors, bounds, 8);
 }
+
+Tiling.sqTilingCircle = function({size}={}){
+  // square Tiling croped to a circle of radius size
+  let tiles = [];
+  for(var j = 0; j < 2*size; j++){
+    for(var i = 0; i < 2*size; i++){
+      // crop according to center of square tile
+      if(distance(0,0,i-size+1/2,j-size+1/2)<=size){
+        tiles.push(Tile.squareTile(j,i,2*size,2*size));
+      }
+    }	
+  }
+  return new Tiling(tiles);
+}
+
