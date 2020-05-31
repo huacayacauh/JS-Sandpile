@@ -1,5 +1,6 @@
 
 async function draw_custom(srcPIC){
+        console.log("drawing a tiling from image");
 	
 	while(app.scene.children.length > 0){
 		app.scene.remove(app.scene.children[0]);
@@ -30,7 +31,7 @@ async function draw_custom(srcPIC){
 	for(var i = 0; i < width; i++){
 		for(var j = 0; j < height; j++){
 			if(context.getImageData(i, j, 1, 1).data[0] == 0){
-				tils.push(Tile.squareTile(i, j, 10000, 10000));
+				tils.push(Tile.squareTile(i, height-j, width, height));
 			}
 		}
 	}
@@ -38,13 +39,12 @@ async function draw_custom(srcPIC){
 	// ---------------------------------------------------------------------------------------------------------------
 	
 	check_stable = 0;
-
 	selectedTile = null;
 	
 	currentTiling = new Tiling(tils);
 	currentTiling.cmap = cmap;
 	enableWireFrame(document.getElementById("wireFrameToggle"));
-	app.camera.zoom = 1.0;
+	//app.camera.zoom = 1.0;
 
 	app.controls.zoomCamera();
 	app.controls.object.updateProjectionMatrix();
@@ -60,6 +60,8 @@ async function draw_custom(srcPIC){
 		app.renderer.render( app.scene, app.camera );
 	};
 	render();
+
+        console.log("done with "+tils.length+" tiles");
 }
 
 async function importAsImage(){
