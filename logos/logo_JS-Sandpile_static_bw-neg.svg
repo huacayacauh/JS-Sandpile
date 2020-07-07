@@ -1,0 +1,19 @@
+<?xml version="1.0" standalone="no"?> 
+<svg width="660" height="660" version="1.1" xmlns="http://www.w3.org/2000/svg">
+<g id="JS-Sandpile logo" transform="rotate(90 323.6 307.7) translate(22 0)">
+<polygon points=" 061.80 117.557 223.60 235.114 199.999 307.76 0 307.76" stroke="white" fill="#666666" stroke-width="10"/>
+<polygon points=" 061.803 497.97 223.606 380.42 285.410 425.32 223.606 615.53" stroke="white" fill="#666666" stroke-width="10"/>
+<polygon points=" 423.6 615.53 361.803 425.32 423.6 380.42 585.41 497.97" stroke="white" fill="#666666" stroke-width="10"/>
+<polygon points=" 647.2 307.768 447.2 307.768 423.6 235.11 585.41 117.557" stroke="white" fill="#666666" stroke-width="10"/>
+<polygon points=" 0 307.76 199.999 307.76 223.606 380.422 061.803 497.97" stroke="white" fill="#666666" stroke-width="10"/>
+<polygon points=" 223.606 615.53 285.41 425.32 361.80 425.32 423.6 615.53" stroke="white" fill="#000000" stroke-width="10"/>
+<polygon points=" 585.41 497.97 423.6 380.42 447.2 307.76 647.2 307.76" stroke="white" fill="#666666" stroke-width="10"/>
+<polygon points=" 423.60 235.114 361.80 425.32 285.41 425.32 223.60 235.114" stroke="white" fill="#ffffff" stroke-width="10"/>
+<polygon points=" 285.41 425. 223.60 380.42 199.999 307.76 223.60 235.114" stroke="white" fill="#cccccc" stroke-width="10"/>
+<polygon points=" 423.6 235.11 447.2 307.76 423.6 380.422 361.80 425.32" stroke="white" fill="#cccccc" stroke-width="10"/>
+<polygon points=" 061.80 117.557 223.606 0 285.410 044.902 223.606 235.114" stroke="white" fill="#666666" stroke-width="10"/>
+<polygon points=" 423.6 235.114 361.80 044.902 423.6 0 585.41 117.557" stroke="white" fill="#666666" stroke-width="10"/>
+<polygon points=" 223.60 235.114 285.41 044.9027 361.80 044.9027 423.60 235.114" stroke="white" fill="#cccccc" stroke-width="10"/>
+<polygon points=" 423.60 0 361.80 044.9027 285.41 044.9027 223.60 0" stroke="white" fill="#666666" stroke-width="10"/>
+</g>
+</svg>
