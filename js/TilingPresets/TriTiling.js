@@ -1,56 +1,40 @@
-Tiling.triTiling = function ({size}={}) {
-	
-	var tils = [];
-	
-	let n = size;
-	
-	for(var y = 0; y < n; y++){
-		for(var x = 0; x < n - y; x++){
-			tils.push(upTriangle(x, y, n));
+Tiling.triTiling = function({size}={}) {
+	var tiles = [];
+	for (var y = 0; y < size - 1; y++){
+		for (var x = 0; x < size - y - 1; x++) {
+			tiles.push(Tile.triTilingUpTriangle(x, y, size));
+			tiles.push(Tile.triTilingDownTriangle(x, y, size));
 		}
 	}
-	for(var y = 0; y < n - 1; y++){
-		for(var x = 0; x < n - y - 1; x++){
-			tils.push(downTriangle(x, y, n));
-		}
-	}
-	return new Tiling(tils);
-}
+	for (var y = 0; y < size; y++)
+		tiles.push(Tile.triTilingUpTriangle(size - y - 1, y, size));
+	return new Tiling(tiles);
+};
 
-function upTriangle(x, y, n){
+Tile.triTilingUpTriangle = function(x, y, size) {
 	var id = [x, y, "up"];
-	
 	var neighbors = [];
-	neighbors.push([x, y, "down"])
-	neighbors.push([x-1, y, "down"])
-	neighbors.push([x, y-1, "down"])
-	
-	
-	let sq3 = Math.sqrt(3);
-	
+	neighbors.push([x, y, "down"]);
+	neighbors.push([x-1, y, "down"]);
+	neighbors.push([x, y-1, "down"]);
+	var sq3 = Math.sqrt(3);
 	var bounds = [];
-	bounds.push(x+ (y-n)/2, y*(sq3/2) - n*(sq3/6));
-	bounds.push(x+ (y-n)/2 + 1, y*(sq3/2) - n*(sq3/6));
-	bounds.push(x+ (y-n)/2 + 0.5, (y+1)*(sq3/2) - n*(sq3/6));
-	
+	bounds.push(x + (y-size)/2, y*(sq3/2) - size*(sq3/6));
+	bounds.push(x + (y-size)/2 + 1, y*(sq3/2) - size*(sq3/6));
+	bounds.push(x + (y-size)/2 + 0.5, (y+1)*(sq3/2) - size*(sq3/6));
 	return new Tile(id, neighbors, bounds, 3);
-}
+};
 
-function downTriangle(x, y, n){
+Tile.triTilingDownTriangle = function(x, y, size) {
 	var id = [x, y, "down"];
-	
 	var neighbors = [];
-	neighbors.push([x, y, "up"])
-	neighbors.push([x+1, y, "up"])
-	neighbors.push([x, y+1, "up"])
-	
-	
-	let sq3 = Math.sqrt(3);
-	
+	neighbors.push([x, y, "up"]);
+	neighbors.push([x+1, y, "up"]);
+	neighbors.push([x, y+1, "up"]);
+	var sq3 = Math.sqrt(3);
 	var bounds = [];
-	bounds.push(x+ (y-n)/2 + 0.5, (y+1)*(sq3/2) - n*(sq3/6));
-	bounds.push(x+ (y-n)/2 + 1.5, (y+1)*(sq3/2) - n*(sq3/6));
-	bounds.push(x+ (y-n)/2 + 1, y*(sq3/2) - n*(sq3/6));
-	
+	bounds.push(x + (y-size)/2 + 0.5, (y+1)*(sq3/2) - size*(sq3/6));
+	bounds.push(x + (y-size)/2 + 1.5, (y+1)*(sq3/2) - size*(sq3/6));
+	bounds.push(x + (y-size)/2 + 1, y*(sq3/2) - size*(sq3/6));
 	return new Tile(id, neighbors, bounds, 3);
-}
+};
