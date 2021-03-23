@@ -140,7 +140,7 @@ Tiling.TriTriangleBySubst = function({iterations}={}) {
   var tiles = [];
   var my_tri = triA0.myclone();
   tiles.push(my_tri);
-  tiles = substitute(
+  tiles = substituteTriTriangle(
     iterations,
     tiles,
     Math.sqrt(2),
@@ -153,3 +153,164 @@ Tiling.TriTriangleBySubst = function({iterations}={}) {
   );
   return new Tiling(tiles);
 };
+
+function findNeighborsTriTriangle(tiles,tilesdict,n2b){
+  // construct
+  // * segments = list of segments (Array of 4 coordinates + tile idkey + neighbor index)
+  //   for undefined neighbors
+  // * segmentsMap = segmentkey -> tile id, neighbors' index
+  var segments = [];
+  var segmentsMap = new Map();
+  tiles.forEach(function(tile){
+    for(let i=0; i<tile.neighbors.length; i++){
+      if(tile.neighbors[i] == undefined){
+        // found an undefined neighbor
+        // caution: segment points need to be ordered (up to p_error)
+        //          so that [x,y,x',y']=[x',y',x,y].
+        //          smallest x first, and if x ~equal then smallest y first
+        //          
+        let segment = [];
+        let x1 = tile.bounds[n2b.get(tile.id[0])[i][0]];
+        let y1 = tile.bounds[n2b.get(tile.id[0])[i][1]];
+        let x2 = tile.bounds[n2b.get(tile.id[0])[i][2]];
+        let y2 = tile.bounds[n2b.get(tile.id[0])[i][3]];
+        if( x2-x1>=p_error || (Math.abs(x2-x1)<p_error && y2-y1>=p_error) ){
+          // normal order
+          segment.push(x1);
+          segment.push(y1);
+          segment.push(x2);
+          segment.push(y2);
+        }
+        else{
+          // reverse order
+          segment.push(x2);
+          segment.push(y2);
+          segment.push(x1);
+          segment.push(y1);
+        }
+        // something unique for segment2key...
+        segment.push(id2key(tile.id));
+        segment.push(i);
+        // add to datastructures
+        segments.push(segment);
+        segmentsMap.set(segment2key(segment),new TileSegment(tile.id,i));
+      }
+    }
+  });
+  // sort the list of segments lexicographicaly
+  // takes into account rounding errors (up to p_error)
+  segments.sort(function(s1,s2){ // useless because  we use n² method
+    for(let i=0; i<s1.length-2; i++){ // -2 to exclude idkey and index
+      if(Math.abs(s1[i]-s2[i])>=p_error){return s1[i]-s2[i];}
+    }
+    return 0;
+  });
+  // check if consecutive elements are identical => new neighbors!
+  // (hypothesis: no three consecutive elements are identical)
+  var fn = 0;
+  for(let i=0; i<segments.length-1; i++){
+    // check if points are identical (up to p_error)
+	for(let j = 0; j<segments.length-1;j++)
+	{
+		if(i == j)
+		{
+			continue;
+		}
+		midPoint_Xi =  segments[i][0] + 0.5*(segments[i][2] - segments[i][0]);
+		midPoint_Yi = segments[i][1] + 0.5*(segments[i][3] - segments[i][1]);
+		midPoint_Xj = segments[j][0] + 0.5*(segments[j][2] - segments[j][0]);
+		midPoint_Yj = segments[j][1] + 0.5*(segments[j][3] - segments[j][1]);
+		
+		if( (distance(segments[i][0],segments[i][1],segments[j][0],segments[j][1])<p_error 
+       && distance(segments[i][2],segments[i][3],segments[j][2],segments[j][3])<p_error) 
+	   || (distance(segments[i][0],segments[i][1],segments[j][0],segments[j][1])<2*p_error 
+       && distance(midPoint_Xi,midPoint_Yi,segments[j][2],segments[j][3])<2*p_error) 
+	   || (distance(midPoint_Xi,midPoint_Yi,segments[j][0],segments[j][1])<2*p_error
+       && distance(segments[i][2],segments[i][3],segments[j][2],segments[j][3])<2*p_error) 
+	   || (distance(segments[i][0],segments[i][1],midPoint_Xj,midPoint_Yj)<2*p_error
+       && distance(segments[i][2],segments[i][3],segments[j][2],segments[j][3])<2*p_error)
+	   || (distance(segments[i][0],segments[i][1],segments[j][0],segments[j][1])<2*p_error
+       && distance(segments[i][2],segments[i][3],midPoint_Xj,midPoint_Yj)<2*p_error)) 
+	   {
+       // found two identical segments => set neighbors
+       fn++;
+       let ts1=segmentsMap.get(segment2key(segments[i]));
+       let ts2=segmentsMap.get(segment2key(segments[j]));
+	   if(tilesdict.get(id2key(ts1.id)).neighbors[ts1.nindex] != undefined)  // If more than one neighbor by side we need to had it at the end
+	   {
+		   tilesdict.get(id2key(ts1.id)).neighbors[tilesdict.get(id2key(ts1.id)).neighbors.length] = ts2.id; 
+	   }
+		else
+		{
+			tilesdict.get(id2key(ts1.id)).neighbors[ts1.nindex] = ts2.id; // probleme ici on reécrit la même case
+		}
+	 }
+	}
+  }
+  // done
+  return fn; // side effect
+}
+
+
+function substituteTriTriangle(iterations,tiles,ratio,mysubstitution,mydupinfos,mydupinfosoriented,myneighbors,findNeighbors_option=false,mydecoration_option=false){
+  // lazy? discover base neighbors
+  if(typeof(myneighbors)=="string"){
+    // check that findNeighbors_option is set
+    if(findNeighbors_option==false){
+      console.log("error: please provide some neighbors2bounds according to your dupinfos/dupinfosoriented, even if you are lazy.");
+      return tiles;
+    }
+    console.log("lazy: compute base neighbors");
+    // reset then find neighbors
+    resetAllNeighbors(tiles);
+    let tilesdict = new Map(tiles.map(i => [id2key(i.id), i]));
+    let fn=findNeighborsTriTriangle(tiles,tilesdict,findNeighbors_option);
+    console.log("  found "+fn);
+  }
+  // scale the base tiling all at once
+  tiles.forEach(tile => tile.scale(0,0,ratio**iterations));
+  // iterate substitution
+  for(let i=0; i < iterations; i++){
+    console.log("starting substitution "+(i+1)+"/"+iterations+"...");
+    // substitute (scaling already done)
+    console.log("* create (new) tiles");
+    let newtiles = tiles.flatMap(mysubstitution);
+    console.log("  "+newtiles.length+" tiles");
+    // convert tiles array to map with id as key (for convenient access)
+    let tilesdict = new Map(tiles.map(i => [id2key(i.id), i]));
+    // convert newtiles array to map with id as key (for convenient access)
+    let newtilesdict = new Map(newtiles.map(i => [id2key(i.id), i]));
+    // compute map of duplicated newtiles (idkey -> id)
+    console.log("* compute map of duplicated tiles");
+    let newdup = duplicatedMap(mydupinfos,mydupinfosoriented,tiles,tilesdict);
+    // set neighbors (if user is not lazy)
+    if(typeof(myneighbors)!="string"){
+      console.log("* compute neighbors (local)");
+      myneighbors(tiles,tilesdict,newtiles,newtilesdict,newdup);
+    }
+    else{
+      console.log("* lazy: reset neighbors");
+      resetAllNeighbors(newtiles);
+    }
+    // remove duplicated tiles
+    console.log("* clean duplicated tiles");
+    newtiles = clean(newtiles,newdup);
+    // find neighbors from non-adjacent tiles
+    if(findNeighbors_option != false){
+      console.log("* compute neighbors (global)");
+      let fn=findNeighborsTriTriangle(newtiles,newtilesdict,findNeighbors_option);
+      console.log("  found "+fn);
+    }
+    // update tiles
+    tiles = newtiles;
+      console.log("* done");
+  }
+  // decorate tiles
+  if(mydecoration_option != false){
+    console.log("decorate tiles");
+    tiles.forEach(tile => tile.sand=mydecoration_option.get(tile.id[0]));
+  }
+  // done
+  console.log("done");
+  return tiles;
+}
