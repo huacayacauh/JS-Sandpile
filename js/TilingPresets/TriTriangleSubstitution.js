@@ -5,7 +5,6 @@
 // substitution described at
 // https://tilings.math.uni-bielefeld.de/substitution/tritriangle/
 // https://sites.math.washington.edu/wxml/tilings/pdfs/TriTriangle-tiling.pdf
-// https://sites.math.washington.edu/wxml/tilings/source/Tritriangle.py
 
 //
 // [1] define tile types TT
@@ -25,14 +24,12 @@ function triangleVectorsToBounds(v1, v2, v3) {
 
 function getTriBounds(size) {
   var bounds = [];
-  bounds.push(0, 0);
-  bounds.push(size, 0);
-  bounds.push(size, size);
+  bounds.push(-size/2, -size/4);
+  bounds.push(size/2, -size/4);
+  bounds.push(size/2, size*3/4);
   return bounds;
 }
 var triA0 = new Tile(["triangle0"], [], getTriBounds(1), 3);
-//var triA1 = new Tile(["triangle1"], [], getTriBounds(1), 3);
-//var triA2 = new Tile(["triangle2"], [], getTriBounds(1), 3);
 
 Tile.prototype.tri0to1 = function() {
   this.id[0] = "triangle1";
@@ -47,35 +44,27 @@ Tile.prototype.tri2to0 = function() {
 //
 // [2] define substitution TT
 //
+
 function substitutionTT(tile) {
-  console.log("substitutionTT: ", tile.id);
   switch (tile.id[0]) {
     case "triangle0":
-      /*var newtiles = [];
+      var newtiles = [];
       
       var new_tri1 = tile.myclone();
       new_tri1.tri0to1();
       new_tri1.id.push("fils_0to1");
       newtiles.push(new_tri1);
       
-      return newtiles;*/
-      tile.tri0to1();
-      tile.id.push("fils_0to1");
-      return tile;
-      break;
+      return newtiles;
     case "triangle1":
-      /*var newtiles = [];
+      var newtiles = [];
       
       var new_tri2 = tile.myclone();
       new_tri2.tri1to2();
       new_tri2.id.push("fils_1to2");
       newtiles.push(new_tri2);
       
-      return newtiles;*/
-      tile.tri1to2();
-      tile.id.push("fils_1to2");
-      return tile;
-      break;
+      return newtiles;
     case "triangle2":
       var newtiles = [];
       
@@ -91,63 +80,33 @@ function substitutionTT(tile) {
       var new_tri2 = tile.myclone();
       new_tri2.bounds = triangleVectorsToBounds(C, AC_center, B);
       new_tri2.id.push("fils0");
-      new_tri2.sand = 0;
       newtiles.push(new_tri2);
       
       var new_tri0_0 = tile.myclone();
       new_tri0_0.tri2to0();
       new_tri0_0.id.push("fils1");
       new_tri0_0.bounds = triangleVectorsToBounds(AB_center, AC_quarter, A);
-      new_tri0_0.sand = 1;
-      console.log(new_tri0_0);
       newtiles.push(new_tri0_0);
 
       var new_tri0_1 = tile.myclone();
       new_tri0_1.tri2to0();
       new_tri0_1.id.push("fils2");
       new_tri0_1.bounds = triangleVectorsToBounds(B, ABC_center, AB_center);
-      new_tri0_1.sand = 2;
       newtiles.push(new_tri0_1);
       
       var new_tri0_2 = tile.myclone();
       new_tri0_2.tri2to0();
       new_tri0_2.id.push("fils3");
       new_tri0_2.bounds = triangleVectorsToBounds(AC_center, AC_quarter, AB_center);
-      new_tri0_2.sand = 3;
       newtiles.push(new_tri0_2);
       
       var new_tri0_3 = tile.myclone();
       new_tri0_3.tri2to0();
       new_tri0_3.id.push("fils4");
       new_tri0_3.bounds = triangleVectorsToBounds(AC_center, ABC_center, AB_center);
-      new_tri0_3.sand = 4;
       newtiles.push(new_tri0_3);
       
-      /*
-      function getType(A, B, C) {
-          if (A.x = C.x && A.y > C.y) {
-              if (A.x > B.x)
-                return 0;
-              else
-                return 1;
-          else if (A.x > C.x) {
-              if (Math.max(A.y, C.y) < B.y)
-                return 0;
-              else
-                return 1;
-          } else {
-              if ((A.y, C.y)/2 > B.y)
-                return 0;
-              else
-                return 1;
-          }
-      }
-      console.log(getType(AC_center, AC_quarter, AB_center));
-      console.log(getType(AC_center, ABC_center, AB_center));
-      */
-      
       return newtiles;
-      break;
     default:
       console.log("caution: undefined tile type for substitutionTT, id = " + tile.id);
   }
@@ -171,6 +130,12 @@ neighbors2boundsTT.set("triangle2", default_neighbors2bounds(3));
 // [7] construct base tilings and call substitute
 //
 
+// prepare decoration
+var decorateTT = new Map();
+decorateTT.set("triangle0", 4);
+decorateTT.set("triangle1", 1);
+decorateTT.set("triangle2", 0);
+
 Tiling.TriTriangleBySubst = function({iterations}={}) {
   var tiles = [];
   var my_tri = triA0.myclone();
@@ -184,7 +149,7 @@ Tiling.TriTriangleBySubst = function({iterations}={}) {
     [], // no duplicated tiles
     "laziness", // myneighbors
     neighbors2boundsTT,
-    false//decorateTT
+    decorateTT
   );
   return new Tiling(tiles);
 };
