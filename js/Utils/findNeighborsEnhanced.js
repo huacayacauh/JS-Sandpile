@@ -7,8 +7,7 @@ function findNeighborsEnhanced(tiles,tilesdict,n2b){
   var segments = [];
   var segmentsMap = new Map();
   tiles.forEach(function(tile){
-    for(let i=0; i<tile.neighbors.length; i++){
-      if(tile.neighbors[i] == undefined){
+    for(let i=0; i<tile.bounds.length/2; i++){ 
         // found an undefined neighbor
         // caution: segment points need to be ordered (up to p_error)
         //          so that [x,y,x',y']=[x',y',x,y].
@@ -39,7 +38,6 @@ function findNeighborsEnhanced(tiles,tilesdict,n2b){
         // add to datastructures
         segments.push(segment);
         segmentsMap.set(segment2key(segment),new TileSegment(tile.id,i));
-      }
     }
   });
   // sort the list of segments lexicographicaly
@@ -51,53 +49,65 @@ function findNeighborsEnhanced(tiles,tilesdict,n2b){
     return 0;
   });
   var fn = 0;
+  // We want to detect the neighbor segment by segment
+  // We sort them by x value
+  // So for each segment we take his x value, and find all of other segment with an x value less than the x'
+  // For each segment we check if their is collision by using function. 
+  
+  
+  // For the vertical segment we find if a segment have the same x value and check if y value have a commons interval 
   for(let i=0; i<segments.length-1; i++){
 	  
-	if(segments[i][0] == segments[i][2]) // not an affine function
+	if(segments[i][0] - p_error < segments[i][2] && segments[i][0] + p_error > segments[i][2]) // not an affine function
 	{
-		minY = 0
-		maxY = 0
-		if(segments[i][1] > segments[i][3])
+		minY = 0;
+		maxY = 0;
+		if(segments[i][1] > segments[i][3]) // Find the bigger yi
 		{
-			maxY = segments[i][1]
-			minY = segments[i][3]
+			maxY = segments[i][1];
+			minY = segments[i][3];
 		}
 		else
 		{
-			maxY = segments[i][3]
-			minY = segments[i][1]
+			maxY = segments[i][3];
+			minY = segments[i][1];
 		}
 		for(let j=i+1; j<segments.length;j++)
 		{
-			if(segments[i][2] < segments[j][0]) // We already pass the segment i
+			if(segments[j][0] > segments[i][2] - p_error) // If false then we already pass the segment i
 			{
 				break;
 			}
-			minYj = 0
-			maxYj = 0
-			if(segments[j][1] > segments[j][3])
+			minYj = 0;
+			maxYj = 0;
+			if(segments[j][1] > segments[j][3]) // Find the bigger yj
 			{
-				maxYj = segments[j][1]
-				minYj = segments[j][3]
+				maxYj = segments[j][1];
+				minYj = segments[j][3];
 			}
 			else
 			{
-				maxYj = segments[j][3]
-				minYj = segments[j][1]
+				maxYj = segments[j][3];
+				minYj = segments[j][1];
 			}
-			if(maxY - p_error< minYj) // They have more than one point in common
+			if(maxY - p_error< minYj) // Of else we take segment with only one pts on common ( they are in line, but no border are touching
 			{
 				continue;
 			}
 			
-			if((segments[j][0] == segments[j][2]) && (((segments[j][1] < maxY + p_error) && (segments[j][1] > minY -p_error))||
-			((segments[j][3] < maxY + p_error) && (segments[j][3] > minY -p_error))))
-			{ // It's a vertical segment and one of the point in on the segment
+			if((segments[j][0] - p_error < segments[j][2] && segments[j][0] + p_error > segments[j][2]) && // Is vertical 
+			(((segments[j][1] < maxY + p_error) && (segments[j][1] > minY -p_error))|| // The first yj is in the segment i
+			((segments[j][3] < maxY + p_error) && (segments[j][3] > minY -p_error))))  // The second yj is in the segment i
+			{
 				fn++;
+				
+				// We need to have symetric add of neighbor, or some case when a very little segment is in a bigger one will cause problem
+			// But then we have to check if we didn't already find the neighbor but it's a cheap check, in most case.
+				
 				let ts1=segmentsMap.get(segment2key(segments[i]));
 				let ts2=segmentsMap.get(segment2key(segments[j]));
 				
-				if(!containElt(tilesdict.get(id2key(ts1.id)).neighbors,ts2.id)) // On ajoute si il y est pas déjà
+				if(!containElt(tilesdict.get(id2key(ts1.id)).neighbors,ts2.id)) // Only add if he isn't already here
 				{
 					tilesdict.get(id2key(ts1.id)).neighbors.push(ts2.id);
 				}
@@ -110,11 +120,13 @@ function findNeighborsEnhanced(tiles,tilesdict,n2b){
 		continue;
 	}		
 	
+	// If the segment isn't vertical, we use a affine function representation :
+	
 	a = (segments[i][3] - segments[i][1])/(segments[i][2] - segments[i][0]); // (yB - yA)/(xB-xA)
 	b = segments[i][1] - a*segments[i][0]; // yA - a*xA = b
 	for(let j=i+1; j<segments.length; j++)
 	{ 
-		if(segments[j][0] > segments[i][2] - p_error) // We already pass the segment i
+		if(segments[j][0] > segments[i][2] - p_error) // If false then we already pass the segment i
 		{
 			break;
 		}
@@ -125,6 +137,8 @@ function findNeighborsEnhanced(tiles,tilesdict,n2b){
 			// a*xJ + b is a pts on our segment and the j segment have the same slope as i segment
 		{
 			fn++;
+			// We need to have symetric add of neighbor, or some case when a very little segment is in a bigger one will cause problem
+			// But then we have to check if we didn't already find the neighbor but it's a cheap check, in most case.
 			let ts1=segmentsMap.get(segment2key(segments[i]));
 			let ts2=segmentsMap.get(segment2key(segments[j]));
 			
@@ -139,21 +153,13 @@ function findNeighborsEnhanced(tiles,tilesdict,n2b){
 		}
 	}		
   }
- for(let i=0; i<tiles.length;i++) // Do not work, somethings else modify the segment value ( probably add value )
+ for(let i=0; i<tiles.length;i++) // Do work, but the user have to specify the number of segment of each tiles in limit. 
+ // this method is much easier than seeing if the tile is in the border of our tilling.
   {
-	/*newLimit = 0
-	for(let j=0; j<tiles[i].neighbors.length;j++)
+	if(tiles[i].limit < tiles[i].neighbors.length)
 	{
-		if(tiles[i].neighbors[j] != undefined)
-		{
-		  newLimit++
-		}
+		tiles[i].limit = tiles[i].neighbors.length;
 	}
-	if(newLimit > tiles[i].limit)
-	{
-		tiles[i].limit = newLimit
-	}*/
-	tiles[i].limit = tiles[i].neighbors.length
   }
   return fn; // side effect
 }
