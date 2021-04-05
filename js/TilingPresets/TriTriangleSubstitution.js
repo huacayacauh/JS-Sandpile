@@ -33,12 +33,15 @@ var triA0 = new Tile(["triangle0"], [], getTriBounds(1), 3);
 
 Tile.prototype.tri0to1 = function() {
   this.id[0] = "triangle1";
+	this.limit = 3
 };
 Tile.prototype.tri1to2 = function() {
   this.id[0] = "triangle2";
+	this.limit = 3
 };
 Tile.prototype.tri2to0 = function() {
   this.id[0] = "triangle0";
+	this.limit = 3
 };
 
 //
@@ -78,6 +81,7 @@ function substitutionTT(tile) {
       var ABC_center = ((new THREE.Vector2()).addVectors(AC_center, B)).divideScalar(2);
       
       var new_tri2 = tile.myclone();
+			new_tri2.limit = 3
       new_tri2.bounds = triangleVectorsToBounds(C, AC_center, B);
       new_tri2.id.push("fils0");
       newtiles.push(new_tri2);
