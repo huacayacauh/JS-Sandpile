@@ -201,6 +201,7 @@ function substituteTriTriangle(iterations,tiles,ratio,mysubstitution,mydupinfos,
     // find neighbors from non-adjacent tiles
     if(findNeighbors_option != false){
       console.log("* compute neighbors (global)");
+	  newtiles.forEach(tile => tile.neighbors = []);
       let fn=findNeighborsEnhanced(newtiles,newtilesdict,findNeighbors_option);
       console.log("  found "+fn);
     }
