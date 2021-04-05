@@ -58,7 +58,7 @@ function findNeighborsEnhanced(tiles,tilesdict,n2b){
   // For the vertical segment we find if a segment have the same x value and check if y value have a commons interval 
   for(let i=0; i<segments.length-1; i++){
 	  
-	if(segments[i][0] == segments[i][2]) // not an affine function
+	if(segments[i][0] - p_error < segments[i][2] && segments[i][0] + p_error > segments[i][2]) // not an affine function
 	{
 		minY = 0;
 		maxY = 0;
@@ -95,7 +95,7 @@ function findNeighborsEnhanced(tiles,tilesdict,n2b){
 				continue;
 			}
 			
-			if((segments[j][0] == segments[j][2]) && // Is vertical 
+			if((segments[j][0] - p_error < segments[j][2] && segments[j][0] + p_error > segments[j][2]) && // Is vertical 
 			(((segments[j][1] < maxY + p_error) && (segments[j][1] > minY -p_error))|| // The first yj is in the segment i
 			((segments[j][3] < maxY + p_error) && (segments[j][3] > minY -p_error))))  // The second yj is in the segment i
 			{
