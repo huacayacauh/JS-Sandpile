@@ -7,8 +7,9 @@ function findNeighborsEnhanced(tiles,tilesdict,n2b){
   var segments = [];
   var segmentsMap = new Map();
   tiles.forEach(function(tile){
+		tile.neighbors = []
+		tile.limit = 0
     for(let i=0; i<tile.bounds.length/2; i++){ 
-        // found an undefined neighbor
         // caution: segment points need to be ordered (up to p_error)
         //          so that [x,y,x',y']=[x',y',x,y].
         //          smallest x first, and if x ~equal then smallest y first
@@ -32,6 +33,7 @@ function findNeighborsEnhanced(tiles,tilesdict,n2b){
           segment.push(x1);
           segment.push(y1);
         }
+				segment.push(0) // nbr of intersect
         // something unique for segment2key...
         segment.push(id2key(tile.id));
         segment.push(i);
@@ -56,7 +58,7 @@ function findNeighborsEnhanced(tiles,tilesdict,n2b){
   
   
   // For the vertical segment we find if a segment have the same x value and check if y value have a commons interval 
-  for(let i=0; i<segments.length-1; i++){
+  for(let i=0; i<segments.length; i++){
 	  
 	if(segments[i][0] - p_error < segments[i][2] && segments[i][0] + p_error > segments[i][2]) // not an affine function
 	{
@@ -103,10 +105,17 @@ function findNeighborsEnhanced(tiles,tilesdict,n2b){
 				
 				// We need to have symetric add of neighbor, or some case when a very little segment is in a bigger one will cause problem
 			// But then we have to check if we didn't already find the neighbor but it's a cheap check, in most case.
-				
+				segments[i][4] +=1
+				segments[j][4] +=1
+				tmpI = segments[i][4]; // We need to do this in order to not modify the segment2key value
+				tmpJ = segments[j][4];
+				segments[i][4] = 0
+				segments[j][4] = 0
 				let ts1=segmentsMap.get(segment2key(segments[i]));
 				let ts2=segmentsMap.get(segment2key(segments[j]));
-				
+
+				segments[i][4] = tmpI
+				segments[j][4] = tmpJ
 				if(!containElt(tilesdict.get(id2key(ts1.id)).neighbors,ts2.id)) // Only add if he isn't already here
 				{
 					tilesdict.get(id2key(ts1.id)).neighbors.push(ts2.id);
@@ -116,6 +125,11 @@ function findNeighborsEnhanced(tiles,tilesdict,n2b){
 					tilesdict.get(id2key(ts2.id)).neighbors.push(ts1.id);
 				}
 			}
+		}
+		if(segments[i][4] == 0) // If a segment never intersect he is in the border of the tilling
+		{
+			let ts1=segmentsMap.get(segment2key(segments[i]));
+			tilesdict.get(id2key(ts1.id)).limit += 1;
 		}
 		continue;
 	}		
@@ -139,8 +153,17 @@ function findNeighborsEnhanced(tiles,tilesdict,n2b){
 			fn++;
 			// We need to have symetric add of neighbor, or some case when a very little segment is in a bigger one will cause problem
 			// But then we have to check if we didn't already find the neighbor but it's a cheap check, in most case.
-			let ts1=segmentsMap.get(segment2key(segments[i]));
-			let ts2=segmentsMap.get(segment2key(segments[j]));
+				segments[i][4] +=1
+				segments[j][4] +=1
+				tmpI = segments[i][4]; // We need to do this in order to not modify the segment2key value
+				tmpJ = segments[j][4];
+				segments[i][4] = 0
+				segments[j][4] = 0
+				let ts1=segmentsMap.get(segment2key(segments[i]));
+				let ts2=segmentsMap.get(segment2key(segments[j]));
+
+				segments[i][4] = tmpI
+				segments[j][4] = tmpJ
 			
 			if(!containElt(tilesdict.get(id2key(ts1.id)).neighbors,ts2.id)) // Only add if he isn't already here
 			{
@@ -152,14 +175,16 @@ function findNeighborsEnhanced(tiles,tilesdict,n2b){
 			}
 		}
 	}		
+	if(segments[i][4] == 0) // If a segment never intersect he is in the border of the tilling
+	{
+		let ts1=segmentsMap.get(segment2key(segments[i]));
+		tilesdict.get(id2key(ts1.id)).limit += 1;
+	}
   }
  for(let i=0; i<tiles.length;i++) // Do work, but the user have to specify the number of segment of each tiles in limit. 
  // this method is much easier than seeing if the tile is in the border of our tilling.
   {
-	if(tiles[i].limit < tiles[i].neighbors.length)
-	{
-		tiles[i].limit = tiles[i].neighbors.length;
-	}
+		tiles[i].limit += tiles[i].neighbors.length;	
   }
   return fn; // side effect
 }
