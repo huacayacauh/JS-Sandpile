@@ -33,7 +33,8 @@ function findNeighborsEnhanced(tiles,tilesdict,n2b){
           segment.push(x1);
           segment.push(y1);
         }
-				segment.push(0) // nbr of intersect
+        // number of tiles neighbors of the curent tile along this segment
+        segment.push(0)
         // something unique for segment2key...
         segment.push(id2key(tile.id));
         segment.push(i);
@@ -53,9 +54,8 @@ function findNeighborsEnhanced(tiles,tilesdict,n2b){
   var fn = 0;
   // We want to detect the neighbor segment by segment
   // We sort them by x value
-  // So for each segment we take his x value, and find all of other segment with an x value less than the x'
-  // For each segment we check if their is collision by using function. 
-  
+  // So for each segment we take its x value, and find all other segment with an x value less than the x'
+  // For each segment we check if their is collision by using affine segment equation.
   
   // For the vertical segment we find if a segment have the same x value and check if y value have a commons interval 
   for(let i=0; i<segments.length; i++){
