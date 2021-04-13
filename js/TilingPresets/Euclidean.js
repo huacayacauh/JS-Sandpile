@@ -3,15 +3,17 @@
 Tiling.trihexagonal = function ({size}={}) {
 
 	var tils = [];
-
-	for(var r=-size; r<=size; r++){
-		for(var q=-size; q<=size; q++){
+	for(var q=0; q<=2*size; q++){
+		for(var r=Math.floor(q/2); r<=size-Math.floor((q+1)/2); r++){
 			tils.push(thHex(r, q));
 			tils.push(thTriSup(r, q));
-			tils.push(thTriInf(r, q));
+			tils.push(thTriInf(r,q));
+			if (q !=0){
 
-			//  tils.push(EuclTri(r, q, 1));
-			//	tils.push(EuclTri(r, q,2));
+			tils.push(thHex(r, -q));
+			tils.push(thTriSup(r, -q));
+			tils.push(thTriInf(r, -q));
+		}
 
 		}
 	}
