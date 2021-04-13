@@ -113,6 +113,13 @@ function rbtrhHex(r, q){
 	let coef1 = Math.sqrt(3) +3;
 	let coef2 = (Math.sqrt(3) +1)/2;
 
+	neighbors.push([r, q, 1]);
+	neighbors.push([r, q, 2]);
+	neighbors.push([r, q, 3]);
+	neighbors.push([r-1+Math.abs(q)%2, q+1, 3]);
+	neighbors.push([r+Math.abs(q)%2, q+1, 2]);
+	neighbors.push([r, q-2, 1]);
+
 	var bounds = [];
 
 	bounds.push(coef1*(r+1/2*(Math.abs(q)%2))+1, q*coef2);
@@ -132,6 +139,11 @@ function rbtrhSqu1(r, q){
 	let coef1 = Math.sqrt(3) +3;
 	let coef2 = (Math.sqrt(3) +1)/2;
 
+	neighbors.push([r, q, 0]);
+	neighbors.push([r, q+2, 0]);
+	neighbors.push([r, q, 4]);
+	neighbors.push([r, q, 5]);
+
 	var bounds = [];
 
 	bounds.push(coef1*(r+1/2*(Math.abs(q)%2))+1/2,q*coef2+sq3);
@@ -149,6 +161,11 @@ function rbtrhSqu2(r, q){
 	let coef1 = Math.sqrt(3) +3;
 	let coef2 = (Math.sqrt(3) +1)/2;
 
+	neighbors.push([r, q, 0]);
+	neighbors.push([r-Math.abs(q+1)%2, q-1, 0]);
+	neighbors.push([r, q-2, 4]);
+	neighbors.push([r-Math.abs(q+1)%2, q-1, 5]);
+
 	var bounds = [];
 
 	bounds.push(coef1*(r+1/2*(Math.abs(q)%2))-1,q*coef2);
@@ -165,6 +182,11 @@ function rbtrhSqu3(r, q){
 	let sq3 = Math.sqrt(3)/2;
 	let coef1 = Math.sqrt(3) +3;
 	let coef2 = (Math.sqrt(3) +1)/2;
+
+	neighbors.push([r, q, 0]);
+	neighbors.push([r+1-Math.abs(q+1)%2, q-1, 0]);
+	neighbors.push([r, q-2, 5]);
+	neighbors.push([r+1-Math.abs(q+1)%2, q-1, 4]);
 
 	var bounds = [];
 
@@ -184,6 +206,10 @@ function rbtrhTri4(r, q){
 	let coef1 = Math.sqrt(3) +3;
 	let coef2 = (Math.sqrt(3) +1)/2;
 
+	neighbors.push([r, q, 1]);
+	neighbors.push([r, q+2, 2]);
+	neighbors.push([r-1+Math.abs(q)%2, q+1, 3]);
+
 	var bounds = [];
 
 	bounds.push(coef1*(r+1/2*(Math.abs(q)%2))-1/2,q*coef2+sq3);
@@ -200,6 +226,10 @@ function rbtrhTri5(r, q){
 	let sq3 = Math.sqrt(3)/2;
 	let coef1 = Math.sqrt(3) +3;
 	let coef2 = (Math.sqrt(3) +1)/2;
+
+	neighbors.push([r, q, 1]);
+	neighbors.push([r+Math.abs(q)%2, q+1, 2]);
+	neighbors.push([r, q+2, 3]);
 
 	var bounds = [];
 
