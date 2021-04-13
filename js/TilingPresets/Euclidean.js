@@ -5,6 +5,9 @@ Tiling.Euclidean = function ({size}={}) {
 	for(var r=-size; r<=size; r++){
 		for(var q=-size; q<=size; q++){
 			tils.push(EuclHex(r, q));
+			tils.push(EuclTriSup(r, q));
+			tils.push(EuclTriInf(r, q));
+
 			//  tils.push(EuclTri(r, q, 1));
 			//	tils.push(EuclTri(r, q,2));
 
@@ -14,21 +17,41 @@ Tiling.Euclidean = function ({size}={}) {
 	return new Tiling(tils);
 }
 
-function EuclTri(x, y, z){
-	var id = [x, y, z];
+function EuclTriSup(r, q){
+	var id = [r,q,1];
 
 	var neighbors = [];
-	neighbors.push([x, y, "down"])
-	neighbors.push([x-1, y, "down"])
-	neighbors.push([x, y-1, "down"])
 
 
-	let sq3 = Math.sqrt(3);
+	neighbors.push([r, q,   0]);
+	neighbors.push([r, q-1,   0]);
+	neighbors.push([r, q-1,   0]);
+
+
+	let sq3 = Math.sqrt(3)/2;
 
 	var bounds = [];
-	neighbors.push([x-1, y,   z+1]);
-	neighbors.push([x-1, y+1, z  ]);
-	neighbors.push([x,   y+1, z-1]);
+	bounds.push(2*r+Math.abs(q)%2+1/2,q*Math.sqrt(3)-sq3);
+	bounds.push(2*r+Math.abs(q)%2-1/2,q*Math.sqrt(3)-sq3);
+	bounds.push(2*r+Math.abs(q)%2,q*Math.sqrt(3)-2*sq3);
+
+	return new Tile(id, neighbors, bounds, 3);
+}
+
+function EuclTriInf(r, q){
+	var id = [r,q,2];
+
+	var neighbors = [];
+	neighbors.push([r, q,   0]);
+	neighbors.push([r+1, q+1,   0]);
+	neighbors.push([r, q+1,   0]);
+
+	let sq3 = Math.sqrt(3)/2;
+
+	var bounds = [];
+	bounds.push(2*r+Math.abs(q)%2+1/2,q*Math.sqrt(3)+sq3);
+	bounds.push(2*r+Math.abs(q)%2-1/2,q*Math.sqrt(3)+sq3);
+	bounds.push(2*r+Math.abs(q)%2,q*Math.sqrt(3)+2*sq3);
 
 	return new Tile(id, neighbors, bounds, 3);
 }
@@ -39,18 +62,23 @@ function EuclHex(r, q){
 	var id = [r, q, 0];
 
 	var neighbors =  [];
-
+	neighbors.push([r, q,   1]);
+	neighbors.push([r, q,   2]);
+	neighbors.push([r, q+1,   1]);
+	neighbors.push([r-1, q+1,   1]);
+	neighbors.push([r, q-1,   2]);
+	neighbors.push([r+1, q-1,   2]);
 
 	let sq3 = Math.sqrt(3)/2;
 	let coef = 1;
 	var bounds = [];
 
-	bounds.push(2*r+q%2+1, q*Math.sqrt(3));
-	bounds.push(2*r+q%2+1/2,q*Math.sqrt(3)+sq3);
-	bounds.push(2*r+q%2-1/2,q*Math.sqrt(3)+sq3);
-	bounds.push(2*r+q%2-1,q*Math.sqrt(3));
-	bounds.push(2*r+q%2-1/2,q*Math.sqrt(3)-sq3);
-	bounds.push(2*r+q%2+1/2,q*Math.sqrt(3)-sq3);
+	bounds.push(2*r+Math.abs(q)%2+1, q*Math.sqrt(3));
+	bounds.push(2*r+Math.abs(q)%2+1/2,q*Math.sqrt(3)+sq3);
+	bounds.push(2*r+Math.abs(q)%2-1/2,q*Math.sqrt(3)+sq3);
+	bounds.push(2*r+Math.abs(q)%2-1,q*Math.sqrt(3));
+	bounds.push(2*r+Math.abs(q)%2-1/2,q*Math.sqrt(3)-sq3);
+	bounds.push(2*r+Math.abs(q)%2+1/2,q*Math.sqrt(3)-sq3);
 
 	return new Tile(id, neighbors, bounds, 6);
 }
