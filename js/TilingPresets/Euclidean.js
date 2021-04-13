@@ -1,12 +1,14 @@
-Tiling.Euclidean = function ({size}={}) {
+
+
+Tiling.trihexagonal = function ({size}={}) {
 
 	var tils = [];
 
 	for(var r=-size; r<=size; r++){
 		for(var q=-size; q<=size; q++){
-			tils.push(EuclHex(r, q));
-			tils.push(EuclTriSup(r, q));
-			tils.push(EuclTriInf(r, q));
+			tils.push(thHex(r, q));
+			tils.push(thTriSup(r, q));
+			tils.push(thTriInf(r, q));
 
 			//  tils.push(EuclTri(r, q, 1));
 			//	tils.push(EuclTri(r, q,2));
@@ -17,7 +19,7 @@ Tiling.Euclidean = function ({size}={}) {
 	return new Tiling(tils);
 }
 
-function EuclTriInf(r, q){
+function thTriInf(r, q){
 	var id = [r,q,1];
 
 	var neighbors = [];
@@ -35,10 +37,10 @@ function EuclTriInf(r, q){
 	bounds.push(2*r+Math.abs(q)%2-1/2,q*Math.sqrt(3)-sq3);
 	bounds.push(2*r+Math.abs(q)%2,q*Math.sqrt(3)-2*sq3);
 
-	return new Tile(id, neighbors, bounds, 4);
+	return new Tile(id, neighbors, bounds, 3);
 }
 
-function EuclTriSup(r, q){
+function thTriSup(r, q){
 	var id = [r,q,2];
 
 	var neighbors = [];
@@ -53,12 +55,12 @@ function EuclTriSup(r, q){
 	bounds.push(2*r+Math.abs(q)%2-1/2,q*Math.sqrt(3)+sq3);
 	bounds.push(2*r+Math.abs(q)%2,q*Math.sqrt(3)+2*sq3);
 
-	return new Tile(id, neighbors, bounds, 4);
+	return new Tile(id, neighbors, bounds, 3);
 }
 
 
 
-function EuclHex(r, q){
+function thHex(r, q){
 	var id = [r, q, 0];
 
 	var neighbors =  [];
@@ -80,5 +82,131 @@ function EuclHex(r, q){
 	bounds.push(2*r+Math.abs(q)%2-1/2,q*Math.sqrt(3)-sq3);
 	bounds.push(2*r+Math.abs(q)%2+1/2,q*Math.sqrt(3)-sq3);
 
+	return new Tile(id, neighbors, bounds, 6);
+}
+
+
+Tiling.rhombitrihexagonal = function ({size}={}) {
+
+	var tils = [];
+
+	for(var r=-size; r<=size; r++){
+		for(var q=-size; q<=size; q++){
+			tils.push(rbtrhHex(r, q));
+			tils.push(rbtrhSqu1(r, q));
+			tils.push(rbtrhSqu2(r, q));
+			tils.push(rbtrhSqu3(r, q));
+			tils.push(rbtrhTri4(r, q));
+			tils.push(rbtrhTri5(r, q));
+
+		}
+	}
+	console.log(new Tiling(tils));
+	return new Tiling(tils);
+}
+
+
+function rbtrhHex(r, q){
+	var id = [r, q, 0];
+	var neighbors =  [];
+	let sq3 = Math.sqrt(3)/2;
+	let coef1 = Math.sqrt(3) +3;
+	let coef2 = (Math.sqrt(3) +1)/2;
+
+	var bounds = [];
+
+	bounds.push(coef1*(r+1/2*(Math.abs(q)%2))+1, q*coef2);
+	bounds.push(coef1*(r+1/2*(Math.abs(q)%2))+1/2,q*coef2+sq3);
+	bounds.push(coef1*(r+1/2*(Math.abs(q)%2))-1/2,q*coef2+sq3);
+	bounds.push(coef1*(r+1/2*(Math.abs(q)%2))-1,q*coef2);
+	bounds.push(coef1*(r+1/2*(Math.abs(q)%2))-1/2,q*coef2-sq3);
+	bounds.push(coef1*(r+1/2*(Math.abs(q)%2))+1/2,q*coef2-sq3);
+	return new Tile(id, neighbors, bounds, 6);
+}
+
+
+function rbtrhSqu1(r, q){
+	var id = [r, q, 1];
+	var neighbors =  [];
+	let sq3 = Math.sqrt(3)/2;
+	let coef1 = Math.sqrt(3) +3;
+	let coef2 = (Math.sqrt(3) +1)/2;
+
+	var bounds = [];
+
+	bounds.push(coef1*(r+1/2*(Math.abs(q)%2))+1/2,q*coef2+sq3);
+	bounds.push(coef1*(r+1/2*(Math.abs(q)%2))-1/2,q*coef2+sq3);
+	bounds.push(coef1*(r+1/2*(Math.abs(q)%2))-1/2,q*coef2+sq3+1);
+	bounds.push(coef1*(r+1/2*(Math.abs(q)%2))+1/2,q*coef2+sq3+1);
+
 	return new Tile(id, neighbors, bounds, 4);
+}
+
+function rbtrhSqu2(r, q){
+	var id = [r, q, 2];
+	var neighbors =  [];
+	let sq3 = Math.sqrt(3)/2;
+	let coef1 = Math.sqrt(3) +3;
+	let coef2 = (Math.sqrt(3) +1)/2;
+
+	var bounds = [];
+
+	bounds.push(coef1*(r+1/2*(Math.abs(q)%2))-1,q*coef2);
+	bounds.push(coef1*(r+1/2*(Math.abs(q)%2))-1/2,q*coef2-sq3);
+	bounds.push(coef1*(r+1/2*(Math.abs(q)%2))-1/2-sq3,q*coef2-sq3-1/2);
+	bounds.push(coef1*(r+1/2*(Math.abs(q)%2))-1-sq3,q*coef2-1/2);
+
+	return new Tile(id, neighbors, bounds, 4);
+}
+
+function rbtrhSqu3(r, q){
+	var id = [r, q, 3];
+	var neighbors =  [];
+	let sq3 = Math.sqrt(3)/2;
+	let coef1 = Math.sqrt(3) +3;
+	let coef2 = (Math.sqrt(3) +1)/2;
+
+	var bounds = [];
+
+	bounds.push(coef1*(r+1/2*(Math.abs(q)%2))+1, q*coef2);
+	bounds.push(coef1*(r+1/2*(Math.abs(q)%2))+1/2,q*coef2-sq3);
+	bounds.push(coef1*(r+1/2*(Math.abs(q)%2))+1/2+sq3,q*coef2-sq3-1/2);
+	bounds.push(coef1*(r+1/2*(Math.abs(q)%2))+1+sq3, q*coef2-1/2);
+
+
+	return new Tile(id, neighbors, bounds, 4);
+}
+
+function rbtrhTri4(r, q){
+	var id = [r, q, 4];
+	var neighbors =  [];
+	let sq3 = Math.sqrt(3)/2;
+	let coef1 = Math.sqrt(3) +3;
+	let coef2 = (Math.sqrt(3) +1)/2;
+
+	var bounds = [];
+
+	bounds.push(coef1*(r+1/2*(Math.abs(q)%2))-1/2,q*coef2+sq3);
+	bounds.push(coef1*(r+1/2*(Math.abs(q)%2))-1/2,q*coef2+sq3+1);
+	bounds.push(coef1*(r+1/2*(Math.abs(q)%2))-1/2-sq3,q*coef2+sq3+1/2);
+
+
+	return new Tile(id, neighbors, bounds, 3);
+}
+
+function rbtrhTri5(r, q){
+	var id = [r, q, 5];
+	var neighbors =  [];
+	let sq3 = Math.sqrt(3)/2;
+	let coef1 = Math.sqrt(3) +3;
+	let coef2 = (Math.sqrt(3) +1)/2;
+
+	var bounds = [];
+
+	bounds.push(coef1*(r+1/2*(Math.abs(q)%2))+1/2,q*coef2+sq3);
+	bounds.push(coef1*(r+1/2*(Math.abs(q)%2))+1/2,q*coef2+sq3+1);
+	bounds.push(coef1*(r+1/2*(Math.abs(q)%2))+1/2+sq3,q*coef2+sq3+1/2);
+
+
+	return new Tile(id, neighbors, bounds, 3);
 }
