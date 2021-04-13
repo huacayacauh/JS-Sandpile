@@ -17,15 +17,15 @@ Tiling.Euclidean = function ({size}={}) {
 	return new Tiling(tils);
 }
 
-function EuclTriSup(r, q){
+function EuclTriInf(r, q){
 	var id = [r,q,1];
 
 	var neighbors = [];
 
 
 	neighbors.push([r, q,   0]);
-	neighbors.push([r, q-1,   0]);
-	neighbors.push([r, q-1,   0]);
+	neighbors.push([r-1+Math.abs(q)%2, q-1,   0]);
+	neighbors.push([r+Math.abs(q)%2, q-1,   0]);
 
 
 	let sq3 = Math.sqrt(3)/2;
@@ -35,16 +35,16 @@ function EuclTriSup(r, q){
 	bounds.push(2*r+Math.abs(q)%2-1/2,q*Math.sqrt(3)-sq3);
 	bounds.push(2*r+Math.abs(q)%2,q*Math.sqrt(3)-2*sq3);
 
-	return new Tile(id, neighbors, bounds, 3);
+	return new Tile(id, neighbors, bounds, 4);
 }
 
-function EuclTriInf(r, q){
+function EuclTriSup(r, q){
 	var id = [r,q,2];
 
 	var neighbors = [];
 	neighbors.push([r, q,   0]);
-	neighbors.push([r+1, q+1,   0]);
-	neighbors.push([r, q+1,   0]);
+	neighbors.push([r+Math.abs(q)%2, q+1,   0]);
+	neighbors.push([r-1+Math.abs(q)%2, q+1,   0]);
 
 	let sq3 = Math.sqrt(3)/2;
 
@@ -53,7 +53,7 @@ function EuclTriInf(r, q){
 	bounds.push(2*r+Math.abs(q)%2-1/2,q*Math.sqrt(3)+sq3);
 	bounds.push(2*r+Math.abs(q)%2,q*Math.sqrt(3)+2*sq3);
 
-	return new Tile(id, neighbors, bounds, 3);
+	return new Tile(id, neighbors, bounds, 4);
 }
 
 
@@ -64,10 +64,10 @@ function EuclHex(r, q){
 	var neighbors =  [];
 	neighbors.push([r, q,   1]);
 	neighbors.push([r, q,   2]);
-	neighbors.push([r, q+1,   1]);
-	neighbors.push([r-1, q+1,   1]);
-	neighbors.push([r, q-1,   2]);
-	neighbors.push([r+1, q-1,   2]);
+	neighbors.push([r+Math.abs(q)%2, q+1,   1]);
+	neighbors.push([r-1+Math.abs(q)%2, q+1,   1]);
+	neighbors.push([r-Math.abs(q+1)%2, q-1,   2]);
+	neighbors.push([r+1-Math.abs(q+1)%2, q-1,   2]);
 
 	let sq3 = Math.sqrt(3)/2;
 	let coef = 1;
@@ -80,5 +80,5 @@ function EuclHex(r, q){
 	bounds.push(2*r+Math.abs(q)%2-1/2,q*Math.sqrt(3)-sq3);
 	bounds.push(2*r+Math.abs(q)%2+1/2,q*Math.sqrt(3)-sq3);
 
-	return new Tile(id, neighbors, bounds, 6);
+	return new Tile(id, neighbors, bounds, 4);
 }
