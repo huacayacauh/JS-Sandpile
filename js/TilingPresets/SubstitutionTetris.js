@@ -173,7 +173,7 @@ function substitutionTetris(tile){
       var newo1 = tile.myclone();
       newo1.id.push('o1');
       newo1.tile2o();
-      newo1.shift(0,(tile.bounds[3]-tile.bounds[1)/2]);
+      newo1.shift(0,(tile.bounds[3]-tile.bounds[1])/2);
       newo1.scale( tile.bounds[2], tile.bounds[3],1/2);
       newtiles.push(newo1);
 
@@ -350,7 +350,24 @@ function substitutionTetris(tile){
       break;
 
     default:
-      console.log("caution: undefined tile type for substitutionTetris,
-       id="+tile.id);
+      console.log("caution: undefined tile type for substitutionTetris,id="+tile.id);
   }
+}
+
+Tiling.TetrisSubstitution = function({iterations}={}){
+  var tiles = [];
+  var myo = o.myclone();
+  tiles.push(myo);
+  tiles = substitute(
+    iterations,
+    tiles,
+    2,
+    substitutionTetris,
+    [],
+    [],
+    "I am lazy",
+    false,
+    false
+  );
+  return new Tiling(tiles);
 }
