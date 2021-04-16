@@ -320,28 +320,29 @@ function substitutionTetris(tile){
       var newj1 = tile.myclone();
       newj1.tile2j();
       newj1.id.push('j1');
-      newj1.rotate(tile.bounds[0]+(tile.bounds[3]-tile.bounds[1]),tile.bounds[3]+(tile.bounds[3]-tile.bounds[1])/2,Math.PI);
-      newj1.scale(tile.bounds[0],tile.bounds[1],1/2);
+      newj1.rotate(newj1.bounds[10],newj1.bounds[11]+(newj1.bounds[9]-newj1.bounds[11])*3/4,Math.PI);
+      newj1.scale(newj1.bounds[4],newj1.bounds[5],1/2);
       newtiles.push(newj1);
 
+
       var newj2 = tile.myclone();
-      newj2.tile2j;
+      newj2.tile2j();
       newj2.id.push('j2');
-      newj2.rotate(tile.bounds[0]+(tile.bounds[3]-tile.bounds[1])/2,tile.bounds[3]+(tile.bounds[3]-tile.bounds[1])/2,-Math.PI/2);
-      newj2.scale(tile.bounds[4],tile.bounds[5],1/2);
+      newj2.rotate(newj2.bounds[0],(newj2.bounds[3]-newj2.bounds[1])*2/3,-Math.PI/2);
+      newj2.scale(newj2.bounds[8],newj2.bounds[9],1/2);
       newtiles.push(newj2);
 
       var newi1 = tile.myclone();
       newi1.tile2i();
       newi1.id.push('i1');
-      newi1.rotate(tile.bounds[0]+(tile.bounds[3]-tile.bounds[1])/2,tile.bounds[3]+(tile.bounds[3]-tile.bounds[1])/2,-Math.PI/2);
-      newi1.scale(tile.bounds[6],tile.bounds[7],1/2);
+      newi1.scale(newi1.bounds[6],newi1.bounds[7],1/2);
+      newi1.rotate((newi1.bounds[4]+newi1.bounds[2])/2,(newi1.bounds[3]+newi1.bounds[1])*7/8,-Math.PI/2);
       newtiles.push(newi1);
 
       var newo1 = tile.myclone();
       newo1.tile2o();
       newo1.id.push('o1');
-      newo1.scale(tile.bounds[14],tile.bounds[15],1/2);
+      newo1.scale(newo1.bounds[6],newo1.bounds[7],1/2);
       newtiles.push(newo1);
 
       return newtiles;
@@ -362,8 +363,11 @@ neighbors2boundsTetris.set('z',default_neighbors2bounds(8));
 
 Tiling.TetrisSubstitution = function({iterations}={}){
   var tiles = [];
-  var myo = l.myclone();
+  var myo = z.myclone();
+
   tiles.push(myo);
+
+
   tiles = substitute(
     iterations,
     tiles,
