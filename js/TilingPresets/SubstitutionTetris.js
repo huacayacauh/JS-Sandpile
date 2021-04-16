@@ -82,13 +82,13 @@ Tile.prototype.tile2l = function(){
   var b0 = this.bounds[0];
   var b1 = this.bounds[1];
   newbounds.push(b0,b1);
-  var b2b3 = shiftPoint(b0,b1,2*vy[0],2*vy[1]);
+  var b2b3 = shiftPoint(b0,b1,3*vy[0],3*vy[1]);
   newbounds.push(b2b3[0],b2b3[1]);
-  var b4b5 = shiftPoint(b2b3[0],b2b3[1],-vx[0],-vx[1]);
+  var b4b5 = shiftPoint(b2b3[0],b2b3[1],2*vx[0],2*vx[1]);
   newbounds.push(b4b5[0],b4b5[1]);
-  var b6b7 = shiftPoint(b4b5[0],b4b5[1],vy[0],vy[1]);
+  var b6b7 = shiftPoint(b4b5[0],b4b5[1],-vy[0],-vy[1]);
   newbounds.push(b6b7[0],b6b7[1]);
-  var b8b9 = shiftPoint(b6b7[0],b6b7[1], 2*vx[0],2*vx[1]);
+  var b8b9 = shiftPoint(b6b7[0],b6b7[1],-vx[0],-vx[1]);
   newbounds.push(b8b9[0],b8b9[1]);
   var b10b11 = shiftPoint(b0,b1,vx[0],vx[1]);
   newbounds.push(b10b11[0],b10b11[1]);
