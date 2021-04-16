@@ -55,88 +55,242 @@ bounds.push(1,0);
 var l = new Tile(['l'],[],bounds,8);
 
 Tile.prototype.tile2l = function(){
+  switch(this.id[0]){
+    case 'o':
+      var vx = [];
+      vx.push((this.bounds[6]-this.bounds[0])/2,(this.bounds[7]-this.bounds[1])/2);
+      var vy = [];
+      vy.push((this.bounds[2]-this.bounds[0])/2,(this.bounds[3]-this.bounds[1])/2);
+      break;
+    case 'i':
+      var vx = [];
+      vx.push(this.bounds[6]-this.bounds[0],this.bounds[7]-this.bounds[1]);
+      var vy = [];
+      vy.push((this.bounds[2]-this.bounds[0])/4,(this.bounds[3]-this.bounds[1])/4);
+      break;
+    case 't':
+      var vx = [];
+      vx.push(this.bounds[4]-this.bounds[2],this.bounds[5]-this.bounds[3]);
+      var vy = [];
+      vy.push(this.bounds[2]-this.bounds[0],this.bounds[3]-this.bounds[1]);
+      break;
+    default:
+      console.log('Transformation non prevue (tile2l)');
+  }
   this.id[0]='l';
   var newbounds = [];
   var b0 = this.bounds[0];
   var b1 = this.bounds[1];
   newbounds.push(b0,b1);
-  newbounds.push(b0,b1+2);
-  newbounds.push(b0-1,b1+2);
-  newbounds.push(b0-1,b1+3);
-  newbounds.push(b0+1,b1+3);
-  newbounds.push(b0+1,b1);
+  var b2b3 = shiftPoint(b0,b1,2*vy[0],2*vy[1]);
+  newbounds.push(b2b3[0],b2b3[1]);
+  var b4b5 = shiftPoint(b2b3[0],b2b3[1],-vx[0],-vx[1]);
+  newbounds.push(b4b5[0],b4b5[1]);
+  var b6b7 = shiftPoint(b4b5[0],b4b5[1],vy[0],vy[1]);
+  newbounds.push(b6b7[0],b6b7[1]);
+  var b8b9 = shiftPoint(b6b7[0],b6b7[1], 2*vx[0],2*vx[1]);
+  newbounds.push(b8b9[0],b8b9[1]);
+  var b10b11 = shiftPoint(b0,b1,vx[0],vx[1]);
+  newbounds.push(b10b11[0],b10b11[1]);
   this.bounds = newbounds;
 }
 
 Tile.prototype.tile2t = function(){
+  switch(this.id[0]){
+    case 'o':
+      var vx = [];
+      vx.push((this.bounds[6]-this.bounds[0])/2,(this.bounds[7]-this.bounds[1])/2);
+      var vy = [];
+      vy.push((this.bounds[2]-this.bounds[0])/2,(this.bounds[3]-this.bounds[1])/2);
+      break;
+    default:
+      console.log('Transformation non prevue (tile2t)');
+  }
   this.id[0]='t';
   var newbounds = [];
   var b0 = this.bounds[0];
   var b1 = this.bounds[1];
-  newbounds.push(b0,b1);
-  newbounds.push(b0,b1+1);
-  newbounds.push(b0+1,b1+1);
-  newbounds.push(b0+1,b1+2);
-  newbounds.push(b0+2,b1+2);
-  newbounds.push(b0+2,b1+1);
-  newbounds.push(b0+3,b1+1);
-  newbounds.push(b0+3,b1);
-  this.bounds = newbounds;
+	newbounds.push(b0,b1);
+	var b23 = shiftPoint(b0,b1,vy[0],vy[1]);
+	newbounds.push(b23[0],b23[1]);
+	var b45 = shiftPoint(b23[0],b23[1],vx[0],vx[1]);
+	newbounds.push(b45[0],b45[1]);
+	var b67 = shiftPoint(b45[0],b45[1],vy[0],vy[1]);
+	newbounds.push(b67[0],b67[1]);
+  var b89 = shiftPoint(b67[0],b67[1],vx[0],vx[1])
+	newbounds.push(b89[0],b89[1]);
+	var b1011 = shiftPoint(b89[0],b89[1],-vy[0],-vy[1]);
+	newbounds.push(b1011[0],b1011[1]);
+	var b1213 = shiftPoint(b1011[0],b1011[1],vx[0],vx[1]);
+	newbounds.push(b1213[0],b1213[1]);
+	var b1415 = shiftPoint(b1213[0],b1213[1],-vy[0],-vy[1]);
+	newbounds.push(b1415[0],b1415[1]);
+	this.bounds = newbounds;
 }
 
 Tile.prototype.tile2z = function(){
+  switch(this.id[0]){
+    case 'o':
+      var vx = [];
+      vx.push((this.bounds[6]-this.bounds[0])/2,(this.bounds[7]-this.bounds[1])/2);
+      var vy = [];
+      vy.push((this.bounds[2]-this.bounds[0])/2,(this.bounds[3]-this.bounds[1])/2);
+      break;
+    default:
+      console.log('Transformation non prevue (tile2z)');
+  }
   this.id[0]='z';
   var newbounds = [];
   var b0 = this.bounds[0];
   var b1 = this.bounds[1];
   newbounds.push(b0,b1);
-  newbounds.push(b0,b1+1);
-  newbounds.push(b0-1,b1+1);
-  newbounds.push(b0-1,b1+2);
-  newbounds.push(b0+1,b1+2);
-  newbounds.push(b0+1,b1+1);
-  newbounds.push(b0+2,b1+1);
-  newbounds.push(b0+2,b1);
+  var b23 = shiftPoint(b0,b1,vy[0],vy[1]);
+	newbounds.push(b23[0],b23[1]);
+	var b45 = shiftPoint(b23[0],b23[1],-vx[0],-vx[1]);
+	newbounds.push(b45[0],b45[1]);
+	var b67 = shiftPoint(b45[0],b45[1],vy[0],vy[1]);
+	newbounds.push(b67[0],b67[1]);
+	var b89 = shiftPoint(b67[0],b67[1],2*vx[0],2*vx[1]);
+	newbounds.push(b89[0],b89[1]);
+	var b1011 = shiftPoint(b89[0],b89[1],-vy[0],-vy[1]);
+	newbounds.push(b1011[0],b1011[1]);
+	var b1213 = shiftPoint(b1011[0],b1011[1],vx[0],vx[1]);
+	newbounds.push(b1213[0],b1213[1]);
+  var b1415 = shiftPoint(b1213[0],b1213[1],-vy[0],-vy[1]);
+	newbounds.push(b1415[0],b1415[1]);
   this.bounds = newbounds;
 }
 
 Tile.prototype.tile2j = function(){
+  switch(this.id[0]){
+    case 'i':
+      var vx = [];
+      vx.push(this.bounds[6]-this.bounds[0],this.bounds[7]-this.bounds[1]);
+      var vy = [];
+      vy.push((this.bounds[2]-this.bounds[0])/4,(this.bounds[3]-this.bounds[1])/4);
+      break;
+    case 't':
+      var vx = [];
+      vx.push(this.bounds[4]-this.bounds[2],this.bounds[5]-this.bounds[3]);
+      var vy = [];
+      vy.push(this.bounds[2]-this.bounds[0],this.bounds[3]-this.bounds[1]);
+      break;
+    case 'z':
+      var vx = [];
+      vx.push(this.bounds[2]-this.bounds[4],this.bounds[3]-this.bounds[5]);
+      var vy = [];
+      vy.push(this.bounds[2]-this.bounds[0],this.bounds[3]-this.bounds[1]);
+    default:
+      console.log('Transformation non prevue (tile2j)');
+  }
   this.id[0]='j';
   var newbounds = [];
   var b0 = this.bounds[0];
   var b1 = this.bounds[1];
   newbounds.push(b0,b1);
-  newbounds.push(b0,b1+3);
-  newbounds.push(b0+2,b1+3);
-  newbounds.push(b0+2,b1+2);
-  newbounds.push(b0+1,b1+2);
-  newbounds.push(b0+1,b1);
+  var b2b3 = shiftPoint(b0,b1,3*vy[0],3*vy[1]);
+  newbounds.push(b2b3[0],b2b3[1]);
+  var b4b5 = shiftPoint(b2b3[0],b2b3[1]);
+  newbounds.push(b4b5[0],b4b5[1]);
+  var b6b7 = shiftPoint(b4b5[0],b4b5[1],-vy[0],-vy[1]);
+  newbounds.push(b6b7[0],b6b7[1]);
+  var b8b9 = shiftPoint(b6b7[0],b6b7[1],-vx[0],-vx[1]);
+  newbounds.push(b8b9[0],b8b9[1]);
+  var b10b11 = shiftPoint(b0,b1,vx[0],vx[1]);
+  newbounds.push(b10b11[0],b10b11[1]);
   this.bounds = newbounds;
 }
 
 Tile.prototype.tile2o = function(){
+  switch(this.id[0]){
+    case 'i':
+      var vx = [];
+      vx.push(this.bounds[6]-this.bounds[0],this.bounds[7]-this.bounds[1]);
+      var vy = [];
+      vy.push((this.bounds[2]-this.bounds[0])/4,(this.bounds[3]-this.bounds[1])/4);
+      break;
+    case 'j':
+      var vx = [];
+      vx.push(this.bounds[10]-this.bounds[0],this.bounds[11]-this.bounds[1]);
+      var vy = [];
+      vy.push(this.bounds[6]-this.bounds[4],this.bounds[7]-this.bounds[5]);
+      break;
+    case 'l':
+      var vx = [];
+      vx.push(this.bounds[10]-this.bounds[0],this.bounds[11]-this.bounds[1]);
+      var vy = [];
+      vy.push(this.bounds[4]-this.bounds[6],this.bounds[5]-this.bounds[7]);
+      break;
+    case 't':
+      var vx = [];
+      vx.push(this.bounds[4]-this.bounds[2],this.bounds[5]-this.bounds[3]);
+      var vy = [];
+      vy.push(this.bounds[2]-this.bounds[0],this.bounds[3]-this.bounds[1]);
+      break;
+    case 'z':
+      var vx = [];
+      vx.push(this.bounds[2]-this.bounds[4],this.bounds[3]-this.bounds[5]);
+      var vy = [];
+      vy.push(this.bounds[2]-this.bounds[0],this.bounds[3]-this.bounds[1]);
+    default:
+      console.log('Transformation non prevue (tile2o)');
+  }
   this.id[0]='o';
   var newbounds = [];
   var b0 = this.bounds[0];
   var b1 = this.bounds[1];
   newbounds.push(b0,b1);
-  newbounds.push(b0,b1+2);
-  newbounds.push(b0+2,b1+2);
-  newbounds.push(b0+2,b1);
+  var b2b3 = shiftPoint(b0,b1,2*vy[0],2*vy[1]);
+  newbounds.push(b2b3[0],b2b3[1]);
+  var b4b5 = shiftPoint(b2b3[0],b2b3[1],2*vx[0],2*vx[1])
+  newbounds.push(b4b5[0],b4b5[1]);
+  var b6b7 = shiftPoint(b0,b1,2*vx[0],2*vx[1]);
+  newbounds.push(b6b7[0],b6b7[1]);
   this.bounds = newbounds;
 }
 
 Tile.prototype.tile2i = function(){
+  switch(this.id[0]){
+    case 'j':
+      var vx = [];
+      vx.push(this.bounds[10]-this.bounds[0],this.bounds[11]-this.bounds[1]);
+      var vy = [];
+      vy.push(this.bounds[6]-this.bounds[4],this.bounds[7]-this.bounds[5]);
+      break;
+    case 'l':
+      var vx = [];
+      vx.push(this.bounds[10]-this.bounds[0],this.bounds[11]-this.bounds[1]);
+      var vy = [];
+      vy.push(this.bounds[4]-this.bounds[6],this.bounds[5]-this.bounds[7]);
+      break;
+    case 't':
+      var vx = [];
+      vx.push(this.bounds[4]-this.bounds[2],this.bounds[5]-this.bounds[3]);
+      var vy = [];
+      vy.push(this.bounds[2]-this.bounds[0],this.bounds[3]-this.bounds[1]);
+      break;
+    case 'z':
+      var vx = [];
+      vx.push(this.bounds[2]-this.bounds[4],this.bounds[3]-this.bounds[5]);
+      var vy = [];
+      vy.push(this.bounds[2]-this.bounds[0],this.bounds[3]-this.bounds[1]);
+    default:
+      console.log('Transformation non prevue (tile2i)');
+  }
   this.id[0]='i';
   var newbounds = [];
   var b0 = this.bounds[0];
   var b1 = this.bounds[1];
   newbounds.push(b0,b1);
-  newbounds.push(b0,b1+4);
-  newbounds.push(b0+1,b1+4);
-  newbounds.push(b0+1,b1);
+  var b2b3 = shiftPoint(b0,b1,4*vy[0],4*vy[1]);
+  newbounds.push(b2b3[0],b2b3[1]);
+  var b4b5 = shiftPoint(b2b3[0],b2b3[1],vx[0],vx[1])
+  newbounds.push(b4b5[0],b4b5[1]);
+  var b6b7 = shiftPoint(b0,b1,vx[0],vx[1]);
+  newbounds.push(b6b7[0],b6b7[1]);
   this.bounds = newbounds;
 }
+
 
 function substitutionTetris(tile){
   switch(tile.id[0]){
