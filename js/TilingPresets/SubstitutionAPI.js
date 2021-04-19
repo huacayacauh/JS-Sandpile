@@ -378,9 +378,10 @@ function segment2key (a){
 // datastructure associated to some tile's segment:
 // * tile id
 // * neighbors' index
-function TileSegment(id,nindex){
+function TileSegment(id,nindex,nbrIntersect){
   this.id=id;
   this.nindex=nindex;
+	this.nbrIntersect=nbrIntersect;
 }
 
 //
@@ -617,12 +618,21 @@ function substituteGeneral(iterations,tiles,ratio,mysubstitution,mydupinfos,mydu
       console.log("error: please provide some neighbors2bounds according to your dupinfos/dupinfosoriented, even if you are lazy.");
       return tiles;
     }
-    console.log("lazy: compute base neighbors");
-    // reset then find neighbors
-    resetAllNeighbors(tiles);
-    let tilesdict = new Map(tiles.map(i => [id2key(i.id), i]));
-    let fn=findNeighborsEnhanced(tiles,tilesdict,findNeighbors_option);
-    console.log("  found "+fn);
+		else if(myneighbors=="general")
+		{
+			let tilesdict = new Map(tiles.map(i => [id2key(i.id), i]));
+			let fn=findNeighborsEnhanced(tiles,tilesdict,findNeighbors_option);
+			console.log("  found "+fn);
+		}
+		else
+		{
+			console.log("lazy: compute base neighbors");
+			// reset then find neighbors
+			resetAllNeighbors(tiles);
+			let tilesdict = new Map(tiles.map(i => [id2key(i.id), i]));
+			let fn=findNeighbors(tiles,tilesdict,findNeighbors_option);
+			console.log("  found "+fn);
+		}
   }
   // scale the base tiling all at once
   tiles.forEach(tile => tile.scale(0,0,ratio**iterations));
@@ -653,12 +663,19 @@ function substituteGeneral(iterations,tiles,ratio,mysubstitution,mydupinfos,mydu
     console.log("* clean duplicated tiles");
     newtiles = clean(newtiles,newdup);
     // find neighbors from non-adjacent tiles
-    if(findNeighbors_option != false){
+    if(myneighbors == "general"){
       console.log("* compute neighbors (global)");
-    newtiles.forEach(tile => tile.neighbors = []);
+			newtiles.forEach(tile => tile.neighbors = []);
       let fn=findNeighborsEnhanced(newtiles,newtilesdict,findNeighbors_option);
       console.log("  found "+fn);
     }
+		else 
+		{
+			console.log("* compute neighbors (global)");
+			newtiles.forEach(tile => tile.neighbors = []);
+      let fn=findNeighbors(newtiles,newtilesdict,findNeighbors_option);
+      console.log("  found "+fn);
+		}
     // update tiles
     tiles = newtiles;
       console.log("* done");
