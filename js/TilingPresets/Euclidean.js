@@ -91,7 +91,7 @@ function thHex(r, q){
 Tiling.rhombitrihexagonal = function ({size}={}) {
 
 	var tils = [];
-
+  size =  parseInt(size)
 	for(var r=0; r<=size; r++){
 		for(var q=0; q<=size; q++){
 			tils.push(rbtrhHex(r, q));
@@ -113,7 +113,10 @@ Tiling.rhombitrihexagonal = function ({size}={}) {
 				tils.push(rbtrhTri5(-1, q-1));
 			}
 
-
+			if (r==size && q%2 == 1){
+			                tils.push(rbtrhSqu2(size+1, q+1));
+			                tils.push(rbtrhTri4(size+1, q-1));
+			            }
 			if (q==(size-1)){
 				if (r !=0 || size%2 ==0){
 					tils.push(rbtrhSqu2(r, q+2));
