@@ -33,14 +33,12 @@ function findNeighborsEnhanced(tiles,tilesdict,n2b){
           segment.push(x1);
           segment.push(y1);
         }
-        // number of tiles neighbors of the curent tile along this segment
-        segment.push(0)
         // something unique for segment2key...
         segment.push(id2key(tile.id));
         segment.push(i);
         // add to datastructures
         segments.push(segment);
-        segmentsMap.set(segment2key(segment),new TileSegment(tile.id,i));
+        segmentsMap.set(segment2key(segment),new TileSegment(tile.id,i,0));
     }
   });
   // sort the list of segments lexicographicaly
@@ -54,8 +52,9 @@ function findNeighborsEnhanced(tiles,tilesdict,n2b){
   var fn = 0;
   // We want to detect the neighbor segment by segment
   // We sort them by x value
-  // So for each segment we take its x value, and find all other segment with an x value less than the x'
-  // For each segment we check if their is collision by using affine segment equation.
+  // So for each segment we take his x value, and find all of other segment with an x value less than the x'
+  // For each segment we check if their is collision by using equation
+  
   
   // For the vertical segment we find if a segment have the same x value and check if y value have a commons interval 
   for(let i=0; i<segments.length; i++){
@@ -105,30 +104,24 @@ function findNeighborsEnhanced(tiles,tilesdict,n2b){
 				
 				// We need to have symetric add of neighbor, or some case when a very little segment is in a bigger one will cause problem
 			// But then we have to check if we didn't already find the neighbor but it's a cheap check, in most case.
-				segments[i][4] +=1
-				segments[j][4] +=1
-				tmpI = segments[i][4]; // We need to do this in order to not modify the segment2key value
-				tmpJ = segments[j][4];
-				segments[i][4] = 0
-				segments[j][4] = 0
+
 				let ts1=segmentsMap.get(segment2key(segments[i]));
 				let ts2=segmentsMap.get(segment2key(segments[j]));
-
-				segments[i][4] = tmpI
-				segments[j][4] = tmpJ
-				if(!containElt(tilesdict.get(id2key(ts1.id)).neighbors,ts2.id)) // Only add if he isn't already here
+				ts1.nbrIntersect += 1;
+				ts2.nbrIntersect += 1;
+				if(!tilesdict.get(id2key(ts1.id)).neighbors.includes(ts2.id)) // Only add if he isn't already here
 				{
 					tilesdict.get(id2key(ts1.id)).neighbors.push(ts2.id);
 				}
-				if(!containElt(tilesdict.get(id2key(ts2.id)).neighbors,ts1.id))
+				if(!tilesdict.get(id2key(ts2.id)).neighbors.includes(ts1.id))
 				{
 					tilesdict.get(id2key(ts2.id)).neighbors.push(ts1.id);
 				}
 			}
 		}
-		if(segments[i][4] == 0) // If a segment never intersect he is in the border of the tilling
+		let ts1=segmentsMap.get(segment2key(segments[i]));
+		if(ts1.nbrIntersect == 0) // If a segment never intersect he is in the border of the tilling
 		{
-			let ts1=segmentsMap.get(segment2key(segments[i]));
 			tilesdict.get(id2key(ts1.id)).limit += 1;
 		}
 		continue;
@@ -153,31 +146,27 @@ function findNeighborsEnhanced(tiles,tilesdict,n2b){
 			fn++;
 			// We need to have symetric add of neighbor, or some case when a very little segment is in a bigger one will cause problem
 			// But then we have to check if we didn't already find the neighbor but it's a cheap check, in most case.
-				segments[i][4] +=1
-				segments[j][4] +=1
-				tmpI = segments[i][4]; // We need to do this in order to not modify the segment2key value
-				tmpJ = segments[j][4];
-				segments[i][4] = 0
-				segments[j][4] = 0
+
 				let ts1=segmentsMap.get(segment2key(segments[i]));
 				let ts2=segmentsMap.get(segment2key(segments[j]));
+				
+				ts1.nbrIntersect += 1;
+				ts2.nbrIntersect += 1;
 
-				segments[i][4] = tmpI
-				segments[j][4] = tmpJ
 			
-			if(!containElt(tilesdict.get(id2key(ts1.id)).neighbors,ts2.id)) // Only add if he isn't already here
+			if(!tilesdict.get(id2key(ts1.id)).neighbors.includes(ts2.id)) // Only add if he isn't already here
 			{
 				tilesdict.get(id2key(ts1.id)).neighbors.push(ts2.id);
 			}
-			if(!containElt(tilesdict.get(id2key(ts2.id)).neighbors,ts1.id))
+			if(!tilesdict.get(id2key(ts2.id)).neighbors.includes(ts1.id))
 			{
 				tilesdict.get(id2key(ts2.id)).neighbors.push(ts1.id);
 			}
 		}
 	}		
-	if(segments[i][4] == 0) // If a segment never intersect he is in the border of the tilling
+	let ts1=segmentsMap.get(segment2key(segments[i]));
+	if(ts1.nbrIntersect == 0) // If a segment never intersect he is in the border of the tilling
 	{
-		let ts1=segmentsMap.get(segment2key(segments[i]));
 		tilesdict.get(id2key(ts1.id)).limit += 1;
 	}
   }
@@ -187,15 +176,4 @@ function findNeighborsEnhanced(tiles,tilesdict,n2b){
 		tiles[i].limit += tiles[i].neighbors.length;	
   }
   return fn; // side effect
-}
-
-function containElt(tab,elt){
-	for(let i = 0; i<tab.length;i++)
-	{
-		if(tab[i] == elt)
-		{
-			return true;
-		}
-	}
-	return false;
 }
