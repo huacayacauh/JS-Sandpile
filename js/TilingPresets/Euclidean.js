@@ -92,14 +92,38 @@ Tiling.rhombitrihexagonal = function ({size}={}) {
 
 	var tils = [];
 
-	for(var r=-size; r<=size; r++){
-		for(var q=-size; q<=size; q++){
+	for(var r=0; r<=size; r++){
+		for(var q=0; q<=size; q++){
 			tils.push(rbtrhHex(r, q));
 			tils.push(rbtrhSqu1(r, q));
 			tils.push(rbtrhSqu2(r, q));
 			tils.push(rbtrhSqu3(r, q));
 			tils.push(rbtrhTri4(r, q));
 			tils.push(rbtrhTri5(r, q));
+
+			if (q<=1){
+				tils.push(rbtrhSqu1(r, q-2));
+				tils.push(rbtrhTri4(r, q-2));
+				tils.push(rbtrhTri5(r, q-2));
+			}
+
+
+			if ((r==0 )&& (q%2 == 0)){
+				tils.push(rbtrhSqu3(-1, q+1));
+				tils.push(rbtrhTri5(-1, q-1));
+			}
+
+
+			if (q==(size-1)){
+				if (r !=0 || size%2 ==0){
+					tils.push(rbtrhSqu2(r, q+2));
+				}
+				if (r !=size || size%2 ==1){
+					tils.push(rbtrhSqu3(r, q+2));
+
+				}
+			}
+
 
 		}
 	}
