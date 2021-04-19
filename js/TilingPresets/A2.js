@@ -90,81 +90,17 @@ Tiling.A2BySubst = function({iterations}={}) {
   var tiles = [];
   var base = little_chair.myclone();
   tiles.push(base);
-  tiles = substituteAmmanA2(
+  tiles = substituteGeneral(
     iterations,
     tiles,
     Math.pow(phi, 1/2),
     substitution_A2,
     [], // no duplicated tiles
     [], // no duplicated tiles
-    "laziness", // myneighbors
+    "general", // myneighbors
     neighbors2bounds_A2,
     decorate_A2 // decorateTT
   );
   return new Tiling(tiles);
 };
 
-function substituteAmmanA2(iterations,tiles,ratio,mysubstitution,mydupinfos,mydupinfosoriented,myneighbors,findNeighbors_option=false,mydecoration_option=false){
-  // lazy? discover base neighbors
-  if(typeof(myneighbors)=="string"){
-    // check that findNeighbors_option is set
-    if(findNeighbors_option==false){
-      console.log("error: please provide some neighbors2bounds according to your dupinfos/dupinfosoriented, even if you are lazy.");
-      return tiles;
-    }
-    console.log("lazy: compute base neighbors");
-    // reset then find neighbors
-    resetAllNeighbors(tiles);
-    let tilesdict = new Map(tiles.map(i => [id2key(i.id), i]));
-    let fn=findNeighborsEnhanced(tiles,tilesdict,findNeighbors_option);
-    console.log("  found "+fn);
-  }
-  // scale the base tiling all at once
-  tiles.forEach(tile => tile.scale(0,0,ratio**iterations));
-  // iterate substitution
-  for(let i=0; i < iterations; i++){
-    console.log("starting substitution "+(i+1)+"/"+iterations+"...");
-    // substitute (scaling already done)
-    console.log("* create (new) tiles");
-    let newtiles = tiles.flatMap(mysubstitution);
-    console.log("  "+newtiles.length+" tiles");
-    // convert tiles array to map with id as key (for convenient access)
-    let tilesdict = new Map(tiles.map(i => [id2key(i.id), i]));
-    // convert newtiles array to map with id as key (for convenient access)
-    let newtilesdict = new Map(newtiles.map(i => [id2key(i.id), i]));
-    // compute map of duplicated newtiles (idkey -> id)
-    console.log("* compute map of duplicated tiles");
-    let newdup = duplicatedMap(mydupinfos,mydupinfosoriented,tiles,tilesdict);
-    // set neighbors (if user is not lazy)
-    if(typeof(myneighbors)!="string"){
-      console.log("* compute neighbors (local)");
-      myneighbors(tiles,tilesdict,newtiles,newtilesdict,newdup);
-    }
-    else{
-      console.log("* lazy: reset neighbors");
-      resetAllNeighbors(newtiles);
-    }
-    // remove duplicated tiles
-    console.log("* clean duplicated tiles");
-    newtiles = clean(newtiles,newdup);
-    // find neighbors from non-adjacent tiles
-    if(findNeighbors_option != false){
-      console.log("* compute neighbors (global)");
-	  newtiles.forEach(tile => tile.neighbors = []);
-      let fn=findNeighborsEnhanced(newtiles,newtilesdict,findNeighbors_option);
-      console.log("  found "+fn);
-    }
-    // update tiles
-    tiles = newtiles;
-      console.log("* done");
-  }
-  // decorate tiles
-  if(mydecoration_option != false){
-    console.log("decorate tiles");
-    tiles.forEach(tile => tile.sand=mydecoration_option.get(tile.id[0]));
-  }
-  // done
-  console.log(tiles);
-  console.log("done");
-  return tiles;
-}
