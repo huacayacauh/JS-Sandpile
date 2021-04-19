@@ -300,6 +300,11 @@ neighbors2boundsTangram.set('tri',default_neighbors2bounds(3));
 neighbors2boundsTangram.set('lol',default_neighbors2bounds(4));
 neighbors2boundsTangram.set('lor',default_neighbors2bounds(4));
 
+decorateTangram = new Map();
+decorateTangram.set('sqr',0);
+decorateTangram.set('tri',1);
+decorateTangram.set('lol',2);
+decorateTangram.set('lor',2);
 
 
 Tiling.TangramSubstitution = function({iterations}={}){
@@ -315,7 +320,8 @@ Tiling.TangramSubstitution = function({iterations}={}){
     [],
     [],
     "I am lazy",
-    neighbors2boundsTangram
+    neighbors2boundsTangram,
+    decorateTangram
 
   );
   return new Tiling(tiles);
