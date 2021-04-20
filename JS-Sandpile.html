@@ -61,6 +61,14 @@
 						<option value="trihexagonal">Trihexagonal</option>
 						<option value="rhombitrihexagonal">Rhombitrihexagonal</option>
 
+					<optgroup label="Semiregular">
+						<option value="A2BySubst">A2</option>
+						<option value="AmmannChair2BySubst">AmmannChair2</option>
+						<option value="TriTriangleBySubst">TriTriangle</option>
+						<option value="tetrakisSquareTiling">Tetrakis Square</option>
+						<option value="elongatedTriangularTiling">Elongated Triangular</option>
+
+
 					</optgroup>
 					<optgroup label="Cut and Project (via Mutligrid)">
 						<option value="PenroseCutandproject">Penrose P3 (rhomb)</option>
@@ -105,6 +113,7 @@
 						<option value="sqTilingCircle">Square Tiling croped to circle</option>
 						<option value="pythagorean">Pythagorean</option>
 						<option value="truncSq">Truncated Square</option>
+						<option value="truncHex">Truncated Hexagon</option>
 						<option value="cairoPenta">Cairo Pentagonal</option>
 					</optgroup>
 
@@ -365,23 +374,35 @@
     <script src="./js/Utils/Geometry.js"></script>
     <script src="./js/Utils/Matrix.js"></script>
     <script src="./js/Utils/Combinatorics.js"></script>
-	<script src="./js/Utils/gpu-browser.min.js"></script>
+	<!--<script src="./js/Utils/gpu-browser.min.js"></script>-->
 
 	<script src="./js/Tiling.js"></script>
 
+	<script src="./js/Utils/findNeighborsEnhanced.js"></script>
+
+
 	<script src="./js/TilingPresets/HexTiling.js"></script>
 	<script src="./js/TilingPresets/TriTiling.js"></script>
+
+	<script src="./js/TilingPresets/TetrakisSquare.js"></script>
+	<script src="./js/TilingPresets/ElongatedTriangular.js"></script>
+
 	<script src="./js/TilingPresets/PenroseTiling.js"></script>
 	<script src="./js/TilingPresets/CustomSquareTiling.js"></script>
 	<script src="./js/TilingPresets/SquareTiling.js"></script>
 	<script src="./js/TilingPresets/Pythagorean.js"></script>
 	<script src="./js/TilingPresets/TruncSquare.js"></script>
+	<!--<script src="./js/TilingPresets/TruncHexagon.js"></script>-->
 	<script src="./js/TilingPresets/CairoPentagonal.js"></script>
 	<script src="./js/TilingPresets/PenroseP0.js"></script>
 
     <script src="./js/TilingPresets/SubstitutionAPI.js"></script>
+	<script src="./js/TilingPresets/TriTriangleSubstitution.js"></script>
+
     <script src="./js/TilingPresets/PenroseP2Substitution.js"></script>
     <script src="./js/TilingPresets/PenroseP3Substitution.js"></script>
+    <script src="./js/TilingPresets/A2.js"></script>
+    <script src="./js/TilingPresets/AmmannChair2.js"></script>
     <script src="./js/TilingPresets/AmmannBeenkerA5Substitution.js"></script>
     <script src="./js/TilingPresets/BirdsBeesSubstitution.js"></script>
     <script src="./js/TilingPresets/TriangleSubstitution.js"></script>
