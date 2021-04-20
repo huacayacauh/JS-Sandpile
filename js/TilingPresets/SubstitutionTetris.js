@@ -528,10 +528,10 @@ function substitutionTetris(tile){
 }
 
 var neighbors2boundsTetris = new Map();
-neighbors2boundsTetris.set('o',default_neighbors2bounds(8));
-neighbors2boundsTetris.set('i',default_neighbors2bounds(8));
-neighbors2boundsTetris.set('j',default_neighbors2bounds(8));
-neighbors2boundsTetris.set('l',default_neighbors2bounds(8));
+neighbors2boundsTetris.set('o',default_neighbors2bounds(4));
+neighbors2boundsTetris.set('i',default_neighbors2bounds(4));
+neighbors2boundsTetris.set('j',default_neighbors2bounds(6));
+neighbors2boundsTetris.set('l',default_neighbors2bounds(6));
 neighbors2boundsTetris.set('t',default_neighbors2bounds(8));
 neighbors2boundsTetris.set('z',default_neighbors2bounds(8));
 
@@ -540,14 +540,14 @@ Tiling.TetrisSubstitution = function({iterations}={}){
   var myo = o.myclone();
   tiles.push(myo);
 
-  tiles = substitute(
+  tiles = substituteGeneral(
     iterations,
     tiles,
     2,
     substitutionTetris,
     [],
     [],
-    "I am lazy",
+    "general",
     neighbors2boundsTetris
 
   );
