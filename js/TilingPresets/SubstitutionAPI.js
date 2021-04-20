@@ -413,7 +413,7 @@ function default_neighbors2bounds(n){
 // output:
 // * number of matching segments founds
 //
-function findNeighbors(tiles,tilesdict,n2b){
+function findNeighborsEdgeToEdge(tiles,tilesdict,n2b){
   // construct
   // * segments = list of segments (Array of 4 coordinates + tile idkey + neighbor index)
   //   for undefined neighbors
@@ -543,7 +543,8 @@ function resetAllNeighbors(tiles){
 // 
 
 
-//edge to edge: compute base neighbors
+
+
 
 function substitute(iterations,tiles,ratio,mysubstitution,mydupinfos,mydupinfosoriented,myneighbors,findNeighbors_option=false,mydecoration_option=false){
   // lazy? discover base neighbors
@@ -553,75 +554,10 @@ function substitute(iterations,tiles,ratio,mysubstitution,mydupinfos,mydupinfoso
       console.log("error: please provide some neighbors2bounds according to your dupinfos/dupinfosoriented, even if you are lazy.");
       return tiles;
     }
-    console.log("lazy: compute base neighbors");
-    // reset then find neighbors
-    resetAllNeighbors(tiles);
-    let tilesdict = new Map(tiles.map(i => [id2key(i.id), i]));
-    let fn=findNeighbors(tiles,tilesdict,findNeighbors_option);
-    console.log("  found "+fn);
-  }
-  // scale the base tiling all at once
-  tiles.forEach(tile => tile.scale(0,0,ratio**iterations));
-  // iterate substitution
-  for(let i=0; i < iterations; i++){
-    console.log("starting substitution "+(i+1)+"/"+iterations+"...");
-    // substitute (scaling already done)
-    console.log("* create (new) tiles");
-    let newtiles = tiles.flatMap(mysubstitution);
-    console.log("  "+newtiles.length+" tiles");
-    // convert tiles array to map with id as key (for convenient access)
-    let tilesdict = new Map(tiles.map(i => [id2key(i.id), i]));
-    // convert newtiles array to map with id as key (for convenient access)
-    let newtilesdict = new Map(newtiles.map(i => [id2key(i.id), i]));
-    // compute map of duplicated newtiles (idkey -> id)
-    console.log("* compute map of duplicated tiles");
-    let newdup = duplicatedMap(mydupinfos,mydupinfosoriented,tiles,tilesdict);
-    // set neighbors (if user is not lazy)
-    if(typeof(myneighbors)!="string"){
-      console.log("* compute neighbors (local)");
-      myneighbors(tiles,tilesdict,newtiles,newtilesdict,newdup);
-    }
-    else{
-      console.log("* lazy: reset neighbors");
-      resetAllNeighbors(newtiles);
-    }
-    // remove duplicated tiles
-    console.log("* clean duplicated tiles");
-    newtiles = clean(newtiles,newdup);
-    // find neighbors from non-adjacent tiles
-    if(findNeighbors_option != false){
-      console.log("* compute neighbors (global)");
-      let fn=findNeighbors(newtiles,newtilesdict,findNeighbors_option);
-      console.log("  found "+fn);
-    }
-    // update tiles
-    tiles = newtiles;
-      console.log("* done");
-  }
-  // decorate tiles
-  if(mydecoration_option != false){
-    console.log("decorate tiles");
-    tiles.forEach(tile => tile.sand=mydecoration_option.get(tile.id[0]));
-  }
-  // done
-  console.log("done");
-  return tiles;
-}
-
-//general: compute base neighbors
-
-function substituteGeneral(iterations,tiles,ratio,mysubstitution,mydupinfos,mydupinfosoriented,myneighbors,findNeighbors_option=false,mydecoration_option=false){
-  // lazy? discover base neighbors
-  if(typeof(myneighbors)=="string"){
-    // check that findNeighbors_option is set
-    if(findNeighbors_option==false){
-      console.log("error: please provide some neighbors2bounds according to your dupinfos/dupinfosoriented, even if you are lazy.");
-      return tiles;
-    }
-		else if(myneighbors=="general")
+		else if(myneighbors=="edge-to-edge")
 		{
 			let tilesdict = new Map(tiles.map(i => [id2key(i.id), i]));
-			let fn=findNeighborsEnhanced(tiles,tilesdict,findNeighbors_option);
+			let fn=findNeighborsEdgeToEdge(tiles,tilesdict,findNeighbors_option);
 			console.log("  found "+fn);
 		}
 		else
@@ -663,10 +599,10 @@ function substituteGeneral(iterations,tiles,ratio,mysubstitution,mydupinfos,mydu
     console.log("* clean duplicated tiles");
     newtiles = clean(newtiles,newdup);
     // find neighbors from non-adjacent tiles
-    if(myneighbors == "general"){
+    if(myneighbors == "edge-to-edge"){
       console.log("* compute neighbors (global)");
 			newtiles.forEach(tile => tile.neighbors = []);
-      let fn=findNeighborsEnhanced(newtiles,newtilesdict,findNeighbors_option);
+      let fn=findNeighborsEdgeToEdge(newtiles,newtilesdict,findNeighbors_option);
       console.log("  found "+fn);
     }
 		else 
