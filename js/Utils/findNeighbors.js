@@ -1,5 +1,5 @@
 
-function findNeighborsEnhanced(tiles,tilesdict,n2b){
+function findNeighbors(tiles,tilesdict,n2b){
   // construct
   // * segments = list of segments (Array of 4 coordinates + tile idkey + neighbor index)
   //   for undefined neighbors
