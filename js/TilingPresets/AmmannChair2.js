@@ -82,7 +82,7 @@ Tiling.AmmannChair2BySubst = function({iterations}={}) {
 	var tiles = [];
 	var AmmanChair = AmmanChair2.myclone();
 	tiles.push(AmmanChair);
-	tiles = substituteGeneral(
+	tiles = substitute(
 		iterations,
 		tiles,
 		1,

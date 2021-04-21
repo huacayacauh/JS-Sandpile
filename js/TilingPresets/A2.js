@@ -90,7 +90,7 @@ Tiling.A2BySubst = function({iterations}={}) {
   var tiles = [];
   var base = little_chair.myclone();
   tiles.push(base);
-  tiles = substituteGeneral(
+  tiles = substitute(
     iterations,
     tiles,
     Math.pow(phi, 1/2),
