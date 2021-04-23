@@ -151,9 +151,11 @@ function make_hyperbol2tiling(p, q, star, iter_num, Ox, Oy, R) {
     //  tile.neighbour_by_side = neighbour_by_side;
     tiles.push(tile);
     //tiles_liste.push_back([tile,0,0,1]);
-    for (var side = 0 ; side < q; side++){
-        tiles_liste.push_back([tile,side,0,1]);
-
+    if (iter_num>0){
+      for (var side = 0 ; side < q; side++){
+        // le p-2 est pas sur
+          tiles_liste.push_back([tile,side,p-2,1]);
+      }
     }
   }
 
@@ -189,13 +191,21 @@ function make_hyperbol2tiling(p, q, star, iter_num, Ox, Oy, R) {
 
 
       id = id+1;
-
+    //  console.log("cpt: ",cpt, "  | iter: ",iter);
       tiles.push(T_2);
       if (cpt > 0){
-        tiles_liste.push_back([tile, side_no+1 ,cpt-1,iter]);
+        tiles_liste.push_back([T_2, 1 ,cpt-1,iter]);
       }
+
+      // 2 ou 3 a voir
+      if (side_no < side_num-2){
+        tiles_liste.push_back([tile,side_no+1 ,cpt,iter]);
+      }
+
+
+
       if (iter < iter_num){
-        tiles_liste.push_back([T_2, 2 ,p-1 ,iter+1]);
+        tiles_liste.push_back([T_2, 2 ,p-2 ,iter+1]);
       }
 
 
@@ -209,7 +219,7 @@ function make_hyperbol2tiling(p, q, star, iter_num, Ox, Oy, R) {
     var R = 1;
     var Ox = 0;
     var Oy = 0;
-    var p = 3; // pour angle tangent
+    var p = 4; // pour angle tangent
     var q = 7; // pour angle ouverture centrale
     var iter_num = iterations;
 
