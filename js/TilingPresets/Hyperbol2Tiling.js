@@ -53,19 +53,16 @@ function reorder (bounds, B0x, B0y, B1x, B1y){
     if ( Math.abs(bounds[k]-B0x)< delta  &&  Math.abs(bounds[k+1]-B0y)< delta)
     {
       if (k != 0){
-        console.log(1);
 
         new_bounds = bounds.slice(k,bounds.length).concat(bounds.slice(0,k));
         break;
 
       } else if ( Math.abs(bounds[k+2]-B1x)< delta  &&  Math.abs(bounds[k+3]-B1y)< delta) {
-        console.log(2);
 
         new_bounds = bounds.slice(k,bounds.length).concat(bounds.slice(0,k));
         break;
 
       } else {
-        console.log(3);
 
         var new_bounds = [];
         new_bounds.push(bounds[0],bounds[1]);
@@ -80,7 +77,6 @@ function reorder (bounds, B0x, B0y, B1x, B1y){
     if (Math.abs(bounds[k]-B1x)< delta  &&  Math.abs(bounds[k+1]-B1y)< delta)
     {
       if (k != 0){
-        console.log(4);
 
         for (var i = k+2; i => 0; i = i-2)
         {
@@ -92,9 +88,6 @@ function reorder (bounds, B0x, B0y, B1x, B1y){
         }
         break;
       } else if ( Math.abs(bounds[k+2]-B0x)< delta  &&  Math.abs(bounds[k+3]-B0y)) {
-
-        console.log(5);
-
         for (var i = k+2; i => 0; i = i-2)
         {
           new_bounds.push(bounds[i],bounds[i+1]);
@@ -105,7 +98,6 @@ function reorder (bounds, B0x, B0y, B1x, B1y){
         }
         break;
       } else {
-        console.log(6);
 
         new_bounds = bounds.slice(bounds.length-2,bounds.length).concat(bounds.slice(0,bounds.length-2));
         break;
@@ -158,11 +150,9 @@ function make_hyperbol2tiling(p, q, star, iter_num, Ox, Oy, R) {
     var tile = new Tile([0, 0], [], bounds, q);
     //  tile.neighbour_by_side = neighbour_by_side;
     tiles.push(tile);
-    tiles_liste.push_back([tile,1,p-1,1]);
-    tiles_liste.push_back([tile,0,p-1,1]);
-
+    //tiles_liste.push_back([tile,0,0,1]);
     for (var side = 0 ; side < q; side++){
-  //      tiles_liste.push_back([tile,side,p-2,1]);
+        tiles_liste.push_back([tile,side,0,1]);
 
     }
   }
@@ -170,8 +160,7 @@ function make_hyperbol2tiling(p, q, star, iter_num, Ox, Oy, R) {
 
   while ( !tiles_liste.isEmpty())
   {
-    console.log(id);
-    console.log(tiles_liste.getLength());
+
 
     var tile ;
     var side_no;
@@ -198,17 +187,15 @@ function make_hyperbol2tiling(p, q, star, iter_num, Ox, Oy, R) {
       );
       var T_2 = new Tile([id], [], T_2_bounds, q);
 
-      console.log(T_2_bounds);
-
 
       id = id+1;
 
       tiles.push(T_2);
       if (cpt > 0){
-        tiles_liste.push_back([T_2, q-2 ,cpt-1 ,iter]);
+        tiles_liste.push_back([tile, side_no+1 ,cpt-1,iter]);
       }
       if (iter < iter_num){
-      //  tiles_liste.push_back([T_2, 2 ,p-2 ,iter+1]);
+        tiles_liste.push_back([T_2, 2 ,p-1 ,iter+1]);
       }
 
 
@@ -225,7 +212,6 @@ function make_hyperbol2tiling(p, q, star, iter_num, Ox, Oy, R) {
     var p = 3; // pour angle tangent
     var q = 7; // pour angle ouverture centrale
     var iter_num = iterations;
-    console.log("vu");
 
     return new Tiling(make_hyperbol2tiling(p, q, false, iter_num, Ox, Oy, R));
   };
