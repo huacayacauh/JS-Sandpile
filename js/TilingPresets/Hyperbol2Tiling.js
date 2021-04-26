@@ -133,9 +133,15 @@ function make_hyperbol2tiling(p, q, star, iter_num, Ox, Oy, R) {
   var alpha_1 = Math.PI / p;
   var gamma_1 = Math.PI / 2 - alpha_1;
   var OA = Math.sqrt(R * (R + Math.sin(beta_2 / 2)**2 / (Math.sin(gamma_1)**2 - Math.sin(beta_2 / 2)**2))) * Math.cos(beta_2 / 2) - R * Math.sin(beta_2 / 2) * Math.cos(gamma_1) / Math.sqrt(Math.sin(gamma_1)**2 - Math.sin(beta_2 / 2)**2);
-  console.log("OA:", OA);
+  // console.log("OA:", OA);
   var Ax = OA;
   var Ay = 0;
+
+
+  var voisin_depart = ['N','P','P'];
+  var voisin_n = [['N','P']];
+  var voisin_p = [['N','P','P'],['N','P']];
+
 
   // Creation des tuiles de base
   if (!star) {
@@ -162,7 +168,7 @@ function make_hyperbol2tiling(p, q, star, iter_num, Ox, Oy, R) {
   // tiles_liste.push_back([tile,2,['N','P','P'],1]);
 
      for (var side = 0 ; side < q; side++){
-      tiles_liste.push_back([tile,side,['N','P','P'],1]);
+      tiles_liste.push_back([tile,side,[].concat(voisin_depart),1]);
      }
     }
   }
@@ -188,7 +194,7 @@ function make_hyperbol2tiling(p, q, star, iter_num, Ox, Oy, R) {
       tile.bounds[(2*side_no+3)%(side_num*2)],
       Ox, Oy, R);
 
-      console.log(ret);
+      // console.log(ret);
 
 
       var T_2_bounds = circle_inversion_polygon(tile.bounds, ret.Cx, ret.Cy, ret.r);
@@ -199,7 +205,7 @@ function make_hyperbol2tiling(p, q, star, iter_num, Ox, Oy, R) {
 
 
 
-console.log(T_2_bounds);
+// console.log(T_2_bounds);
 
      T_2_bounds =  reorder(T_2_bounds,
         tile.bounds[(2*side_no+2)%(side_num*2)],
@@ -219,7 +225,7 @@ console.log(T_2_bounds);
     //  console.log("cpt: ",cpt, "  | iter: ",iter, " | d: ",d);
       // console.log(pile);
       var fill = pile.shift();
-      console.log(pile);
+      // console.log(pile);
 
       if (pile.length > 0){
         // if (fill == 'N'){
@@ -228,11 +234,13 @@ console.log(T_2_bounds);
 
       if (iter < iter_num){
           if (fill == 'N'){
-            tiles_liste.push_back([T_2, 2 ,['N','P'] ,iter+1]);
+            for (var k = 0; k < voisin_n.length; k++){
+              tiles_liste.push_back([T_2, 2 + k ,[].concat(voisin_n[k]) ,iter+1]);
+            }
           }else{
-            tiles_liste.push_back([T_2, 1  ,['N','P','P'] ,iter+1]);
-            tiles_liste.push_back([T_2, 2  ,['N','P'] ,iter+1]);
-
+            for (var k = 0; k < voisin_p.length; k++){
+              tiles_liste.push_back([T_2, 1 + k ,[].concat(voisin_p[k]) ,iter+1]);
+            }
           }
       }
 
