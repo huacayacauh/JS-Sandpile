@@ -114,6 +114,37 @@ function reorder (bounds, B0x, B0y, B1x, B1y){
   return new_bounds;
 }
 
+function calcul_voisin (p,q){
+
+  var voisin_depart = ['N'];
+  var voisin_n = [['N']];
+  var voisin_p = [['N','P'],['N']];
+
+
+  for (var h = 2; h < q; h++){
+      voisin_depart = voisin_depart.concat(['P'])
+  }
+
+  for (var i = 4; i < q; i++){
+      voisin_n = [['N','P']].concat(voisin_n)
+      voisin_p = [['N','P']].concat(voisin_p)
+  }
+  for (var j = 4; j < p; j++){
+    for (var k = 0; k < voisin_n.length; k++){
+        voisin_n[k] = voisin_n[k].concat('P');
+    }
+    for (var k = 0; k < voisin_p.length; k++){
+      voisin_p[k] = voisin_p[k].concat('P');
+    }
+  }
+
+console.log( [voisin_depart,voisin_n,voisin_p]);
+
+  return [voisin_depart,voisin_n,voisin_p];
+
+
+}
+
 
 
 function make_hyperbol2tiling(p, q, star, iter_num, Ox, Oy, R) {
@@ -138,10 +169,10 @@ function make_hyperbol2tiling(p, q, star, iter_num, Ox, Oy, R) {
   var Ay = 0;
 
 
-  var voisin_depart = ['N','P','P'];
-  var voisin_n = [['N','P']];
-  var voisin_p = [['N','P','P'],['N','P']];
-
+  var voisin_depart;
+  var voisin_n ;
+  var voisin_p ;
+  [voisin_depart,voisin_n,voisin_p] = calcul_voisin(p,q)
 
   // Creation des tuiles de base
   if (!star) {
@@ -254,8 +285,8 @@ function make_hyperbol2tiling(p, q, star, iter_num, Ox, Oy, R) {
     var R = 1;
     var Ox = 0;
     var Oy = 0;
-    var p = 5; // pour angle tangent
-    var q = 4; // pour angle ouverture centrale
+    var p = 6; // pour angle tangent
+    var q = 5 ; // pour angle ouverture centrale
     var iter_num = iterations;
 
     return new Tiling(make_hyperbol2tiling(p, q, false, iter_num, Ox, Oy, R));
