@@ -133,7 +133,7 @@ function make_hyperbol2tiling(p, q, star, iter_num, Ox, Oy, R) {
   var alpha_1 = Math.PI / p;
   var gamma_1 = Math.PI / 2 - alpha_1;
   var OA = Math.sqrt(R * (R + Math.sin(beta_2 / 2)**2 / (Math.sin(gamma_1)**2 - Math.sin(beta_2 / 2)**2))) * Math.cos(beta_2 / 2) - R * Math.sin(beta_2 / 2) * Math.cos(gamma_1) / Math.sqrt(Math.sin(gamma_1)**2 - Math.sin(beta_2 / 2)**2);
-  //console.log("OA:", OA);
+  console.log("OA:", OA);
   var Ax = OA;
   var Ay = 0;
 
@@ -159,10 +159,10 @@ function make_hyperbol2tiling(p, q, star, iter_num, Ox, Oy, R) {
     if (iter_num>0){
   //     tiles_liste.push_back([tile,0,p-3,1,0]);
  // tiles_liste.push_back([tile,0,['N','P','P'],1]);
- //  tiles_liste.push_back([tile,1,['N','P','P'],1]);
+  // tiles_liste.push_back([tile,2,['N','P','P'],1]);
 
      for (var side = 0 ; side < q; side++){
-       tiles_liste.push_back([tile,side,['N','P','P'],1]);
+      tiles_liste.push_back([tile,side,['N','P','P'],1]);
      }
     }
   }
@@ -188,6 +188,9 @@ function make_hyperbol2tiling(p, q, star, iter_num, Ox, Oy, R) {
       tile.bounds[(2*side_no+3)%(side_num*2)],
       Ox, Oy, R);
 
+      console.log(ret);
+
+
       var T_2_bounds = circle_inversion_polygon(tile.bounds, ret.Cx, ret.Cy, ret.r);
 //      console.log(  tile.bounds[(2*side_no+0)%(side_num*2)],
 //         tile.bounds[(2*side_no+1)%(side_num*2)],
@@ -196,7 +199,7 @@ function make_hyperbol2tiling(p, q, star, iter_num, Ox, Oy, R) {
 
 
 
-//console.log(T_2_bounds);
+console.log(T_2_bounds);
 
      T_2_bounds =  reorder(T_2_bounds,
         tile.bounds[(2*side_no+2)%(side_num*2)],
@@ -204,7 +207,7 @@ function make_hyperbol2tiling(p, q, star, iter_num, Ox, Oy, R) {
         tile.bounds[(2*side_no+0)%(side_num*2)],
         tile.bounds[(2*side_no+1)%(side_num*2)]
       );
-    //  console.log(T_2_bounds);
+     // console.log(T_2_bounds);
 
 
       var T_2 = new Tile([id], [], T_2_bounds, q);
@@ -214,7 +217,7 @@ function make_hyperbol2tiling(p, q, star, iter_num, Ox, Oy, R) {
       tiles.push(T_2);
 
     //  console.log("cpt: ",cpt, "  | iter: ",iter, " | d: ",d);
-      console.log(pile);
+      // console.log(pile);
       var fill = pile.shift();
       console.log(pile);
 
