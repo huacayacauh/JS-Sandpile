@@ -66,7 +66,7 @@ function Queue(){
   this.peek = function(){
     return (queue.length > 0 ? queue[offset] : undefined);
   }
-  
+
   this.getQueue = function(){
     return queue;
   }
@@ -148,6 +148,7 @@ function get_orthogonal_circle_radius_and_center(Ax, Ay, Bx, By, Ox, Oy, R) {
     var ps = produit_scalaire(ApBx, ApBy, wx, wy);
 	var ret = {};
     ret.r = AB * Math.sqrt(1/4 + ((R**2 - 1/4*(norm_ApB**2 - norm_AmB**2)) / ps)**2);
+    ret.r = Math.min(ret.r,1000000000)
     ret.Cx = ApBx / 2 + Math.sqrt((ret.r/AB)**2 - 1/4) * wx;
     ret.Cy = ApBy / 2 + Math.sqrt((ret.r/AB)**2 - 1/4) * wy;
     return ret;
@@ -268,7 +269,7 @@ function make_hyperbolic_tiling(p, q, star, iter_num, Ox, Oy, R) {
 	var tiles = [];
 	var tiles_queue = new Queue();
 	var dict = [];
-	
+
 	// Verification des parametres
 	if (1/p + 1/q >= 1/2) {
 		console.log("Error: p and q must respect hyperbolic angular rule.");
@@ -283,7 +284,7 @@ function make_hyperbolic_tiling(p, q, star, iter_num, Ox, Oy, R) {
 	//console.log("OA:", OA);
 	var Ax = OA;
 	var Ay = 0;
-	
+
 	// Creation des tuiles de base
 	if (!star) {
 		var bounds = [];
@@ -305,7 +306,7 @@ function make_hyperbolic_tiling(p, q, star, iter_num, Ox, Oy, R) {
 		tiles.push(tile);
 		tiles_queue.enqueue(tile);
 	}
-	
+
 	console.log("iteration");
 	for (var iter = 1; iter <= iter_num; iter++) {
 		console.log("iter:" + iter);
@@ -355,8 +356,8 @@ function make_hyperbolic_tiling(p, q, star, iter_num, Ox, Oy, R) {
 				var T_2 = new Tile([iter, side_no], neighbour_by_side, T_2_bounds, q);
 				T_2.neighbour_by_side = neighbour_by_side;
 				tile.neighbour_by_side[side_no] = [iter, side_no];
-				
-				
+
+
 				for (var T_3 of tiles_queue.getQueue()) {
 					var T3_side_num = T_3.bounds.length / 2;
 					for (var T_3_side_no = 0; T_3_side_no < T3_side_num; T_3_side_no++) {
@@ -379,14 +380,14 @@ function make_hyperbolic_tiling(p, q, star, iter_num, Ox, Oy, R) {
 						}
 					}
 				}
-				
+
 				tiles.push(T_2);
 				tiles_queue.enqueue(T_2);
 			}
 		}
 	}
 	console.log(dict);
-	
+
 	/*
 	// Itération
 	var ret = get_orthogonal_circle_radius_and_center(bounds[4], bounds[5], bounds[2], bounds[3], Ox, Oy, R);
@@ -395,7 +396,7 @@ function make_hyperbolic_tiling(p, q, star, iter_num, Ox, Oy, R) {
 	//console.log(bounds_2);
 	tiles.push(new Tile("base_2", [], bounds_2, p));
 	*/
-	
+
 	return tiles;
 }
 
