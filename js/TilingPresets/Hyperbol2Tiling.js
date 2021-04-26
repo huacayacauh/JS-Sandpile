@@ -142,7 +142,7 @@ function make_hyperbol2tiling(p, q, star, iter_num, Ox, Oy, R) {
     var bounds = [];
     bounds.push(Ax, Ay);
     for (var i = 1; i < q; i++) {
-      var l = rotation(Ax, Ay, Ox, Oy, i*beta_2);
+      var l = rotation(Ax, Ay, Ox, Oy, -i*beta_2);
       bounds.push(l[0], l[1]);
     }
     //console.log(bounds);
@@ -157,12 +157,13 @@ function make_hyperbol2tiling(p, q, star, iter_num, Ox, Oy, R) {
     //  tile.neighbour_by_side = neighbour_by_side;
     tiles.push(tile);
     if (iter_num>0){
-      tiles_liste.push_back([tile,0,p-3,1]);
-      tiles_liste.push_back([tile,1,p-3,1]);
+  //     tiles_liste.push_back([tile,0,p-3,1,0]);
+ // tiles_liste.push_back([tile,0,['N','P','P'],1]);
+ //  tiles_liste.push_back([tile,1,['N','P','P'],1]);
 
-      for (var side = 0 ; side < q; side++){
-          // tiles_liste.push_back([tile,side,p-3,1]);
-      }
+     for (var side = 0 ; side < q; side++){
+       tiles_liste.push_back([tile,side,['N','P','P'],1]);
+     }
     }
   }
 
@@ -171,9 +172,11 @@ function make_hyperbol2tiling(p, q, star, iter_num, Ox, Oy, R) {
   {
     var tile ;
     var side_no;
-    var cpt;
+    var pile;
     var iter ;
-    [tile,side_no,cpt,iter] = tiles_liste.pop_front();
+    var fill ;
+
+    [tile,side_no,pile,iter,fill] = tiles_liste.pop_front();
 
 
     var side_num = tile.bounds.length / 2;
@@ -185,7 +188,7 @@ function make_hyperbol2tiling(p, q, star, iter_num, Ox, Oy, R) {
       tile.bounds[(2*side_no+3)%(side_num*2)],
       Ox, Oy, R);
 
-      var T_2_bounds =         circle_inversion_polygon(tile.bounds, ret.Cx, ret.Cy, ret.r);
+      var T_2_bounds = circle_inversion_polygon(tile.bounds, ret.Cx, ret.Cy, ret.r);
 //      console.log(  tile.bounds[(2*side_no+0)%(side_num*2)],
 //         tile.bounds[(2*side_no+1)%(side_num*2)],
 //         tile.bounds[(2*side_no+2)%(side_num*2)],
@@ -193,7 +196,7 @@ function make_hyperbol2tiling(p, q, star, iter_num, Ox, Oy, R) {
 
 
 
-console.log(T_2_bounds);
+//console.log(T_2_bounds);
 
      T_2_bounds =  reorder(T_2_bounds,
         tile.bounds[(2*side_no+2)%(side_num*2)],
@@ -209,26 +212,28 @@ console.log(T_2_bounds);
 
       id = id+1;
       tiles.push(T_2);
-      if (cpt > 0){
-      tiles_liste.push_back([T_2, q-1 ,cpt-1,iter]);
-      }
 
-      var d = 0;
-      if (p-3 == 0){
-        d = 1
-      }
-      console.log("cpt: ",cpt, "  | iter: ",iter, " | d: ",d);
+    //  console.log("cpt: ",cpt, "  | iter: ",iter, " | d: ",d);
+      console.log(pile);
+      var fill = pile.shift();
+      console.log(pile);
 
-      if (side_no < (side_num-2-d) && iter > 1){
-          tiles_liste.push_back([tile,side_no+1 ,cpt,iter]);
+      if (pile.length > 0){
+        // if (fill == 'N'){
+          tiles_liste.push_front([T_2, q-1 ,pile,iter]);
         }
 
       if (iter < iter_num){
-        tiles_liste.push_back([T_2, 3-d ,p-3 ,iter+1]);
-        // tiles_liste.push_back([T_2,2,p-3,iter+1]);
+          if (fill == 'N'){
+            tiles_liste.push_back([T_2, 2 ,['N','P'] ,iter+1]);
+          }else{
+            tiles_liste.push_back([T_2, 1  ,['N','P','P'] ,iter+1]);
+            tiles_liste.push_back([T_2, 2  ,['N','P'] ,iter+1]);
 
+          }
       }
-    }
+
+  }
 
 
     return tiles;
@@ -238,8 +243,8 @@ console.log(T_2_bounds);
     var R = 1;
     var Ox = 0;
     var Oy = 0;
-    var p = 4; // pour angle tangent
-    var q = 7; // pour angle ouverture centrale
+    var p = 5; // pour angle tangent
+    var q = 4; // pour angle ouverture centrale
     var iter_num = iterations;
 
     return new Tiling(make_hyperbol2tiling(p, q, false, iter_num, Ox, Oy, R));
