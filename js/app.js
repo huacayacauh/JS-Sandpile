@@ -4,7 +4,7 @@
 // ################################################
 //
 // 	[ 1.0 ] 	Main class of the application
-//			
+//
 //		Creates the THREE.js canvas containing
 //		the interesting part of the app.
 //
@@ -17,10 +17,10 @@ class App{
 		var container = document.getElementById("canvasHolder");
 		this.WIDTH = container.clientWidth - 10;
 		this.HEIGHT = container.clientHeight - 10;
-		
+
 		this.scene = new THREE.Scene();
 		this.ratio = this.WIDTH / this.HEIGHT;
-		
+
 		this.renderer = new THREE.WebGLRenderer( );
 		this.renderer.setSize(this.WIDTH, this.HEIGHT);
 		container.appendChild(this.renderer.domElement);
@@ -40,11 +40,11 @@ class App{
 		this.controls.enableZoom = true;
 		this.controls.enableRotate = false;
 	}
-	
+
 	// ------------------------------------------------
 	// 	[ 1.1 ] 	Re-sizing of the Canvas
 	// ------------------------------------------------
-	
+
 	reset_size(){
 		var container = document.getElementById("canvasHolder");
 		this.WIDTH = container.clientWidth - 10;
@@ -60,7 +60,7 @@ class App{
 		this.camera.right = right;
 		this.camera.top = top_cam;
 		this.camera.bottom = bottom;
-		
+
 		this.camera.updateProjectionMatrix();
 		this.renderer.setSize(this.WIDTH, this.HEIGHT);
 	}
@@ -70,7 +70,7 @@ class App{
 // ################################################
 //
 // 	[ 2.0 ]		Application state variables
-//			
+//
 //		Shared and used between many files
 //
 // ################################################
@@ -102,7 +102,7 @@ var color_hue_shift = 0.0; // Animation of selected tile color
 
 var color_select = new THREE.Color(); // Animation of selected tile color
 
-var tileInfo = document.getElementById("tileInfo"); 
+var tileInfo = document.getElementById("tileInfo");
 
 var check_copy = true; // Copy the tiling once in a while to see if it is stable
 
@@ -123,7 +123,7 @@ function onWindowResize(){
 // ################################################
 //
 // 	[ 3.0 ]		Tiling manipulation controls
-//			
+//
 //		See Tiling.js [ 2.0 ]
 //
 // ################################################
@@ -185,7 +185,7 @@ function iterateTiling(){
                         increment_number_of_steps()
                 }
 	}
-	
+
 	if(document.getElementById("pauseToggle").checked && is_stable)
 		playPause(document.getElementById("playButton"));
 	currentTiling.colorTiles();
@@ -223,7 +223,7 @@ function clearTiling(){
 // 	[ 3.5 ] 	Adding, Subtracting and setting
 //				complex operations over the
 //				current Tiling.
-//		
+//
 //		This section could be improved ...
 //
 //		Tiling.js [ 2.3 ] [ 2.4 ] [ 2.5 ]
@@ -233,7 +233,7 @@ function complexOperationAdd(){
 	// Apply the selected operation, additively
 
 	if(currentTiling){
-		
+
 		currentTiling.lastChange = 0;
 		var operationType = document.getElementById("complexOperationValue").value;
 		var operationTimes = document.getElementById("complexOperationRepeat").valueAsNumber;
@@ -375,7 +375,7 @@ function complexOperationSub(){
 // ################################################
 //
 // 	[ 4.0 ]		Tiling display controls
-//			
+//
 //		See Tiling [ 2.0 ]
 //
 // ################################################
@@ -411,7 +411,7 @@ function playPause(elem){
 
 // ------------------------------------------------
 // 	[ 4.3 ] 	Shift hue of selected tile
-//			
+//
 //			Called by a routine.
 // ------------------------------------------------
 function colorSelected(){
@@ -443,7 +443,7 @@ function enableWireFrame(elem){
 			}
 		}
 	}
-		
+
 }
 
 // ------------------------------------------------
@@ -458,37 +458,39 @@ function drawTiling(){
 		app.scene.remove(app.scene.children[0]);
 		console.log("cleared");
 	}
-	
+
 	check_stable = 0;
-	
+
 	cW = document.getElementById("cW").value;
 	cH = document.getElementById("cH").value;
-	
+
 	var size = document.getElementById("size").value;
 
 	selectedTile = null;
-	
+
 	preset = document.getElementById("TilingSelect").value;
 
 	var nbIt = document.getElementById("penroseIt").value;
+	var p = document.getElementById("p").value;
+	var q = document.getElementById("q").value;
 	
-	var command = "currentTiling = Tiling." + preset + "({height:cH, width:cW, iterations:nbIt, size:size})";
-	
+	var command = "currentTiling = Tiling." + preset + "({height:cH, width:cW, iterations:nbIt, size:size, p:p, q:q})";
+
         console.log("BEGIN construct a new Tiling");
 	eval(command);
         console.log("END construct a new Tiling");
         console.log("INFO the current Tiling has "+currentTiling.tiles.length+" tiles");
-	
+
 	currentTiling.cmap = cmap;
-	
+
 	app.controls.zoomCamera();
 	app.controls.object.updateProjectionMatrix();
 
 	app.scene.add(currentTiling.mesh);
-	
+
 	currentTiling.colorTiles();
 	//console.log(currentTiling);
-	
+
 	enableWireFrame(document.getElementById("wireFrameToggle"));
 
 	playWithDelay();
@@ -506,28 +508,32 @@ function redraw(){
 		app.scene.remove(app.scene.children[0]);
 		console.log("cleared");
 	}
-	
+
 	check_stable = 0;
-	
+
 	cW = document.getElementById("cW").value;
 	cH = document.getElementById("cH").value;
-	
+
 	var size = document.getElementById("size").value;
 
 	selectedTile = null;
-	
+
 	var nbIt = document.getElementById("penroseIt").value;
-	
+
+	var p = document.getElementById("p").value;
+	var q = document.getElementById("q").value;
+
+
 	currentTiling.cmap = cmap;
-	
+
 	app.controls.zoomCamera();
 	app.controls.object.updateProjectionMatrix();
 
 	app.scene.add(currentTiling.mesh);
-	
+
 	currentTiling.colorTiles();
 	//console.log(currentTiling);
-	
+
 	enableWireFrame(document.getElementById("wireFrameToggle"));
 
 	playWithDelay();
@@ -574,7 +580,7 @@ function saveConfiguration(){
 			return;
 		}
 		document.getElementById("complexOperationValue").innerHTML += '<option value="CNFG'+ savedConfigs.length +'">' + config_name + '</option>';
-		
+
 		savedConfigs.push(currentTiling.hiddenCopy());
 	}
 }
@@ -583,8 +589,8 @@ function saveConfiguration(){
 // ################################################
 //
 // 	[ 6.0 ]		Mouse Click
-//			
-//		See Tiling 
+//
+//		See Tiling
 //
 // ################################################
 
@@ -597,16 +603,16 @@ app.renderer.domElement.addEventListener('mousemove', function( event ) {
 		CanvasClick(event, false);
 	}
   }, false);
-  
+
 
 app.renderer.domElement.addEventListener('mousedown', function( event ) {
 	CanvasClick(event, true);
   }, false);
- 
-  
+
+
 function CanvasClick(event, force){
-	
-	
+
+
 	//on calcule un ration entre -1 et 1 pour chaque coordonées x et y du clique
 	//si mouse.x == -1 alors on a cliqué tout à gauche
 	//si mouse.x ==  1 alors on a cliqué tout à droite
@@ -644,7 +650,7 @@ function CanvasClick(event, force){
 						currentTiling.remove(brush_t[k], nbTimes);
 					}
 					break;
-				
+
 				case "setOne":
 					currentTiling.lastChange = 0;
 					var brush_t = zone(lastTile, document.getElementById("brushRange").value)
@@ -657,7 +663,7 @@ function CanvasClick(event, force){
 					if(currentTiling.selectedIndex)
 						currentTiling.colorTile(currentTiling.selectedIndex);
 					selectedTile = lastTile;
-					
+
 					console.log(currentTiling.tiles[selectedTile]);
 					tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentTiling.tiles[selectedTile].sand;
 					currentTiling.selectedIndex = currentTiling.indexDict[face.faceIndex*3];
@@ -676,7 +682,7 @@ function CanvasClick(event, force){
 		}
 	}
 }
-  
+
 app.renderer.domElement.onmousedown = function() {
 
 holdMouse = true;
@@ -714,4 +720,3 @@ function zone(index, size){
 var holdMouse = false;
 var lastTile = 0;
 var previousTile = -1;
-
