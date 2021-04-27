@@ -152,7 +152,7 @@ function make_hyperbolVertextiling(p, q, star, iter_num, Ox, Oy, R) {
     var bounds = [];
     bounds.push(Ax, Ay);
     for (var i = 1; i < q; i++) {
-      var l = rotation(Ax, Ay, Ox, Oy, -i*beta_2);
+      var l = rotatePoint(Ax, Ay, Ox, Oy, -i*beta_2);
       bounds.push(l[0], l[1]);
     }
     //console.log(bounds);
@@ -322,7 +322,7 @@ function make_hyperbolVertextiling(p, q, star, iter_num, Ox, Oy, R) {
       var bounds = [];
       bounds.push(Ax, Ay);
       for (var i = 1; i < q; i++) {
-        var l = rotation(Ax, Ay, Ox, Oy, -i*beta_2);
+        var l = rotatePoint(Ax, Ay, Ox, Oy, -i*beta_2);
         bounds.push(l[0], l[1]);
       }
 
