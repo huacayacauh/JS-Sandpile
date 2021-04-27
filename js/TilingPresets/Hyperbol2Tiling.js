@@ -104,7 +104,7 @@ function calcul_voisin (p,q){
 
 
 
-function make_hyperbol2tiling(p, q, star, iter_num, Ox, Oy, R) {
+function make_hyperbolVertextiling(p, q, star, iter_num, Ox, Oy, R) {
   var tiles = [];
   var tiles_liste = [];
   var dict = [];
@@ -112,8 +112,7 @@ function make_hyperbol2tiling(p, q, star, iter_num, Ox, Oy, R) {
   var idmax = []
   var iter_cur = 0;
   var cpt_n = 0;
-  var cpt_t = 0;
-  var id_facteur =0;
+  var cpt_p = 0;
 
   // Verification des parametres
   if (1/p + 1/q >= 1/2) {
@@ -137,8 +136,6 @@ function make_hyperbol2tiling(p, q, star, iter_num, Ox, Oy, R) {
   [voisin_depart,voisin_n,voisin_p] = calcul_voisin(p,q)
   var nombre_n = q * countOccurrences(voisin_depart,'N');
   var nombre_p = q * countOccurrences(voisin_depart,'P');
-  id_facteur = (nombre_n*voisin_n.flat().length+nombre_p*voisin_p.flat().length)/(nombre_n+nombre_p)
-console.log(id_facteur);
   idmax.push(1);
 
   for (var k =1; k<= iter_num;k++){
@@ -181,9 +178,8 @@ console.log(id_facteur);
     var side_no;
     var pile;
     var iter ;
-    var fill ;
 
-    [tile,side_no,pile,iter,fill] = tiles_liste.shift();
+    [tile,side_no,pile,iter] = tiles_liste.shift();
 
 
     var side_num = tile.bounds.length / 2;
@@ -248,7 +244,6 @@ console.log(id_facteur);
 
       var T_2 = new Tile([id,iter_cur], neighbour_by_side, T_2_bounds, q);
 
-
       id = id+1;
       if (fill == 'N'){
         cpt_n = cpt_n+1;
@@ -284,11 +279,152 @@ console.log(id_facteur);
     return tiles;
   }
 
-  Tiling.hyperbol2Tiling = function({iterations,p,q}={}) {
+  Tiling.hyperbolVertexTiling = function({iterations,p,q}={}) {
     var R = 1;
     var Ox = 0;
     var Oy = 0;
     var iter_num = iterations;
 
-    return new Tiling(make_hyperbol2tiling(p, q, false, iter_num, Ox, Oy, R));
+    return new Tiling(make_hyperbolVertextiling(p, q, false, iter_num, Ox, Oy, R));
+  };
+
+
+
+
+
+
+
+
+  function make_hyperbolEdgetiling(p, q, star, iter_num, Ox, Oy, R) {
+    var tiles = [];
+    var tiles_liste = [];
+    var dict = [];
+    var id = 1;
+    var idmax = []
+    var iter_cur = 0;
+    var cpt_n = 0;
+    var cpt_p = 0;
+
+    // Verification des parametres
+    if (1/p + 1/q >= 1/2) {
+      console.log("Error: p and q must respect hyperbolic angular rule.");
+      return;
+    }
+
+    // Initialisation
+    var beta_2 = 2 * Math.PI / q;
+    var alpha_1 = Math.PI / p;
+    var gamma_1 = Math.PI / 2 - alpha_1;
+    var OA = Math.sqrt(R * (R + Math.sin(beta_2 / 2)**2 / (Math.sin(gamma_1)**2 - Math.sin(beta_2 / 2)**2))) * Math.cos(beta_2 / 2) - R * Math.sin(beta_2 / 2) * Math.cos(gamma_1) / Math.sqrt(Math.sin(gamma_1)**2 - Math.sin(beta_2 / 2)**2);
+    var Ax = OA;
+    var Ay = 0;
+
+    if (!star) {
+      var bounds = [];
+      bounds.push(Ax, Ay);
+      for (var i = 1; i < q; i++) {
+        var l = rotation(Ax, Ay, Ox, Oy, -i*beta_2);
+        bounds.push(l[0], l[1]);
+      }
+
+      var tile = new Tile(['polygon',0], [], bounds, q);
+      tiles.push(tile);
+      if (iter_num>0){
+        for (var side = 0 ; side < q; side++){
+          tiles_liste.push([tile,side, 'N',1]);
+        }
+      }
+    }
+
+
+    while ( tiles_liste.length != 0 )
+    {
+      var tile ;
+      var side_no;
+      var iter ;
+      var fill ;
+
+      [tile,side_no,fill,iter] = tiles_liste.shift();
+
+
+      var side_num = tile.bounds.length / 2;
+
+      var ret = get_orthogonal_circle_radius_and_center(
+        tile.bounds[(2*side_no+0)%(side_num*2)],
+        tile.bounds[(2*side_no+1)%(side_num*2)],
+        tile.bounds[(2*side_no+2)%(side_num*2)],
+        tile.bounds[(2*side_no+3)%(side_num*2)],
+        Ox, Oy, R);
+
+
+        var T_2_bounds = circle_inversion_polygon(tile.bounds, ret.Cx, ret.Cy, ret.r);
+
+
+        T_2_bounds =  reorder(T_2_bounds,
+          tile.bounds[(2*side_no+2)%(side_num*2)],
+          tile.bounds[(2*side_no+3)%(side_num*2)],
+          tile.bounds[(2*side_no+0)%(side_num*2)],
+          tile.bounds[(2*side_no+1)%(side_num*2)]
+        );
+
+        var neighbour_by_side = [];
+
+
+
+
+
+        var T_2 = new Tile(['polygon',id], neighbour_by_side, T_2_bounds, q);
+
+        id = id+1;
+
+        tiles.push(T_2);
+
+        if (iter < iter_num){
+          if (fill == 'N'){
+            for (var k = 0; k <q-3; k++){
+              tiles_liste.push([T_2, 2 + k ,'N' ,iter+1]);
+            }
+
+            if (p%2 == 1){
+              tiles_liste.push([T_2, q-1 ,'PD',iter+1]);
+            }
+            tiles_liste.push([T_2, 1 ,'PG',iter+1]);
+          }else if (fill == 'PG'){
+            for (var k = 0; k < q-2; k++){
+              tiles_liste.push([T_2, 2 + k ,'N' ,iter+1]);
+            }
+          } else{
+            for (var k = 0; k < q-2; k++){
+              tiles_liste.push([T_2, q-2 - k ,'N' ,iter+1]);
+            }
+          }
+        }
+      }
+
+
+      var findNeighbors_option = new Map();
+      findNeighbors_option.set('polygon',default_neighbors2bounds(q));
+
+      let tilesdict = new Map(tiles.map(i => [id2key(i.id), i]));
+			let fn=findNeighbors(tiles,tilesdict,findNeighbors_option);
+      tiles.forEach(tile => tile.scale(0,0,200))
+
+      return tiles;
+    }
+
+
+
+
+
+
+
+
+
+  Tiling.hyperbolEdgeTiling = function({iterations,p,q}={}) {
+    var R = 1;
+    var Ox = 0;
+    var Oy = 0;
+    var iter_num = iterations;
+
+    return new Tiling(make_hyperbolEdgetiling(p, q, false, iter_num, Ox, Oy, R));
   };
