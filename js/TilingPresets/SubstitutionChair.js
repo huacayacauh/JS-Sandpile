@@ -69,14 +69,14 @@ Tiling.ChairSubstitution = function({iterations}={}){
 	var myw = w.myclone();
 	tiles.push(myw);
 
-	tiles = substituteGeneral(
+	tiles = substitute(
 	iterations,
 	tiles,
 	2,
 	substitutionChair,
 	[],
 	[],
-	"general",
+	"I am lazy",
 	neighbors2boundsChair,
 	decorateChair
 	);

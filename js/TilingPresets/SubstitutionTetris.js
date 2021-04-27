@@ -237,7 +237,6 @@ Tile.prototype.tile2o = function(){
     default:
       console.log('Transformation non prevue (tile2o)');
   }
-
   this.id[0]='o';
   var newbounds = [];
   var b0 = this.bounds[0];
@@ -249,7 +248,6 @@ Tile.prototype.tile2o = function(){
   newbounds.push(b4b5[0],b4b5[1]);
   var b6b7 = shiftPoint(b0,b1,2*vx[0],2*vx[1]);
   newbounds.push(b6b7[0],b6b7[1]);
-
   this.bounds = newbounds;
 }
 
@@ -540,16 +538,15 @@ Tiling.TetrisSubstitution = function({iterations}={}){
   var myo = o.myclone();
   tiles.push(myo);
 
-  tiles = substituteGeneral(
+  tiles = substitute(
     iterations,
     tiles,
     2,
     substitutionTetris,
     [],
     [],
-    "general",
+    "I am lazy",
     neighbors2boundsTetris
-
   );
   return new Tiling(tiles);
 }
