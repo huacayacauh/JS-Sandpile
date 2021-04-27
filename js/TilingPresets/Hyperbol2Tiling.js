@@ -184,7 +184,7 @@ function make_hyperbolVertextiling(p, q, star, iter_num, Ox, Oy, R) {
 
     var side_num = tile.bounds.length / 2;
 
-    var ret = get_orthogonal_circle_radius_and_center(
+    var ret = getOrthogonalCircleRadiusAndCenter(
       tile.bounds[(2*side_no+0)%(side_num*2)],
       tile.bounds[(2*side_no+1)%(side_num*2)],
       tile.bounds[(2*side_no+2)%(side_num*2)],
@@ -192,7 +192,7 @@ function make_hyperbolVertextiling(p, q, star, iter_num, Ox, Oy, R) {
       Ox, Oy, R);
 
 
-      var T_2_bounds = circle_inversion_polygon(tile.bounds, ret.Cx, ret.Cy, ret.r);
+      var T_2_bounds = circleInversionPolygon(tile.bounds, ret.Cx, ret.Cy, ret.r);
 
       // console.log(T_2_bounds);
 
@@ -348,7 +348,7 @@ function make_hyperbolVertextiling(p, q, star, iter_num, Ox, Oy, R) {
 
       var side_num = tile.bounds.length / 2;
 
-      var ret = get_orthogonal_circle_radius_and_center(
+      var ret = getOrthogonalCircleRadiusAndCenter(
         tile.bounds[(2*side_no+0)%(side_num*2)],
         tile.bounds[(2*side_no+1)%(side_num*2)],
         tile.bounds[(2*side_no+2)%(side_num*2)],
@@ -356,7 +356,7 @@ function make_hyperbolVertextiling(p, q, star, iter_num, Ox, Oy, R) {
         Ox, Oy, R);
 
 
-        var T_2_bounds = circle_inversion_polygon(tile.bounds, ret.Cx, ret.Cy, ret.r);
+        var T_2_bounds = circleInversionPolygon(tile.bounds, ret.Cx, ret.Cy, ret.r);
 
 
         T_2_bounds =  reorder(T_2_bounds,
