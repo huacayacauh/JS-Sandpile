@@ -152,7 +152,7 @@ function make_hyperbolVertextiling(p, q, star, iter_num, Ox, Oy, R) {
     var bounds = [];
     bounds.push(Ax, Ay);
     for (var i = 1; i < q; i++) {
-      var l = rotatePoint(Ax, Ay, Ox, Oy, -i*beta_2);
+      var l = rotation(Ax, Ay, Ox, Oy, -i*beta_2);
       bounds.push(l[0], l[1]);
     }
     //console.log(bounds);
@@ -279,13 +279,12 @@ function make_hyperbolVertextiling(p, q, star, iter_num, Ox, Oy, R) {
     return tiles;
   }
 
-  Tiling.hyperbolVertexTiling = function({iterations,p,q}={}) {
+  Tiling.hyperbolVertexTiling = function({iterations,cote,sommet}={}) {
     var R = 1;
     var Ox = 0;
     var Oy = 0;
     var iter_num = iterations;
-
-    return new Tiling(make_hyperbolVertextiling(p, q, false, iter_num, Ox, Oy, R));
+    return new Tiling(make_hyperbolVertextiling(cote, sommet, false, iter_num, Ox, Oy, R));
   };
 
 
@@ -420,11 +419,11 @@ function make_hyperbolVertextiling(p, q, star, iter_num, Ox, Oy, R) {
 
 
 
-  Tiling.hyperbolEdgeTiling = function({iterations,p,q}={}) {
+  Tiling.hyperbolEdgeTiling = function({iterations,cote,sommet}={}) {
     var R = 1;
     var Ox = 0;
     var Oy = 0;
     var iter_num = iterations;
 
-    return new Tiling(make_hyperbolEdgetiling(p, q, false, iter_num, Ox, Oy, R));
+    return new Tiling(make_hyperbolEdgetiling(cote, sommet, false, iter_num, Ox, Oy, R));
   };
