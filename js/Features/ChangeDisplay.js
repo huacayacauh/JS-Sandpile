@@ -59,9 +59,9 @@ var btn = document.getElementById("colorButton");
 
 var current_preset = "default";
 
-// When the user clicks on the button, open the modal 
+// When the user clicks on the button, open the modal
 btn.onclick = function() {
-	
+
 	// ------------------------------------------------
 	// 	[ 2.1 ] 	Re-build the content of the
 	//				modal every-time we open it
@@ -75,34 +75,34 @@ btn.onclick = function() {
 	exitModal.onclick = function() {
 	  modal.style.display = "none";
 	}
-	
-	
+
+
 	modal.children[0].appendChild(exitModal);
-	
+
 	var colorInputs = []
-	
+
 	var default_para;
-	
+
 	for(var i = 0; i<cmap.length; i++){
 		var para = document.createElement("p");
 		var node = document.createTextNode("Color " + i);
-		
+
 		var colElement = document.createElement("input");
 		colElement.type = "color";
 		colElement.style= "display:inline; margin-left:20px";
 		colElement.value = "#" + cmap[i].getHexString();
-		
+
 		colorInputs.push(colElement);
-		
+
 		para.appendChild(node);
 		para.appendChild(colElement);
 		modal.children[0].appendChild(para);
 	}
-	
+
 	// The modal is fully built, now we add buttons to add or remove colors
-	
+
 	var colorTotal = cmap.length;
-	
+
 	var addColor = document.createElement("button");
 	addColor.innerHTML = "Add color";
 	addColor.classList.add("btn");
@@ -112,7 +112,7 @@ btn.onclick = function() {
 		var para = document.createElement("p");
 		var node = document.createTextNode("Color " + colorTotal);
 		colorTotal ++;
-		
+
 		var colElement = document.createElement("input");
 		colElement.type = "color";
 		colElement.style= "display:inline; margin-left:20px";
@@ -121,12 +121,12 @@ btn.onclick = function() {
 		else
 			colElement.value = "#000000";
 		colorInputs.push(colElement);
-		
+
 		para.appendChild(node);
 		para.appendChild(colElement);
 		modal.children[0].appendChild(para);
 	}
-	
+
 	var validate = document.createElement("button");
 	validate.classList.add("btn");
 	validate.classList.add("btn-default");
@@ -149,13 +149,13 @@ btn.onclick = function() {
 		}
 		modal.style.display = "none";
 	}
-	
+
 	// ------------------------------------------------
 	// 	[ 2.2 ] 	Manages presets
 	//
 	//		This section could be improved.
 	// ------------------------------------------------
-	
+
 	var preset_span = document.createElement("span");
 	preset_span.innerHTML = "Preset : ";
 	var preset_choice = document.createElement("select");
@@ -164,13 +164,13 @@ btn.onclick = function() {
 	preset_choice.id ="preset_choice";
 	preset_span.appendChild(preset_choice);
 	preset_choice.oninput = function() {
-		
+
 		if(this.value == "default" || this.value ==""){
-			// default 
+			// default
 			var para = document.createElement("p");
 			var node = document.createTextNode("Greyscale while stable, flashy colors if not.");
 			para.style = "height:80px; margin-top:80px;";
-			
+
 			para.appendChild(node);
 			default_para = para;
 			modal.children[0].appendChild(para);
@@ -188,9 +188,9 @@ btn.onclick = function() {
 		var lava_array = ["#cccccc", "#888888", "#444444", "#553333", "#772222", "#aa1111", "#ff1100", "#ff8800", "#eeee00"];
 		var blue_array = ["#000055", "#000088", "#0022aa", "#0044ff", "#0099ff", "#00ccff", "#00ffff", "#aaffff", "#ffffff"];
 		var green_array = ["#ffffff", "#ffffcc", "#ddffaa", "#aaff77", "#66ff33", "#33cc33", "#009933"];
-		
+
 		var selected_array;
-		
+
 		switch(preset_choice.value){
 			case "black4":
 			selected_array = black4_array;
@@ -203,24 +203,24 @@ btn.onclick = function() {
 			case "grey":
 			selected_array = grey_array;
 			break;
-			
+
 			case "lava":
 			selected_array = lava_array;
 			break;
-			
+
 			case "blue":
 			selected_array = blue_array;
 			break;
-			
+
 			case "green":
 			selected_array = green_array;
 			break;
-			
+
 			default:
 			selected_array = [];
 			break;
 		}
-		
+
 		for(var i = 0; i < selected_array.length; i++){
 			if(colorInputs[i]){
 				colorInputs[i].value = selected_array[i];
@@ -234,56 +234,56 @@ btn.onclick = function() {
 				colorInputs[i].parentNode.parentNode.removeChild(colorInputs[i].parentNode);
 				colorTotal --;
 			}
-			
+
 			colorInputs.splice(selected_array.length, colorInputs.length - selected_array.length);
 		}
 	}
-	
+
 	// Create element for each preset we defined
-	
+
 	var p0 = document.createElement("option");
 	p0.value = "default";
 	p0.innerHTML = "Default";
 	preset_choice.appendChild(p0);
-	
+
 	var p1 = document.createElement("option");
 	p1.value = "black4";
 	p1.innerHTML = "Greyscale 4";
 	preset_choice.appendChild(p1);
-	
+
 	var p2 = document.createElement("option");
 	p2.value = "black3";
 	p2.innerHTML = "Greyscale 3";
 	preset_choice.appendChild(p2);
-	
+
 	var p3 = document.createElement("option");
 	p3.value = "grey";
 	p3.innerHTML = "Gold Dust";
 	preset_choice.appendChild(p3);
-	
+
 	var p4 = document.createElement("option");
 	p4.value = "lava";
 	p4.innerHTML = "Lava red";
 	preset_choice.appendChild(p4);
-	
+
 	var p5 = document.createElement("option");
 	p5.value = "blue";
 	p5.innerHTML = "Deep blue";
 	preset_choice.appendChild(p5);
-	
+
 	var p6 = document.createElement("option");
 	p6.value = "green";
 	p6.innerHTML = "Lime green";
 	preset_choice.appendChild(p6);
-	
-	
+
+
 	// We append the controls created to the modal and display it on screen
-	
+
 	modal.children[0].appendChild(addColor);
 	modal.children[0].appendChild(validate);
 	modal.children[0].appendChild(preset_span);
     modal.style.display = "block";
-	
+
 	document.getElementById("preset_choice").value = current_preset;
 	preset_choice.oninput();
 }
@@ -335,18 +335,17 @@ function hideParams(){
 	var func = document.getElementById("TilingSelect").value;
 	func = "Tiling." + func +".toString()";
 	var func_str = eval(func);
-	
-	var params = ["height", "width", "iterations", "size"];
-	for(var i=0; i<4; i++){
+
+	var params = ["height", "width", "iterations", "size", "p", "q"];
+	for(var i=0; i<params.length; i++){
 		if(func_str.includes(params[i])){
 			document.getElementById("p_" + params[i]).style="display:contents";
 		} else {
 			document.getElementById("p_" + params[i]).style="display:none";
 		}
 	}
-		
+
 }
 
 // Prevents wireFrameToggle from being automatcally set to true
 $('input[id="wireFrameToggle"]').removeAttr('checked');
-

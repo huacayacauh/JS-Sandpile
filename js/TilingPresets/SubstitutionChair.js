@@ -69,7 +69,7 @@ Tiling.ChairSubstitution = function({iterations}={}){
 	var myw = w.myclone();
 	tiles.push(myw);
 
-	tiles = substituteGeneral(
+	tiles = substitute(
 	iterations,
 	tiles,
 	2,

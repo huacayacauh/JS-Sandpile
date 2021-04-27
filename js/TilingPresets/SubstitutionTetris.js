@@ -540,7 +540,7 @@ Tiling.TetrisSubstitution = function({iterations}={}){
   var myo = o.myclone();
   tiles.push(myo);
 
-  tiles = substituteGeneral(
+  tiles = substitute(
     iterations,
     tiles,
     2,

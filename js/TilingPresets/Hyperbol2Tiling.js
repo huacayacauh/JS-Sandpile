@@ -277,16 +277,15 @@ function make_hyperbol2tiling(p, q, star, iter_num, Ox, Oy, R) {
 
   }
 
+    tiles.forEach(tile => tile.scale(0,0,200))
 
     return tiles;
   }
 
-  Tiling.hyperbol2Tiling = function({iterations}={}) {
+  Tiling.hyperbol2Tiling = function({iterations,p,q}={}) {
     var R = 1;
     var Ox = 0;
     var Oy = 0;
-    var p = 6; // pour angle tangent
-    var q = 5 ; // pour angle ouverture centrale
     var iter_num = iterations;
 
     return new Tiling(make_hyperbol2tiling(p, q, false, iter_num, Ox, Oy, R));
