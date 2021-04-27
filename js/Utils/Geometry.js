@@ -46,3 +46,157 @@ function distancePointSegment(x,y,xA,yA,xB,yB){
   return res;
 }
 
+
+//these are used in Hyperbol2Tiling.js:
+
+//return the coordinates of the AB vector
+function vector(xA, yA, xB, yB) {
+	var x = xB - xA;
+    var y = yB - yA;
+    return [x, y];
+}
+
+//computes the dot product between vectors A and B
+function dot_product(Ax, Ay, Bx, By) {
+    return Ax * Bx + Ay * By;
+}
+
+//computes the norm of the vector (x, y)
+function norm(x, y) {
+    return Math.sqrt(dot_product(x, y, x, y));
+}
+
+//returns the squared norm of the vector (x, y) (dot product with itself)
+function norm_square(x, y) {
+    return dot_product(x, y, x, y);
+}
+
+// returns the distance squared between two points A and B
+function dist_square(xA, yA, xB, yB) {
+    var l = vector(xA, yA, xB, yB);
+	var x = l[0];
+	var y = l[1];
+    return norm_square(x, y);
+}
+
+//returns the coordinates of the middle of the segment [AB]
+function middle(Ax, Ay, Bx, By) {
+    var x = (Ax + Bx) / 2;
+    var y = (Ay + By) / 2;
+    return [x, y];
+}
+
+function vect_orthogonal_centrifuge(Ax, Ay, Bx, By, Ox, Oy) {
+    var l = vector(Ax, Ay, Bx, By);
+	var x = l[0];
+	var y = l[1];
+    var l = middle(Ax, Ay, Bx, By);
+	var Mx = l[0];
+	var My = l[1];
+    if (y * (Mx - Oy) == x * (My - Ox))
+        return [y, -x];
+    var s = (y * (Mx - Oy) - x * (My - Ox)) / Math.abs(y * (Mx - Oy) - x * (My - Ox));
+    return [s * y, - s * x];
+}
+
+
+function get_orthogonal_circle_radius_and_center(Ax, Ay, Bx, By, Ox, Oy, R) {
+    var AB = distance(Ax, Ay, Bx, By);
+    var ApBx = Ax + Bx;
+    var ApBy = Ay + By;
+    var AmBx = Ax - Bx;
+    var AmBy = Ay - By;
+    var norm_ApB = norm(ApBx, ApBy);
+    var norm_AmB = norm(AmBx, AmBy);
+    var l = vect_orthogonal_centrifuge(Ax, Ay, Bx, By, Ox, Oy);
+	var wx = l[0];
+	var wy = l[1];
+    var ps = dot_product(ApBx, ApBy, wx, wy);
+	var ret = {};
+    ret.r = AB * Math.sqrt(1/4 + ((R**2 - 1/4*(norm_ApB**2 - norm_AmB**2)) / ps)**2);
+    ret.r = Math.min(ret.r,1000000000)
+    ret.Cx = ApBx / 2 + Math.sqrt((ret.r/AB)**2 - 1/4) * wx;
+    ret.Cy = ApBy / 2 + Math.sqrt((ret.r/AB)**2 - 1/4) * wy;
+    return ret;
+}
+
+
+function circle_inversion(Px, Py, Cx, Cy, r) {
+    var l = vector(Cx, Cy, Px, Py);
+	var x = l[0];
+	var y = l[1];
+    var new_norm = r*r / (x*x + y*y);
+    return [Cx + new_norm * x, Cy + new_norm * y];
+}
+
+function circle_inversion_polygon(bounds, Cx, Cy, r) {
+    var size = bounds.length;
+    var res_bounds = [];
+    for (var i = 0; i < size/2; i++) {
+        var l = circle_inversion(bounds[i*2], bounds[i*2+1], Cx, Cy, r)
+		var x = l[0];
+		var y = l[1];
+        res_bounds.push(x, y);
+	}
+    return res_bounds;
+}
+
+
+function PoincareTilingPoint(a, b, c) {
+  var p = {};
+  p.x = a;
+  p.y = b;
+  p.adjacentTilesNum = c;
+  return p;
+}
+
+function is_same_point(p_1, p_2) {
+	var d = dist_square(p_1.x, p_1.y, p_2.x, p_2.y);
+	return d < Math.pow(10, -10);
+}
+
+function arrContains(arr, p) {
+	for (var p2 of arr) {
+		if (is_same_point(p, p2)) {
+			return true;
+		}
+	}
+	return false;
+}
+
+function arrGetValue(arr, p) {
+	for (var p2 of arr) {
+		if (is_same_point(p, p2))
+			return p2.adjacentTilesNum;
+	}
+	return undefined;
+}
+
+function arrSetValue(arr, p, val) {
+	for (var p2 of arr) {
+		if (is_same_point(p, p2)) {
+			var idx = arr.indexOf(p2);
+			p2.adjacentTilesNum = val;
+			arr[idx] = p2;
+			return val;
+		}
+	}
+}
+
+function arrAdd(arr, p, val) {
+	if (arrContains(arr, p)) {
+		return arrSetValue(arr, p, val);
+	} else {
+		p.adjacentTilesNum = val;
+		arr.push(p);
+		return val;
+	}
+}
+
+function arrIncr(arr, p) {
+	if (arrContains(arr, p)) {
+		return arrSetValue(arr, p, arrGetValue(arr, p) + 1);
+	} else {
+		return arrAdd(arr, p, 1);
+	}
+}
