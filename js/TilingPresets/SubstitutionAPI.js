@@ -794,7 +794,7 @@ function substitute(iterations,tiles,ratio,mysubstitution,mydupinfos,mydupinfoso
       let fn=findNeighborsEdgeToEdge(newtiles,newtilesdict,findNeighbors_option);
       console.log("  found "+fn);
     }
-		else
+    else if (typeof(myneighbors)=="string")
 		{
 			console.log("* compute neighbors (global)");
 			newtiles.forEach(tile => tile.neighbors = []);
