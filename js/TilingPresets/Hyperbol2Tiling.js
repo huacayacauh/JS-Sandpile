@@ -325,8 +325,11 @@ function make_hyperbolVertextiling(p, q, star, iter_num, Ox, Oy, R) {
         var l = rotatePoint(Ax, Ay, Ox, Oy, -i*beta_2);
         bounds.push(l[0], l[1]);
       }
-
-      var tile = new Tile(['polygon',0], [], bounds, q);
+      var neighbour_by_side = [];
+      for (var k = 0; k < q; k++) {
+        neighbour_by_side.push([k,1]);
+      }
+      var tile = new Tile([0,0],neighbour_by_side, bounds, q);
       tiles.push(tile);
       if (iter_num>0){
         for (var side = 0 ; side < q; side++){
@@ -342,8 +345,9 @@ function make_hyperbolVertextiling(p, q, star, iter_num, Ox, Oy, R) {
       var side_no;
       var iter ;
       var fill ;
+      var cpt;
 
-      [tile,side_no,fill,iter] = tiles_liste.shift();
+      [tile,side_no,fill,iter,cpt] = tiles_liste.shift();
 
 
       var side_num = tile.bounds.length / 2;
@@ -372,7 +376,7 @@ function make_hyperbolVertextiling(p, q, star, iter_num, Ox, Oy, R) {
 
 
 
-        var T_2 = new Tile(['polygon',id], neighbour_by_side, T_2_bounds, q);
+        var T_2 = new Tile([id,iter], neighbour_by_side, T_2_bounds, q);
 
         id = id+1;
 
@@ -384,17 +388,31 @@ function make_hyperbolVertextiling(p, q, star, iter_num, Ox, Oy, R) {
               tiles_liste.push([T_2, 2 + k ,'N' ,iter+1]);
             }
 
-            if (p%2 == 1){
-              tiles_liste.push([T_2, q-1 ,'PD',iter+1]);
+            if (p > 4){
+              tiles_liste.push([T_2, q-1 ,'PD',iter+1, (p-5)/2]);
             }
-            tiles_liste.push([T_2, 1 ,'PG',iter+1]);
+            tiles_liste.push([T_2, 1 ,'PG',iter+1, (p-4)/2]);
           }else if (fill == 'PG'){
+            if (cpt >= 1 ){
+              console.log(cpt);
+              tiles_liste.push([T_2, 1 ,'PG' ,iter+1,cpt-1]);
+
+            }
+
+
             for (var k = 0; k < q-2; k++){
-              tiles_liste.push([T_2, 2 + k ,'N' ,iter+1]);
+              tiles_liste.push([T_2, 2 + k ,'N' ,iter+1,0]);
             }
           } else{
+            if (cpt >= 1 ){
+              console.log(cpt);
+
+              tiles_liste.push([T_2, q-1 ,'PD' ,iter+1,cpt-1]);
+
+            }
+
             for (var k = 0; k < q-2; k++){
-              tiles_liste.push([T_2, q-2 - k ,'N' ,iter+1]);
+              tiles_liste.push([T_2, q-2 - k ,'N' ,iter+1,0]);
             }
           }
         }
