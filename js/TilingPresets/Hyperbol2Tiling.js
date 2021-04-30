@@ -104,14 +104,14 @@ function calcul_voisin (p,q, edge){
       var cur_array = item.flat();
 
       if (i == 0){
-        for (var k = 0; k < Math.floor((voisin_n[voisin_n.length-1].length)/2); k++)
+        for (var k = 0; k < Math.floor((item.length-1)/2); k++)
         {
           var tmp = cur_array.pop();
           cur_array.unshift(tmp);
         }
         edge_array.push(cur_array);
       }else{
-        for (var k = 0; k < Math.floor((voisin_n[voisin_n.length-1].length-1)/2); k++)
+        for (var k = 0; k < Math.floor((item[item.length-1].length-1)/2); k++)
         {
           var tmp = cur_array.pop();
           cur_array.unshift(tmp);
@@ -120,11 +120,11 @@ function calcul_voisin (p,q, edge){
 
         var cpt = 0
         var new_array =[]
-        for (var k = -1; k < voisin_n.length-1; k++)
+        for (var k = -1; k < item.length-1; k++)
         {
 
-          new_array.push(cur_array.slice(cpt,cpt+voisin_n[(voisin_n.length+k)%voisin_n.length].length))
-          cpt = cpt+voisin_n[(voisin_n.length+k)%voisin_n.length].length;
+          new_array.push(cur_array.slice(cpt,cpt+item[(item.length+k)%item.length].length))
+          cpt = cpt+item[(item.length+k)%item.length].length;
 
         }
         edge_array.push(new_array);
@@ -387,7 +387,7 @@ function make_hyperbolVertextiling(p, q, star, iter_num, Ox, Oy, R) {
       tiles.push(tile);
       if (iter_num>0){
         for (var side = 0 ; side < q; side++){
-          tiles_liste.push([tile,side, 'N',1]);
+          tiles_liste.push([tile,side, 'N',1,voisin_depart]);
         }
       }
     }
@@ -399,9 +399,9 @@ function make_hyperbolVertextiling(p, q, star, iter_num, Ox, Oy, R) {
       var side_no;
       var iter ;
       var fill ;
-      var cpt;
+      var pile;
 
-      [tile,side_no,fill,iter,cpt] = tiles_liste.shift();
+      [tile,side_no,fill,iter,pile] = tiles_liste.shift();
 
 
       var side_num = tile.bounds.length / 2;
@@ -465,60 +465,45 @@ function make_hyperbolVertextiling(p, q, star, iter_num, Ox, Oy, R) {
         tiles.push(T_2);
 
         if (iter < iter_num){
-// if (iter == 1 ){
-//   index_n = voisin_depart.indexOf("N");
-//   if (index_n != 0){
-//     tiles_liste.push([T_2, q-1 ,'PD',iter+1, index_n]);
-//   }
-//   tiles_liste.push([T_2, 2 + k ,'N' ,iter+1]);
-//
-//
-// }else {
-//
-// }
-
 
           if (fill == 'N'){
 
-            for (var k = 0; k < voisin_n.length-1; k++){
-              index_n = voisin_n[k].indexOf("N");
-              if (index_n != 0){
-                  tiles_liste.push([T_2, q-1 ,'PD',iter+1, index_n]);
-                }
-                tiles_liste.push([T_2, 2 + k ,'N' ,iter+1]);
-                tiles_liste.push([T_2, 1 ,'PG' ,iter+1,voisin_n.length-index_n]);
+            index_n = pile.indexOf("N");
+            if (index_n != 0){
+              tiles_liste.push([T_2, q-1 ,'PD',iter+1, index_n]);
+            }
+            tiles_liste.push([T_2, 1 ,'PG' ,iter+1,voisin_n.length-index_n]);
+
+            for (var k = 0; k < voisin_n.length; k++){
+                tiles_liste.push([T_2, 2 + k ,'N' ,iter+1,voisin_n[k]]);
             }
 
 
-          }else{
-
-          if (fill == 'PG'){
-            if (cpt >= 1 ){
-              console.log(cpt);
-              tiles_liste.push([T_2, 1 ,'PG' ,iter+1,cpt-1]);
+          }else if (fill == 'PG'){
+            if (pile >= 1 ){
+              console.log(pile);
+              tiles_liste.push([T_2, 1 ,'PG' ,iter+1,pile-1]);
             }
             // for (var k = 0; k < q-3; k++){
             //   tiles_liste.push([T_2, 2 + k ,'N' ,iter+1,0]);
             // }
-
-          } else{
-            if (cpt >= 1 ){
-              tiles_liste.push([T_2, q-1 ,'PD' ,iter+1,cpt-1]);
+            for (var k = 0; k < voisin_p.length; k++){
+                tiles_liste.push([T_2, 2 + k ,'N' ,iter+1,voisin_p[k]]);
+          }
+        } else {
+            if (pile >= 1 ){
+              tiles_liste.push([T_2, q-1 ,'PD' ,iter+1,pile-1]);
             }
+            for (var k = 0; k < voisin_p.length; k++){
+                tiles_liste.push([T_2, q- 2 - k ,'N' ,iter+1,voisin_p[k]]);
             // for (var k = 0; k < q-2; k++){
             //   tiles_liste.push([T_2, q-2 - k ,'N' ,iter+1,0]);
             // }
           }
-          for (var k = 0; k < voisin_p.length-1; k++){
-            index_n = voisin_p[k].indexOf("N");
-            if (index_n != 0){
-                tiles_liste.push([T_2, q-1 ,'PD',iter+1, index_n]);
-              }
-              tiles_liste.push([T_2, 2 + k ,'N' ,iter+1]);
-              tiles_liste.push([T_2, 1 ,'PG' ,iter+1,voisin_p.length-index_n]);
+
           }
 
-        }
+
       }
     }
 
