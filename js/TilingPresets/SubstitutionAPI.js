@@ -776,6 +776,9 @@ function substitute(iterations,tiles,ratio,mysubstitution,mydupinfos,mydupinfoso
     console.log("* compute map of duplicated tiles");
     let newdup = duplicatedMap(mydupinfos,mydupinfosoriented,tiles,tilesdict);
     // set neighbors (if user is not lazy)
+
+    if (mydupinfo != [] || i == iterations-1){
+
     if(typeof(myneighbors)!="string"){
       console.log("* compute neighbors (local)");
       myneighbors(tiles,tilesdict,newtiles,newtilesdict,newdup);
@@ -801,6 +804,7 @@ function substitute(iterations,tiles,ratio,mysubstitution,mydupinfos,mydupinfoso
       let fn=findNeighbors(newtiles,newtilesdict,findNeighbors_option);
       console.log("  found "+fn);
 		}
+  }
     // update tiles
     tiles = newtiles;
       console.log("* done");

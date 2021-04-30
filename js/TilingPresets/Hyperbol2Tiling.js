@@ -74,7 +74,7 @@ function reorder (bounds, B0x, B0y, B1x, B1y){
 }
 
 
-function calcul_voisin (p,q){
+function calcul_voisin (p,q, edge){
 
   var voisin_depart = ['N'];
   var voisin_n = [['N']];
@@ -97,9 +97,47 @@ function calcul_voisin (p,q){
       voisin_p[k] = voisin_p[k].concat('P');
     }
   }
-  console.log([voisin_depart,voisin_n,voisin_p]);
-  return [voisin_depart,voisin_n,voisin_p];
+  if (edge == 1){
+    var edge_array = [];
+    [voisin_depart,voisin_n,voisin_p].forEach((item,i) => {
 
+      var cur_array = item.flat();
+
+      if (i == 0){
+        for (var k = 0; k < Math.floor((voisin_n[voisin_n.length-1].length)/2); k++)
+        {
+          var tmp = cur_array.pop();
+          cur_array.unshift(tmp);
+        }
+        edge_array.push(cur_array);
+      }else{
+        for (var k = 0; k < Math.floor((voisin_n[voisin_n.length-1].length-1)/2); k++)
+        {
+          var tmp = cur_array.pop();
+          cur_array.unshift(tmp);
+
+        }
+
+        var cpt = 0
+        var new_array =[]
+        for (var k = -1; k < voisin_n.length-1; k++)
+        {
+
+          new_array.push(cur_array.slice(cpt,cpt+voisin_n[(voisin_n.length+k)%voisin_n.length].length))
+          cpt = cpt+voisin_n[(voisin_n.length+k)%voisin_n.length].length;
+
+        }
+        edge_array.push(new_array);
+      }
+    });
+    console.log(edge_array);
+
+    return edge_array;
+  } else{
+
+    console.log([voisin_depart,voisin_n,voisin_p]);
+    return [voisin_depart,voisin_n,voisin_p];
+  }
 }
 
 
@@ -133,7 +171,7 @@ function make_hyperbolVertextiling(p, q, star, iter_num, Ox, Oy, R) {
   var voisin_depart;
   var voisin_n ;
   var voisin_p ;
-  [voisin_depart,voisin_n,voisin_p] = calcul_voisin(p,q)
+  [voisin_depart,voisin_n,voisin_p] = calcul_voisin(p,q,0)
   var nombre_n = q * countOccurrences(voisin_depart,'N');
   var nombre_p = q * countOccurrences(voisin_depart,'P');
   idmax.push(1);
@@ -240,8 +278,6 @@ function make_hyperbolVertextiling(p, q, star, iter_num, Ox, Oy, R) {
         }
       }
 
-
-
       var T_2 = new Tile([id,iter_cur], neighbour_by_side, T_2_bounds, q);
 
       id = id+1;
@@ -321,6 +357,21 @@ function make_hyperbolVertextiling(p, q, star, iter_num, Ox, Oy, R) {
     var Ax = OA;
     var Ay = 0;
 
+    var voisin_depart;
+    var voisin_n ;
+    var voisin_p ;
+    [voisin_depart,voisin_n,voisin_p] = calcul_voisin(p,q,1);
+    idmax.push(1);
+
+    // for (var k =1; k<= iter_num;k++){
+    //   var nb_edge = nombre_n+nombre_p;
+    //   idmax.push(nb_edge);
+    //   [nombre_n,nombre_p] =
+    //   [nombre_n*countOccurrences(voisin_n,'N')+nombre_p*countOccurrences(voisin_p,'N'),
+    //   nombre_n*countOccurrences(voisin_n,'P')+nombre_p*countOccurrences(voisin_p,'P')];
+    // }
+
+
     if (!star) {
       var bounds = [];
       bounds.push(Ax, Ay);
@@ -378,14 +429,26 @@ function make_hyperbolVertextiling(p, q, star, iter_num, Ox, Oy, R) {
 
         if (iter_cur != iter){
           id = 0;
+          var cpt_n = 0;
+          var cpt_p = 0;
+
           iter_cur = iter;
         }
 
         neighbour_by_side.push(tile.id);
+        if (fill == 'N'){
+
+        if (p > 4){
+
         for (var k = 0; k < q-1; k++){
           neighbour_by_side.push([id*(q-3+p-3)+k,iter+1]);
-    //      console.log([id*(q-3+p-3)+k,iter+1]);
-}
+          }
+        }else{
+          for (var k = 0; k < q; k++){
+            neighbour_by_side.push([id*(q-3+p-3)+k,iter+1]);
+            }
+        }
+  }
 
 //console.log((q-3+p-3));
 // console.log([id,iter]);
@@ -393,40 +456,71 @@ function make_hyperbolVertextiling(p, q, star, iter_num, Ox, Oy, R) {
         var T_2 = new Tile([id,iter], neighbour_by_side, T_2_bounds, q);
 
         id = id+1;
+        if (fill == 'N'){
+          cpt_n = cpt_n+1;
+        }else{
+          cpt_p = cpt_p+1;
+        }
 
         tiles.push(T_2);
 
         if (iter < iter_num){
+// if (iter == 1 ){
+//   index_n = voisin_depart.indexOf("N");
+//   if (index_n != 0){
+//     tiles_liste.push([T_2, q-1 ,'PD',iter+1, index_n]);
+//   }
+//   tiles_liste.push([T_2, 2 + k ,'N' ,iter+1]);
+//
+//
+// }else {
+//
+// }
+
+
           if (fill == 'N'){
-            for (var k = 0; k <q-3; k++){
-              tiles_liste.push([T_2, 2 + k ,'N' ,iter+1]);
+
+            for (var k = 0; k < voisin_n.length-1; k++){
+              index_n = voisin_n[k].indexOf("N");
+              if (index_n != 0){
+                  tiles_liste.push([T_2, q-1 ,'PD',iter+1, index_n]);
+                }
+                tiles_liste.push([T_2, 2 + k ,'N' ,iter+1]);
+                tiles_liste.push([T_2, 1 ,'PG' ,iter+1,voisin_n.length-index_n]);
             }
 
-            if (p > 4){
-              tiles_liste.push([T_2, q-1 ,'PD',iter+1, (p-5)/2]);
-            }
-            tiles_liste.push([T_2, 1 ,'PG',iter+1, (p-4)/2]);
-          }else if (fill == 'PG'){
+
+          }else{
+
+          if (fill == 'PG'){
             if (cpt >= 1 ){
               console.log(cpt);
               tiles_liste.push([T_2, 1 ,'PG' ,iter+1,cpt-1]);
-
             }
+            // for (var k = 0; k < q-3; k++){
+            //   tiles_liste.push([T_2, 2 + k ,'N' ,iter+1,0]);
+            // }
 
-
-            for (var k = 0; k < q-2; k++){
-              tiles_liste.push([T_2, 2 + k ,'N' ,iter+1,0]);
-            }
           } else{
             if (cpt >= 1 ){
               tiles_liste.push([T_2, q-1 ,'PD' ,iter+1,cpt-1]);
             }
-            for (var k = 0; k < q-2; k++){
-              tiles_liste.push([T_2, q-2 - k ,'N' ,iter+1,0]);
-            }
+            // for (var k = 0; k < q-2; k++){
+            //   tiles_liste.push([T_2, q-2 - k ,'N' ,iter+1,0]);
+            // }
           }
+          for (var k = 0; k < voisin_p.length-1; k++){
+            index_n = voisin_p[k].indexOf("N");
+            if (index_n != 0){
+                tiles_liste.push([T_2, q-1 ,'PD',iter+1, index_n]);
+              }
+              tiles_liste.push([T_2, 2 + k ,'N' ,iter+1]);
+              tiles_liste.push([T_2, 1 ,'PG' ,iter+1,voisin_p.length-index_n]);
+          }
+
         }
       }
+    }
 
 
       // var findNeighbors_option = new Map();
