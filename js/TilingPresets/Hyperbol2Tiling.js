@@ -337,7 +337,7 @@ function make_hyperbolVertextiling(p, q, star, iter_num, Ox, Oy, R) {
     var tiles = [];
     var tiles_liste = [];
     var dict = [];
-    var id = 0;
+    var id = 1;
     var idmax = []
     var iter_cur = 1;
     var cpt_n = 0;
@@ -361,8 +361,8 @@ function make_hyperbolVertextiling(p, q, star, iter_num, Ox, Oy, R) {
     var voisin_n ;
     var voisin_p ;
     [voisin_depart,voisin_n,voisin_p] = calcul_voisin(p,q,1);
-    idmax.push(1);
 
+    // idmax.push(1);
     // for (var k =1; k<= iter_num;k++){
     //   var nb_edge = nombre_n+nombre_p;
     //   idmax.push(nb_edge);
@@ -380,12 +380,13 @@ function make_hyperbolVertextiling(p, q, star, iter_num, Ox, Oy, R) {
         bounds.push(l[0], l[1]);
       }
       var neighbour_by_side = [];
-      for (var k = 0; k < q; k++) {
-        neighbour_by_side.push([k,1]);
-      }
-      var tile = new Tile([0,0],neighbour_by_side, bounds, q);
+      // for (var k = 0; k < q; k++) {
+      //   neighbour_by_side.push([k,1]);
+      // }
+      var tile = new Tile(['polygon',0],neighbour_by_side, bounds, q);
       tiles.push(tile);
       if (iter_num>0){
+         // tiles_liste.push([tile,0, 'N',1,voisin_depart]);
         for (var side = 0 ; side < q; side++){
           tiles_liste.push([tile,side, 'N',1,voisin_depart]);
         }
@@ -427,40 +428,14 @@ function make_hyperbolVertextiling(p, q, star, iter_num, Ox, Oy, R) {
         var neighbour_by_side = [];
 
 
-        if (iter_cur != iter){
-          id = 0;
-          var cpt_n = 0;
-          var cpt_p = 0;
-
-          iter_cur = iter;
-        }
-
-        neighbour_by_side.push(tile.id);
-        if (fill == 'N'){
-
-        if (p > 4){
-
-        for (var k = 0; k < q-1; k++){
-          neighbour_by_side.push([id*(q-3+p-3)+k,iter+1]);
-          }
-        }else{
-          for (var k = 0; k < q; k++){
-            neighbour_by_side.push([id*(q-3+p-3)+k,iter+1]);
-            }
-        }
-  }
-
-//console.log((q-3+p-3));
-// console.log([id,iter]);
-
-        var T_2 = new Tile([id,iter], neighbour_by_side, T_2_bounds, q);
+        var T_2 = new Tile(['polygon',id], neighbour_by_side, T_2_bounds, q);
 
         id = id+1;
-        if (fill == 'N'){
-          cpt_n = cpt_n+1;
-        }else{
-          cpt_p = cpt_p+1;
-        }
+        // if (fill == 'N'){
+        //   cpt_n = cpt_n+1;
+        // }else{
+        //   cpt_p = cpt_p+1;
+        // }
 
         tiles.push(T_2);
 
@@ -470,50 +445,40 @@ function make_hyperbolVertextiling(p, q, star, iter_num, Ox, Oy, R) {
 
             index_n = pile.indexOf("N");
             if (index_n != 0){
-              tiles_liste.push([T_2, q-1 ,'PD',iter+1, index_n]);
+              tiles_liste.push([T_2, q-1 ,'PD',iter+1, index_n-1]);
             }
-            tiles_liste.push([T_2, 1 ,'PG' ,iter+1,voisin_n.length-index_n]);
+            tiles_liste.push([T_2, 1 ,'PG' ,iter+1,pile.length-2-index_n]);
 
             for (var k = 0; k < voisin_n.length; k++){
-                tiles_liste.push([T_2, 2 + k ,'N' ,iter+1,voisin_n[k]]);
+                tiles_liste.push([T_2, 2 + k ,'N' ,iter+1,voisin_n[voisin_n.length-1-k]]);
             }
 
-
           }else if (fill == 'PG'){
-            if (pile >= 1 ){
+            if (pile > 0 ){
               console.log(pile);
               tiles_liste.push([T_2, 1 ,'PG' ,iter+1,pile-1]);
             }
-            // for (var k = 0; k < q-3; k++){
-            //   tiles_liste.push([T_2, 2 + k ,'N' ,iter+1,0]);
-            // }
             for (var k = 0; k < voisin_p.length; k++){
-                tiles_liste.push([T_2, 2 + k ,'N' ,iter+1,voisin_p[k]]);
+                tiles_liste.push([T_2, 2 + k ,'N' ,iter+1,voisin_p[ voisin_p.length-1-k]]);
           }
         } else {
-            if (pile >= 1 ){
+            if (pile > 0 ){
               tiles_liste.push([T_2, q-1 ,'PD' ,iter+1,pile-1]);
             }
             for (var k = 0; k < voisin_p.length; k++){
                 tiles_liste.push([T_2, q- 2 - k ,'N' ,iter+1,voisin_p[k]]);
-            // for (var k = 0; k < q-2; k++){
-            //   tiles_liste.push([T_2, q-2 - k ,'N' ,iter+1,0]);
-            // }
           }
 
           }
-
-
       }
     }
 
 
-      // var findNeighbors_option = new Map();
-      // findNeighbors_option.set('polygon',default_neighbors2bounds(q));
-      //
-      // let tilesdict = new Map(tiles.map(i => [id2key(i.id), i]));
-			// let fn=findNeighbors(tiles,tilesdict,findNeighbors_option);
       tiles.forEach(tile => tile.scale(0,0,200))
+      var findNeighbors_option = new Map();
+      findNeighbors_option.set('polygon',default_neighbors2bounds(q));
+      let tilesdict = new Map(tiles.map(i => [id2key(i.id), i]));
+      let fn=findNeighbors(tiles,tilesdict,findNeighbors_option);
 
       return tiles;
     }
