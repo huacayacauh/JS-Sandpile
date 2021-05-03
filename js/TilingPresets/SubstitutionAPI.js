@@ -777,7 +777,7 @@ function substitute(iterations,tiles,ratio,mysubstitution,mydupinfos,mydupinfoso
     let newdup = duplicatedMap(mydupinfos,mydupinfosoriented,tiles,tilesdict);
     // set neighbors (if user is not lazy)
 
-    if (mydupinfo != [] || i == iterations-1){
+    if (mydupinfos != [] || i == iterations-1){
 
     if(typeof(myneighbors)!="string"){
       console.log("* compute neighbors (local)");
