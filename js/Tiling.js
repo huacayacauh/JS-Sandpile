@@ -12,7 +12,7 @@
 // 	[ 1.0 ] 	Representation of any Tile
 //
 //		The tile contains a list of its neighbors,
-//		all tiles are included in a Tiling.			
+//		all tiles are included in a Tiling.
 //		See [ 2.0 ]
 //
 // ################################################
@@ -29,10 +29,10 @@ class Tile{
 
 		this.bounds = bounds; // vertices of the polygon to be drawn
 		this.points = [];
-		
+
 		this.svg_color = "000000";
 	}
-        
+
         // [1.1] homemade Tile cloning method
         myclone(){
                 var newid=JSON.parse(JSON.stringify(this.id));
@@ -45,7 +45,7 @@ class Tile{
                         this.neighbors[i]=undefined;
                 }
         }
-        
+
         // [1.2] geometric transformations of a tile (scale, shift, rotate)
 
         // scale tile (all bounds) towards point B by factor f
@@ -86,9 +86,9 @@ class Tile{
 // ################################################
 //
 // 	[ 2.0 ] 	Representation of any Tiling
-//			
+//
 //		This class contains maily a list of
-//		Tiles, which themselves contains 
+//		Tiles, which themselves contains
 //		references to their neighbors.
 //
 //		This class also contains the THREE.js
@@ -96,37 +96,37 @@ class Tile{
 //
 // ################################################
 class Tiling{
-	
+
 	// ------------------------------------------------
 	// 	[ 2.1 ] 	The Tiling object takes in
 	//				just a list of Tile, and proceed
 	//				to translate it into a more
 	//				computable efficient representation
 	//				with arrays instead of dict.
-	//				
+	//
 	//	It builds the THREE.js object representing
 	//	the Tiling, and the THREE.js object representing
 	//	the limits of the Tiles (called the WireFrame).
 	//
 	// ------------------------------------------------
 	constructor(tiles, hide=false, recenter=false){
-		
+
 		this.tiles = tiles;
-		
+
 		this.hide = hide;
-		
+
 		if(!hide){
-			
+
 			// Building the THREE.js main Object ------------------
-			
+
 			var geometry = new THREE.BufferGeometry();
 			var points = [];
 			var colors = [];
-			
+
 			var idloc = {}; // translate tiles ids (of any type) into array locations, for computationnal efficiency
-			
+
 			var pointcounter = 0;
-			
+
 			for(var i = 0; i<tiles.length; i++){
 				if(tiles[i].bounds){
 					var triangles = earcut(tiles[i].bounds);  // triangulation of the bounds
@@ -141,16 +141,16 @@ class Tiling{
 			}
 			geometry.addAttribute( 'position', new THREE.Float32BufferAttribute( points, 3 )  );
 			geometry.addAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );
-			
+
 			var material = new THREE.MeshBasicMaterial( {vertexColors: THREE.VertexColors, side: THREE.DoubleSide} );
 			this.mesh = new THREE.Mesh( geometry, material );
-			
+
 			// The THREE.js object is built. ------------------
 
 			this.selectedIndex;
 			this.cmap = [new THREE.Color(0xffffff),
 						 new THREE.Color(0xff0000)]; // if you see these colors, something went wrong
-			
+
 			// From the idloc dictionnary, translates neighbors of each Tile from ID to
 			// Indexes in the list of Tiles.
 			for(var i = 0; i<this.tiles.length; i++){
@@ -163,9 +163,9 @@ class Tiling{
 				}
 				this.tiles[i].neighbors = new_neighbors;
 			}
-			
+
 			// WireFrame -----------------------------------------------------
-			
+
 			var wireFrame = [];
 			for(var i = 0; i<tiles.length; i++){
 				if(tiles[i].bounds){
@@ -189,11 +189,11 @@ class Tiling{
 
 			var wirePosition = new THREE.Float32BufferAttribute( wireFrame, 3 );
 			wireFrameGeometry.addAttribute( 'position', wirePosition );
-			
+
 			var mat = new THREE.LineBasicMaterial( { color: 0x000000, linewidth: 1 } );
 			this.wireFrame = new THREE.LineSegments( wireFrameGeometry, mat );
-			
-			
+
+
 			// Clicking -----------------------------------------------------
 			this.indexDict = {}; // Dict face index <-> tile index
 
@@ -203,10 +203,10 @@ class Tiling{
 					this.indexDict[tiles[i].points[j]] = i;
 				}
 			}
-			
+
 			// Centering -----------------------------------------------------
                         // puts (0,0) at the barycenter of all tile bounds
-			
+
 			this.center = [0, 0];
 			if(recenter){
 				var count = 0;
@@ -222,7 +222,7 @@ class Tiling{
 				this.center[0] /= count;
 				this.center[1] /= count;
 			}
-			this.mesh.position.set(-this.center[0], -this.center[1], 0); 
+			this.mesh.position.set(-this.center[0], -this.center[1], 0);
 			this.wireFrame.position.set(-this.center[0], -this.center[1], 0);
 		}
 	}
@@ -248,7 +248,7 @@ class Tiling{
 		}
 		return is_stable;
 	}
-	
+
 	stabilize(){
                 console.log("  stabilization...");
 		let t0 = performance.now();
@@ -261,7 +261,7 @@ class Tiling{
 		console.log("  done after "+n+" steps in "+(performance.now()-t0)+" (ms)");
 		this.colorTiles();
 	}
-	
+
 	// ------------------------------------------------
 	// 	[ 2.3 ] 	Basic operation functions
 	// ------------------------------------------------
@@ -269,18 +269,18 @@ class Tiling{
 		this.tiles[id].sand += amount;
 		this.colorTile(id);
 	}
-	
+
 	set(id, amount){
 		this.tiles[id].sand = amount;
 		this.colorTile(id);
 	}
-	
+
 	remove(id, amount){
 		this.tiles[id].sand -= amount;
 		if(this.tiles[id].sand < 0) this.tiles[id].sand = 0;
 		this.colorTile(id);
 	}
-	
+
 	addRandom(amount){
 		for(var j = 0; j<amount; j++){
 			var chosen = Math.floor(this.tiles.length * Math.random());
@@ -295,7 +295,7 @@ class Tiling{
 			this.remove(chosen, 1);
 		}
 	}
-	
+
 	// ------------------------------------------------
 	// 	[ 2.4 ] 	"Everywhere" operations
 	// ------------------------------------------------
@@ -312,7 +312,7 @@ class Tiling{
 		}
 		this.colorTiles();
 	}
-	
+
 	addMaxStable(){
 		for(var id in this.tiles){
 			this.add(id, this.tiles[id].limit - 1);
@@ -336,7 +336,7 @@ class Tiling{
 		}
 		this.colorTiles();
 	}
-	
+
 	// ------------------------------------------------
 	// 	[ 2.5 ] 	Complex operations
 	// ------------------------------------------------
@@ -366,7 +366,7 @@ class Tiling{
 		}
 		return newTiling;
 	}
-	
+
 	hiddenCopy(){
 		var newTiles = [];
 		for(var i = 0; i<this.tiles.length; i++){
@@ -389,13 +389,13 @@ class Tiling{
 		if(colorNum >= this.cmap.length){
 			colorNum = this.cmap.length-1;
 		}
-		
+
 		if(!color){
 			if(colorNum >= 0){
 				color = this.cmap[colorNum];
 			} else{
 				// default
-				
+
 				if(tile.sand >= tile.limit){
 					// ready to topple - flashy colors
 					var flashy = ["#ff1a1a", "#ff751a", "#ffbb33", "#ffff4d", "#99ff66", "#44ff11", "#22ffaa", "#00ffff", "#0077ff",  "#0000ff"];
@@ -405,7 +405,7 @@ class Tiling{
 					// stable, grey
 					var greyScale = 1.0 - tile.sand / tile.limit;
 					color = new THREE.Color( greyScale, greyScale, greyScale );
-					
+
 				}
 			}
 		}
@@ -488,6 +488,10 @@ class Tiling{
                 console.log("done");
                 return inverse;
         }
+
+				get_burningConfiguration(){
+                let burn_conf = this.hiddenCopy();
+                burn_conf.tiles.forEach(tile => tile.sand = tile.limit-tile.neighbors.length);
+                return burn_conf;
+        }
 }
-
-

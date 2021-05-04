@@ -262,6 +262,10 @@ function complexOperationAdd(){
 			case "Inve":
 				currentTiling.addConfiguration(currentTiling.get_inverse());
 			break;
+			case "BurC":
+				for(var i = 0; i< operationTimes; i++)
+					currentTiling.addConfiguration(currentTiling.get_burningConfiguration());
+			break;
 		}
 		if(operationType.substring(0, 4) == "CNFG"){
 			for(var i = 0; i<operationTimes; i++)
@@ -314,6 +318,11 @@ function complexOperationSet(){
 				currentTiling.clear();
 				currentTiling.addConfiguration(newTilingInve);
 			break;
+			case "BurC":
+				currentTiling.clear();
+				for(var i = 0; i< operationTimes; i++)
+					currentTiling.addConfiguration(currentTiling.get_burningConfiguration());
+			break;
 		}
 		if(operationType.substring(0, 4) == "CNFG"){
 			currentTiling.clear();
@@ -360,6 +369,11 @@ function complexOperationSub(){
 
 			case "Inve":
 				currentTiling.removeConfiguration(currentTiling.get_inverse());
+			break;
+
+			case "BurC":
+				for(var i = 0; i< operationTimes; i++)
+					currentTiling.removeConfiguration(currentTiling.get_burningConfiguration());
 			break;
 		}
 		if(operationType.substring(0, 4) == "CNFG"){
