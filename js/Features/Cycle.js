@@ -38,26 +38,26 @@ Tiling.prototype.apply_cycle_burning = function(){
   var cpt = 0;
   var is_stable = false;
   clearTiling()
-  currentTiling.addConfiguration(currentTiling.get_identity());
 
-  let obj = SHA256(currentTiling.tiles.map(a => a.sand).join(''));
-  clearTiling()
+  var obj = SHA256(currentTiling.tiles.map(a => a.sand).join(''));
 
   var found = false;
   while (!found){
     currentTiling.addConfiguration(currentTiling.get_burningConfiguration());
-    cpt+=1;
     is_stable = false;
     while (!is_stable){
         is_stable = currentTiling.iterate();
     }
     let result = SHA256(currentTiling.tiles.map(a => a.sand).join(''));
 
-      if (result == obj){
+    if (result == obj){
         found = true;
         console.log("on a un trouvé l'identité en ",cpt," iteration(s)");
         break;
     }
+    obj = result
+
+    cpt+=1;
   }
   currentTiling.colorTiles();
 }
