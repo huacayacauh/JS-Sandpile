@@ -1,4 +1,4 @@
-Tiling.prototype.apply_cycle = function(){
+Tiling.prototype.apply_cycle_1everywhere = function(){
 
   var cpt = 0;
   var is_stable = false;
@@ -7,10 +7,7 @@ Tiling.prototype.apply_cycle = function(){
   let result = SHA256(currentTiling.tiles.map(a => a.sand).join(''));
   var parcouru = [result];
   var found = false;
-console.log(currentTiling);
-
-
-  while (cpt < currentTiling.tiles.length && !found){
+  while (cpt < currentTiling.tiles.length*currentTiling.tiles[0].limit*100 && !found){
 
     currentTiling.addEverywhere(1);
     cpt+=1;
@@ -33,6 +30,35 @@ console.log(currentTiling);
     console.log("on n'a pas trouvé de cycle en ",cpt," itérations.");
   }
 
+  currentTiling.colorTiles();
+}
+
+Tiling.prototype.apply_cycle_burning = function(){
+
+  var cpt = 0;
+  var is_stable = false;
+  clearTiling()
+  currentTiling.addConfiguration(currentTiling.get_identity());
+
+  let obj = SHA256(currentTiling.tiles.map(a => a.sand).join(''));
+  clearTiling()
+
+  var found = false;
+  while (!found){
+    currentTiling.addConfiguration(currentTiling.get_burningConfiguration());
+    cpt+=1;
+    is_stable = false;
+    while (!is_stable){
+        is_stable = currentTiling.iterate();
+    }
+    let result = SHA256(currentTiling.tiles.map(a => a.sand).join(''));
+
+      if (result == obj){
+        found = true;
+        console.log("on a un trouvé l'identité en ",cpt," iteration(s)");
+        break;
+    }
+  }
   currentTiling.colorTiles();
 }
 
