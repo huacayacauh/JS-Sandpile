@@ -2,12 +2,19 @@ Tiling.triTiling = function({size}={}) {
 	var tiles = [];
 	for (var y = 0; y < size - 1; y++){
 		for (var x = 0; x < size - y - 1; x++) {
-			tiles.push(Tile.triTilingUpTriangle(x, y, size));
-			tiles.push(Tile.triTilingDownTriangle(x, y, size));
+			var delet_this = Math.random();
+			if (delet_this > 0.01)
+				tiles.push(Tile.triTilingUpTriangle(x, y, size));
+			delet_this = Math.random();
+			if (delet_this > 0.01)
+				tiles.push(Tile.triTilingDownTriangle(x, y, size));
 		}
 	}
-	for (var y = 0; y < size; y++)
-		tiles.push(Tile.triTilingUpTriangle(size - y - 1, y, size));
+	for (var y = 0; y < size; y++){
+		var delet_this = Math.random();
+		if (delet_this > 0.01)
+			tiles.push(Tile.triTilingUpTriangle(size - y - 1, y, size));
+		}
 	return new Tiling(tiles);
 };
 

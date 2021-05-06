@@ -2,8 +2,14 @@ Tiling.sqTiling = function({width, height}={}) {
 	// Creates a Tiling corresponding to a square Tiling of dimensions width, height
 	var tiles = [];
 	for (var j = 0; j < width; j++) {
-		for (var i = 0; i < height; i++)
+		for (var i = 0; i < height; i++){
+			if (i == 0 || i == height-1 || j == 0 || j == height-1)
+				var delet_this = Math.random();
+			else
+				var delet_this = 1;
+			if (delet_this > 0.05)
 			tiles.push(Tile.squareTile(j, i, width, height));
+		}
 	}
 	return new Tiling(tiles);
 };
@@ -115,7 +121,7 @@ Tile.sqD4Tile = function(x, y, Max) {
 	bounds.push(x - Max/2, y+1 - Max/2);
 	return new Tile(id, neighbors, bounds, 4);
 };
-	
+
 Tile.sqMooreTile = function(x, y, width, height){
 	// Creates the Tile in position (x, y) of a square Tiling
 	var id = [x, y];
