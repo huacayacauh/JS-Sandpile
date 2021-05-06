@@ -4,7 +4,7 @@ The JS-Sandpiles app is a simple JavaScript implementation of the [Abelian sandp
 
 # Ready to play
 
-It is running here: https://huacayacauh.github.io/JS-Sandpile/
+It is running here: https://pachumain.github.io/JS-Sandpile/JS-Sandpile.html
 
 # Local install
 
