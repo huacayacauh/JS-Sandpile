@@ -66,9 +66,21 @@ decorateChair.set('b',2);
 
 Tiling.ChairSubstitution = function({iterations}={}){
 	var tiles = []
-	var myw = w.myclone();
-	tiles.push(myw);
-
+	var mywup = w.myclone();
+	mywup.id.push('up')
+	tiles.push(mywup);
+	var mywl = w.myclone();
+	mywl.id.push('left');
+	mywl.rotate(mywl.bounds[0],mywl.bounds[1], Math.PI/2);
+	tiles.push(mywl);
+	var mywd = w.myclone();
+	mywd.id.push('down');
+	mywd.rotate(mywd.bounds[0],mywd.bounds[1], Math.PI);
+	tiles.push(mywd);
+	var mywr = w.myclone();
+	mywr.id.push('right');
+	mywr.rotate(mywr.bounds[0],mywr.bounds[1], -Math.PI/2);
+	tiles.push(mywr);
 	tiles = substitute(
 	iterations,
 	tiles,
