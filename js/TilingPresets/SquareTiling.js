@@ -1,4 +1,4 @@
-Tiling.sqTiling = function({width, height}={}) {
+Tiling.sqTiling = function({width, height,trou}={}) {
 	// Creates a Tiling corresponding to a square Tiling of dimensions width, height
 	var tiles = [];
 	for (var j = 0; j < width; j++) {
@@ -7,7 +7,7 @@ Tiling.sqTiling = function({width, height}={}) {
 				var delet_this = Math.random();
 			else
 				var delet_this = 1;
-			if (delet_this > 0.05)
+			if (delet_this > trou/100)
 			tiles.push(Tile.squareTile(j, i, width, height));
 		}
 	}

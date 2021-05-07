@@ -1,18 +1,18 @@
-Tiling.triTiling = function({size}={}) {
+Tiling.triTiling = function({size,trou}={}) {
 	var tiles = [];
 	for (var y = 0; y < size - 1; y++){
 		for (var x = 0; x < size - y - 1; x++) {
 			var delet_this = Math.random();
-			if (delet_this > 0.01)
+			if (delet_this > trou/100)
 				tiles.push(Tile.triTilingUpTriangle(x, y, size));
 			delet_this = Math.random();
-			if (delet_this > 0.01)
+			if (delet_this > trou/100)
 				tiles.push(Tile.triTilingDownTriangle(x, y, size));
 		}
 	}
 	for (var y = 0; y < size; y++){
 		var delet_this = Math.random();
-		if (delet_this > 0.01)
+		if (delet_this > trou/100)
 			tiles.push(Tile.triTilingUpTriangle(size - y - 1, y, size));
 		}
 	return new Tiling(tiles);
