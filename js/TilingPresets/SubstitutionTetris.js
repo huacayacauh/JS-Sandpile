@@ -535,9 +535,21 @@ neighbors2boundsTetris.set('z',default_neighbors2bounds(8));
 
 Tiling.TetrisSubstitution = function({iterations}={}){
   var tiles = [];
-  var myo = o.myclone();
-  tiles.push(myo);
-
+  var myo1 = o.myclone();
+  myo1.id.push('o1');
+  tiles.push(myo1);
+  var myo2 = o.myclone()
+  myo2.id.push('o2');
+  myo2.rotate(0, 0, Math.PI/2);
+  tiles.push(myo2);
+  var myo3 = o.myclone()
+  myo3.id.push('o3');
+  myo3.rotate(0, 0, Math.PI);
+  tiles.push(myo3);
+  var myo4 = o.myclone()
+  myo4.id.push('o4');
+  myo4.rotate(0, 0, -Math.PI/2);
+  tiles.push(myo4);
   tiles = substitute(
     iterations,
     tiles,

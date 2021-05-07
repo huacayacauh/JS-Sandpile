@@ -309,9 +309,21 @@ decorateTangram.set('lor',2);
 
 Tiling.TangramSubstitution = function({iterations}={}){
   var tiles = [];
-  var mysqr = sqr.myclone();
-  tiles.push(mysqr);
-
+  var mysqr1 = sqr.myclone();
+  mysqr1.id.push('sqr1')
+  tiles.push(mysqr1);
+  var mysqr2 = sqr.myclone();
+  mysqr2.id.push('sqr2');
+  mysqr2.rotate(0, 0, Math.PI/2);
+  tiles.push(mysqr2);
+  var mysqr3 = sqr.myclone();
+  mysqr3.id.push('sqr3');
+  mysqr3.rotate(0, 0, Math.PI);
+  tiles.push(mysqr3);
+  var mysqr4 = sqr.myclone();
+  mysqr4.id.push('sqr4');
+  mysqr4.rotate(0, 0, -Math.PI/2)
+  tiles.push(mysqr4);
   tiles = substitute(
     iterations,
     tiles,
