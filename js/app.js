@@ -486,9 +486,12 @@ function drawTiling(){
 
 	var nbIt = document.getElementById("penroseIt").value;
 	var p = document.getElementById("cote").value;
+	var trou = document.getElementById("trou").value;
+
 	var q = document.getElementById("sommet").value;
 
-	var command = "currentTiling = Tiling." + preset + "({height:cH, width:cW, iterations:nbIt, size:size, cote:p, sommet:q})";
+	var command = "currentTiling = Tiling." + preset +
+	"({height:cH, width:cW, iterations:nbIt, size:size, cote:p, sommet:q, trou:trou})";
 
         console.log("BEGIN construct a new Tiling");
 	eval(command);
@@ -536,6 +539,7 @@ function redraw(){
 
 	var p = document.getElementById("cote").value;
 	var q = document.getElementById("sommet").value;
+	var trou = document.getElementById("trou").value;
 
 
 	currentTiling.cmap = cmap;
