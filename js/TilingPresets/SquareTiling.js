@@ -7,7 +7,7 @@ Tiling.sqTiling = function({width, height,trou}={}) {
 				var delet_this = Math.random();
 			else
 				var delet_this = 1;
-			if (delet_this > trou/100)
+			if (delet_this > trou/1000)
 			tiles.push(Tile.squareTile(j, i, width, height));
 		}
 	}
