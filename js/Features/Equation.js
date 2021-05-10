@@ -29,6 +29,8 @@ while (!found && cpt < max){
 }
 if (found != true){
   console.log("on n'a pas trouvé de solution en ",cpt," itérations.");
+  document.getElementById("valueX").innerHTML = "?";
+
 }else{
   document.getElementById("valueX").innerHTML = cpt;
 }
