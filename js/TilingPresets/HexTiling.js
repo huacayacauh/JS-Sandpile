@@ -1,4 +1,4 @@
-Tiling.hexTiling = function ({size}={}) {
+Tiling.hexTiling = function ({size,trou}={}) {
 
 	var tils = [];
 
@@ -7,7 +7,8 @@ Tiling.hexTiling = function ({size}={}) {
 			for(var z=-size; z<=size; z++){
 				if(x+y+z == 0){
 					var delet_this = Math.random();
-					if (delet_this > 0.01)
+					if (delet_this > trou/1000)
+
 						tils.push(hexTile(x, y, z));
 				}
 			}
