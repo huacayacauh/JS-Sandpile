@@ -1,67 +1,74 @@
-Tiling.prototype.apply_cycle_1everywhere = function(){
+Tiling.prototype.equation = function(){
 
-  var cpt = 0;
-  var is_stable = false;
-  clearTiling()
-  currentTiling.addMaxStable();
+let depart = currentTiling.hiddenCopy();
+clearTiling()
+AddTiling("Equation_Result")
+let obj = SHA256(currentTiling.tiles.map(a => a.sand).join(''));
+clearTiling()
+
+currentTiling.addConfiguration(depart)
+var cpt = 1;
+let max =  document.getElementById("iter_equation").value;
+var is_stable = false;
+var found = false;
+
+while (!found && cpt < max){
+  AddTiling("Equation_Raison")
+  is_stable = false;
+  while (!is_stable){
+      is_stable = currentTiling.iterate();
+  }
   let result = SHA256(currentTiling.tiles.map(a => a.sand).join(''));
-  var parcouru = [result];
-  var found = false;
-  while (cpt < currentTiling.tiles.length*currentTiling.tiles[0].limit*100 && !found){
 
-    currentTiling.addEverywhere(1);
-    cpt+=1;
-    is_stable = false;
-    while (!is_stable){
-        is_stable = currentTiling.iterate();
-    }
-    let result = SHA256(currentTiling.tiles.map(a => a.sand).join(''));
-    for (var k =0; k <parcouru.length; k++)
-    {
-      if (result == parcouru[k]){
-        found = true;
-        console.log("on a un cycle en ",cpt," iteration avec la ",k,"-iemes itertaions.");
-        break;
-      }
-    }
-    parcouru.push(result)
+  if (result == obj){
+      found = true;
+      console.log("on a un trouvé l'objectif en ",cpt," iteration(s)");
+      break;
   }
-  if (found != true){
-    console.log("on n'a pas trouvé de cycle en ",cpt," itérations.");
-  }
+  cpt+=1;
+}
+if (found != true){
+  console.log("on n'a pas trouvé de solution en ",cpt," itérations.");
+}
+currentTiling.colorTiles();
 
-  currentTiling.colorTiles();
 }
 
-Tiling.prototype.apply_cycle_burning = function(){
+function AddTiling(source){
+  	if(currentTiling){
+  		currentTiling.lastChange = 0;
+  		var operationType = document.getElementById(source).value;
+  		switch(operationType) {
+  			case "OneE":
+  				currentTiling.addEverywhere(1);
+  			break;
 
-  var cpt = 0;
-  var is_stable = false;
-  clearTiling()
+  			case "MaxS":
+  				currentTiling.addMaxStable();
+  			break;
 
-  var obj = SHA256(currentTiling.tiles.map(a => a.sand).join(''));
+  			case "Dual":
+  				let newTilingDual = currentTiling.getHiddenDual();
+  				currentTiling.addConfiguration(newTilingDual);
+  			break;
 
-  var found = false;
-  while (!found){
-    currentTiling.addConfiguration(currentTiling.get_burningConfiguration());
-    is_stable = false;
-    while (!is_stable){
-        is_stable = currentTiling.iterate();
-    }
-    let result = SHA256(currentTiling.tiles.map(a => a.sand).join(''));
+  			case "Iden":
+  					currentTiling.addConfiguration(currentTiling.get_identity());
+  			break;
 
-    if (result == obj){
-        found = true;
-        console.log("on a un trouvé l'identité en ",cpt," iteration(s)");
-        break;
-    }
-    obj = result
-
-    cpt+=1;
-  }
-  currentTiling.colorTiles();
+  			case "Inve":
+          let newTilingInve = currentTiling.get_inverse();
+  				currentTiling.addConfiguration(newTilingInve);
+  			break;
+  			case "BurC":
+  				currentTiling.addConfiguration(currentTiling.get_burningConfiguration());
+  			break;
+  		}
+  		if(operationType.substring(0, 4) == "CNFG"){
+  			currentTiling.addConfiguration(savedConfigs[operationType.substring(4, operationType.length)]);
+  		}
+  	}
 }
-
 
 
 /**
