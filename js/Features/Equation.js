@@ -7,7 +7,7 @@ let obj = SHA256(currentTiling.tiles.map(a => a.sand).join(''));
 clearTiling()
 
 currentTiling.addConfiguration(depart)
-var cpt = 0;
+var cpt = 1;
 let max =  document.getElementById("iter_equation").value;
 var is_stable = false;
 var found = false;
