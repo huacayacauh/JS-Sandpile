@@ -22,13 +22,15 @@ while (!found && cpt < max){
 
   if (result == obj){
       found = true;
-      console.log("on a un trouvé l'objectif en ",cpt," iteration(s)");
+      console.log("objectif trouvé en ",cpt," iteration(s)");
       break;
   }
   cpt+=1;
 }
 if (found != true){
   console.log("on n'a pas trouvé de solution en ",cpt," itérations.");
+}else{
+  document.getElementById("valueX").innerHTML = cpt;
 }
 currentTiling.colorTiles();
 
