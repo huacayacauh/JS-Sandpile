@@ -349,12 +349,36 @@
 
 				<!-- ############################################################ Cycle -->
 				<div class="controlGroup">
-					<p class="groupTitle">Cycle</p>
-					<button onclick='currentTiling.apply_cycle_1everywhere()' style="margin-left:10px;" class="btn btn-default ">Cycle 1-Everywhere</button>
-		            <br />
-					<button onclick='currentTiling.apply_cycle_burning()' style="margin-left:10px;" class="btn btn-default ">Convergence Burning</button>
-											<br />
-		        </div>
+					<p class="groupTitle">Equation</p>
+<p>
+	(Current + X
+	<select id="Equation_Raison">
+		<option value="MaxS">Max stable</option>
+		<option value="OneE">One Everywhere</option>
+		<option value="Dual">Dual</option>
+		<option value="Iden">Identity</option>
+		<option value="Inve">Inverse</option>
+		<option value="Rand">Random</option>
+		<option value="BurC">Burning Configuration</option>
+	</select>
+	)° = <br/>
+	<select id="Equation_Result">
+		<option value="MaxS">Max stable</option>
+		<option value="OneE">One Everywhere</option>
+		<option value="Dual">Dual</option>
+		<option value="Iden">Identity</option>
+		<option value="Inve">Inverse</option>
+		<option value="Rand">Random</option>
+		<option value="BurC">Burning Configuration</option>
+	</select>
+</p>
+Max X:
+<input type="number" style="width: 100px;" id="iter_equation" min="0" value="100" max="10000000000"/>
+<br>
+<button onclick='currentTiling.equation()'  class="btn btn-default" style="margin-top:10px;display: table;width: -webkit-fill-available;">Equation</button>
+<br />
+
+</div>
 		<!-- ############################################################ Batch procesings -->
 		<div class="controlGroup">
 			<p class="groupTitle">Batch processings</p>
@@ -444,7 +468,7 @@
 	<script src="./js/Features/Harmonics.js"></script>
 	<script src="./js/Features/Roundness.js"></script>
 	<script src="./js/Features/Batch_processings.js"></script>
-	<script src="./js/Features/Cycle.js"></script>
+	<script src="./js/Features/Equation.js"></script>
 
 	<script src="./js/TilingPresets/Euclidean.js"></script>
 
