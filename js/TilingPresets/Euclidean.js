@@ -3,7 +3,7 @@
 Tiling.trihexagonal = function ({size}={}) {
 
 	var tils = [];
-	for(var q=0; q<=size; q++){
+	for(var q=0; q<=2*size; q++){
 		for(var r=-Math.floor((size-q+1)/2); r<=Math.floor((size-q)/2); r++){
 			tils.push(thHex(r, q));
 			tils.push(thTriSup(r, q));
