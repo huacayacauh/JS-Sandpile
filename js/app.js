@@ -598,6 +598,7 @@ function saveConfiguration(){
 			return;
 		}
 		document.getElementById("complexOperationValue").innerHTML += '<option value="CNFG'+ savedConfigs.length +'">' + config_name + '</option>';
+		document.getElementById("Equation_Depart").innerHTML += '<option value="CNFG'+ savedConfigs.length +'">' + config_name + '</option>';
 		document.getElementById("Equation_Raison").innerHTML += '<option value="CNFG'+ savedConfigs.length +'">' + config_name + '</option>';
 		document.getElementById("Equation_Result").innerHTML += '<option value="CNFG'+ savedConfigs.length +'">' + config_name + '</option>';
 

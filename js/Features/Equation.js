@@ -1,12 +1,14 @@
+var depart;
+
 Tiling.prototype.equation = function(){
 
-let depart = currentTiling.hiddenCopy();
+depart = currentTiling.hiddenCopy();
 clearTiling()
 AddTiling("Equation_Result")
 let obj = SHA256(currentTiling.tiles.map(a => a.sand).join(''));
 clearTiling()
+AddTiling("Equation_Depart")
 
-currentTiling.addConfiguration(depart)
 var cpt = 1;
 let max =  document.getElementById("iter_equation").value;
 var is_stable = false;
@@ -29,10 +31,10 @@ while (!found && cpt < max){
 }
 if (found != true){
   console.log("on n'a pas trouvé de solution en ",cpt," itérations.");
-  document.getElementById("valueX").innerHTML = "?";
+  document.getElementById("valueX").innerHTML = "Failed to find";
 
 }else{
-  document.getElementById("valueX").innerHTML = cpt;
+  document.getElementById("valueX").innerHTML = "X ="+ cpt;
 }
 currentTiling.colorTiles();
 
@@ -51,19 +53,15 @@ function AddTiling(source){
   				currentTiling.addMaxStable();
   			break;
 
-  			case "Dual":
-  				let newTilingDual = currentTiling.getHiddenDual();
-  				currentTiling.addConfiguration(newTilingDual);
+  			case "Current":
+  				currentTiling.addConfiguration(depart);
   			break;
 
   			case "Iden":
   					currentTiling.addConfiguration(currentTiling.get_identity());
   			break;
 
-  			case "Inve":
-          let newTilingInve = currentTiling.get_inverse();
-  				currentTiling.addConfiguration(newTilingInve);
-  			break;
+
   			case "BurC":
   				currentTiling.addConfiguration(currentTiling.get_burningConfiguration());
   			break;
