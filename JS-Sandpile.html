@@ -347,14 +347,14 @@
 				<!-- ############################################################ Cycle -->
 				<div class="controlGroup">
 					<p class="groupTitle">Equation</p>
-<p>
-	(<select id="Equation_Depart">
+<p align=center>
+	( <select id="Equation_Depart">
 		<option value="Current">Current</option>
 		<option value="MaxS">Max stable</option>
 		<option value="OneE">One Everywhere</option>
 		<option value="Iden">Identity</option>
 		<option value="BurC">Burning Configuration</option>
-	</select> + X
+	</select> <br/> + x * 
 	<select id="Equation_Raison">
 		<option value="Current">Current</option>
 		<option value="MaxS">Max stable</option>
@@ -362,7 +362,7 @@
 		<option value="Iden">Identity</option>
 		<option value="BurC">Burning Configuration</option>
 	</select>
-	)° = <br/>
+	)°  <br/> =
 	<select id="Equation_Result">
 		<option value="Current">Current</option>
 		<option value="MaxS">Max stable</option>
@@ -371,7 +371,7 @@
 		<option value="BurC">Burning Configuration</option>
 	</select>
 </p>
-Max X:
+Max x:
 <input type="number" style="width: 100px;" id="iter_equation" min="0" value="100" max="10000000000"/>
 <br>
 <button onclick='currentTiling.equation()'  class="btn btn-default" style="margin-top:10px;display: table;width: -webkit-fill-available;">Solve Equation</button>
