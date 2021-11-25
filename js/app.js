@@ -259,8 +259,13 @@ function complexOperationAdd(){
 				for(var i = 0; i< operationTimes; i++)
 					currentTiling.addConfiguration(currentTiling.get_identity());
 			break;
+
 			case "Inve":
 				currentTiling.addConfiguration(currentTiling.get_inverse());
+			break;
+
+			case "Burn":
+				currentTiling.addConfiguration(currentTiling.get_burning());
 			break;
 		}
 		if(operationType.substring(0, 4) == "CNFG"){
@@ -314,6 +319,12 @@ function complexOperationSet(){
 				currentTiling.clear();
 				currentTiling.addConfiguration(newTilingInve);
 			break;
+
+			case "Burn":
+                                let newTilingBurn = currentTiling.get_burning();
+				currentTiling.clear();
+				currentTiling.addConfiguration(newTilingBurn);
+			break;
 		}
 		if(operationType.substring(0, 4) == "CNFG"){
 			currentTiling.clear();
@@ -360,6 +371,10 @@ function complexOperationSub(){
 
 			case "Inve":
 				currentTiling.removeConfiguration(currentTiling.get_inverse());
+			break;
+
+			case "Burn":
+				currentTiling.removeConfiguration(currentTiling.get_burning());
 			break;
 		}
 		if(operationType.substring(0, 4) == "CNFG"){

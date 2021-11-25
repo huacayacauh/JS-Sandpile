@@ -488,6 +488,18 @@ class Tiling{
                 console.log("done");
                 return inverse;
         }
-}
 
+	// ------------------------------------------------
+	// [ 2.10 ] Compute the burning configuration
+	// ------------------------------------------------
+        get_burning(){
+                console.log("compute burning b...");
+                let burning = this.hiddenCopy();
+                burning.tiles.forEach(tile =>
+                  tile.sand = tile.limit - tile.neighbors.length
+                );
+                console.log("done");
+                return burning;
+        }
+}
 
