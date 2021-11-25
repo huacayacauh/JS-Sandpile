@@ -265,7 +265,8 @@ function complexOperationAdd(){
 			break;
 
 			case "Burn":
-				currentTiling.addConfiguration(currentTiling.get_burning());
+				for(var i = 0; i< operationTimes; i++)
+				        currentTiling.addConfiguration(currentTiling.get_burning());
 			break;
 		}
 		if(operationType.substring(0, 4) == "CNFG"){
