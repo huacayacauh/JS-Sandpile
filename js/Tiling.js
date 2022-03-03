@@ -87,7 +87,7 @@ class Tile{
 //
 // 	[ 2.0 ] 	Representation of any Tiling
 //			
-//		This class contains maily a list of
+//		This class contains mainly a list of
 //		Tiles, which themselves contains 
 //		references to their neighbors.
 //
