@@ -5,7 +5,7 @@ Tiling.hexTiling = function ({size}={}) {
 	for(var x=-size; x<=size; x++){
 		for(var y=-size; y<=size; y++){
 			for(var z=-size; z<=size; z++){
-				if(x+y+z == 0 && y == 0){
+				if(x+y+z == 0){
 					tils.push(hexTile(x, y, z));
 				}
 			}
