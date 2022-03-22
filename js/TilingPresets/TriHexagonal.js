@@ -1,7 +1,7 @@
 Tiling.triHexTiling = function ({size}={}) {
 
 	var tils = [];
-	
+
 	for(var x=-size; x<=size; x++){
 		for(var y=-size; y<=size; y++){
 			for(var z=-size; z<=size; z++){
@@ -17,7 +17,7 @@ Tiling.triHexTiling = function ({size}={}) {
 
 function hexTile(x, y, z){
 	var id = [x, y, z];
-	
+
 	var neighbors =  [];
 	neighbors.push([x-1, y,   z+1]);
 	neighbors.push([x-1, y+1, z  ]);
@@ -25,7 +25,7 @@ function hexTile(x, y, z){
 	neighbors.push([x,   y-1, z+1]);
 	neighbors.push([x+1, y,   z-1]);
 	neighbors.push([x+1, y-1, z  ]);
-	
+
 	let sq3 = Math.sqrt(3)/2;
 	var bounds = [];
 	bounds.push(1.5*x - sq3, (y-z)*sq3 - 0.5);
@@ -34,8 +34,8 @@ function hexTile(x, y, z){
 	bounds.push(1.5*x + sq3, (y-z)*sq3+ 0.5);
 	bounds.push(1.5*x , (y-z)*sq3 + 1);
 	bounds.push(1.5*x - sq3, (y-z)*sq3 + 0.5);
-	
+
 	return new Tile(id, neighbors, bounds, 6);
 }
 
-
+	//qsgr
