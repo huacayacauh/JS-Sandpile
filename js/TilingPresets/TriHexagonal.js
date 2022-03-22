@@ -28,12 +28,12 @@ function hexTile(x, y, z){
 	
 	let sq3 = Math.sqrt(3)/2;
 	var bounds = [];
-	bounds.push(1.5*x - sq3, (y-z)*sq3 - 0.5);
-	bounds.push(1.5*x , (y-z)*sq3 - 1);
-	bounds.push(1.5*x + sq3, (y-z)*sq3 - 0.5);
-	bounds.push(1.5*x + sq3, (y-z)*sq3+ 0.5);
-	bounds.push(1.5*x , (y-z)*sq3 + 1);
-	bounds.push(1.5*x - sq3, (y-z)*sq3 + 0.5);
+	bounds.push(2*sq3*x - sq3, (y-z) - 0.5);
+	bounds.push(2*sq3*x , (y-z) - 1);
+	bounds.push(2*sq3*x + sq3, (y-z) - 0.5);
+	bounds.push(2*sq3*x + sq3, (y-z) + 0.5);
+	bounds.push(2*sq3*x , (y-z) + 1);
+	bounds.push(2*sq3*x - sq3, (y-z) + 0.5);
 	
 	return new Tile(id, neighbors, bounds, 6);
 }
