@@ -26,16 +26,40 @@ function hexTile(x, y, z){
 	neighbors.push([x+1, y,   z-1]);
 	neighbors.push([x+1, y-1, z  ]);
 
+	
+
 	let sq3 = Math.sqrt(3)/2;
 	var bounds = [];
-	bounds.push(1.5*x - sq3, (y-z)*sq3 - 0.5);
-	bounds.push(1.5*x , (y-z)*sq3 - 1);
-	bounds.push(1.5*x + sq3, (y-z)*sq3 - 0.5);
-	bounds.push(1.5*x + sq3, (y-z)*sq3+ 0.5);
-	bounds.push(1.5*x , (y-z)*sq3 + 1);
-	bounds.push(1.5*x - sq3, (y-z)*sq3 + 0.5);
+	bounds.push(2*sq3*x - sq3, (y-z) - 0.5);
+	bounds.push(2*sq3*x , (y-z) - 1);
+	bounds.push(2*sq3*x + sq3, (y-z) - 0.5);
+	bounds.push(2*sq3*x + sq3, (y-z) + 0.5);
+	bounds.push(2*sq3*x , (y-z) + 1);
+	bounds.push(2*sq3*x - sq3, (y-z) + 0.5);
+
+
+
 
 	return new Tile(id, neighbors, bounds, 6);
-}
 
-	//qsgr
+
+
+}
+	function triTile(x, y, z){
+		var id = [x, y, z];
+		var neighbors = [];
+		let sq5= Math.sqrt(5)/2;
+
+		neighbors.push([x-sq5, y, z+sq5]);
+		neighbors.push([x+sq5, y, z-sq5]);
+		neighbors.push([x+sq5, y-sq5, z]);
+		neighbors.push([x, y-sq5, z+sq5]);
+		neighbors.push([x-sq5, y+sq5, z]);
+		neighbors.push([x, y+sq5, z-sq5]);
+
+		var bounds=[];
+
+
+
+		return new Tile(id, neighbors, bounds, 3);
+	}
