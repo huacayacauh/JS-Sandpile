@@ -1,6 +1,18 @@
-Tiling.uniformTriHexagonalTilingNoCorona = function ({size}={}) {
+// This code is part of JS-Sandpile (https://github.com/huacayacauh/JS-Sandpile/)
+// CC-BY Valentin Darrigo, Jeremy Fersula, Kevin Perrot
+
+// Truncated Trihexagonal tiling
+// tiling described at 
+// https://en.wikipedia.org/wiki/Truncated_trihexagonal_tiling
+
+// This code implements the tiling without the final corona
+
+
+Tiling.truncatedTriHexagonalTilingNoCorona = function ({size}={}) {
 
 	var tils = [];
+
+    // Tiles around the central dodecagon are hardcoded
 
     tils.push(dodecagon(0, 0, 0));
     tils.push(squareTile(0, 0, 0, 1));

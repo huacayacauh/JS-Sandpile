@@ -1,4 +1,12 @@
-Tiling.uniformTriHexagonalTiling = function ({size}={}) {
+// This code is part of JS-Sandpile (https://github.com/huacayacauh/JS-Sandpile/)
+// CC-BY Valentin Darrigo, Jeremy Fersula, Kevin Perrot
+
+// Truncated Trihexagonal tiling
+// tiling described at 
+// https://en.wikipedia.org/wiki/Truncated_trihexagonal_tiling
+
+
+Tiling.truncatedTriHexagonalTiling = function ({size}={}) {
 
 	var tils = [];
 
