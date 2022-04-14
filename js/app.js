@@ -517,6 +517,54 @@ function drawTiling(){
 	render();
 }
 
+function drawDual(){
+	while(app.scene.children.length > 0){
+		app.scene.remove(app.scene.children[0]);
+		console.log("cleared");
+	}
+	
+	check_stable = 0;
+	
+	cW = document.getElementById("cW").value;
+	cH = document.getElementById("cH").value;
+	
+	var size = document.getElementById("size").value;
+
+	selectedTile = null;
+	
+	preset = document.getElementById("TilingSelect").value;
+
+	var nbIt = document.getElementById("penroseIt").value;
+	
+	var command = "currentTiling = Tiling." + preset + "({height:cH, width:cW, iterations:nbIt, size:size})";
+	
+        console.log("BEGIN construct a new Tiling");
+	eval(command);
+        console.log("END construct a new Tiling");
+        console.log("INFO the current Tiling has "+currentTiling.tiles.length+" tiles");
+	
+	currentTiling.cmap = cmap;
+	
+	app.controls.zoomCamera();
+	app.controls.object.updateProjectionMatrix();
+
+	app.scene.add(currentTiling.mesh);
+	
+	currentTiling.colorTiles();
+	//console.log(currentTiling);
+	
+	enableWireFrame(document.getElementById("wireFrameToggle"));
+
+	playWithDelay();
+
+	var render = function () {
+		requestAnimationFrame( render );
+		app.controls.update();
+		app.renderer.render( app.scene, app.camera );
+	};
+	render();
+}
+
 function redraw(){
 	while(app.scene.children.length > 0){
 		app.scene.remove(app.scene.children[0]);
