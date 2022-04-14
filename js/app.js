@@ -542,8 +542,8 @@ function drawDual(){
 	eval(command);
         console.log("END construct a new Tiling");
         console.log("INFO the current Tiling has "+currentTiling.tiles.length+" tiles");
-	
-	currentTiling.cmap = cmap;
+	dTiling = dualTiling(currentTiling)
+	dTiling.cmap = cmap;
 	
 	app.controls.zoomCamera();
 	app.controls.object.updateProjectionMatrix();
@@ -563,6 +563,42 @@ function drawDual(){
 		app.renderer.render( app.scene, app.camera );
 	};
 	render();
+}
+
+function dualTiling(tiling){
+	var tils = [];
+	var margeErreur = distance(tiling.tiles[i].bounds[0], tiling.tiles[i].bounds[1])/20
+	
+	var newBounds = []
+	for(var i=0; i<tiling.tiles.length; i++){
+		var meanArray = []
+		for(var i=0; i<tiling.tiles[i].bounds[0].length; i++){
+			var mean = 0
+			for(var j=0; j<tiling.tiles[i].bounds.length; j++){
+				meanX += tiling.tiles[i].bounds[j]
+			}
+			meanArray += mean
+		}
+		newBounds += meanArray
+	}
+	
+	parcouru = []
+	for(var i=0; i<tiling.tiles.length; i++){
+		for(var j=0; j<tiling.tiles[i].bounds.length; j++){
+			if (distance(tiling.tiles[i].bounds[j],parcouru[]))
+			parcouru += tiling.tiles[i].bounds[j]
+			tils.push(currentTile);
+		}
+	}
+	return new Tiling(tils)
+}
+
+function distance(coord1, coord2){
+	let sq = 0 
+	for(var i=0; i<coord1.length; i++){
+		sq += coord1[i] + coord2[i]
+	}
+	return sq
 }
 
 function redraw(){
