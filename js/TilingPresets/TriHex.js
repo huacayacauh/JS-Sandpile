@@ -11,8 +11,9 @@
 // [0] toolbox
 //
 
-var y_side = Math.tan(Math.PI/3);
-var scaling_ratio = 0.5;
+var x_side = 3;
+var y_side = Math.tan(Math.PI/3) * x_side;
+var scaling_ratio = 2;
 
 //
 // [1] define tile types TriHex
@@ -22,7 +23,7 @@ var scaling_ratio = 0.5;
 
 var bounds = [];
 bounds.push(0,0);
-bounds.push(1,0);
+bounds.push(x_side,0);
 bounds.push(0,y_side);
 var Wtriangle = new Tile(['Wtriangle'],[],bounds,3);
 
@@ -30,8 +31,8 @@ var Wtriangle = new Tile(['Wtriangle'],[],bounds,3);
 
 bounds = []
 bounds.push(0,0);
-bounds.push(1,0);
-bounds.push(1,y_side);
+bounds.push(x_side,0);
+bounds.push(0,y_side);
 var Btriangle = new Tile(['Btriangle'],[],bounds,3);
 
 Tile.prototype.Btriangle2Wtriangle = function(){
@@ -56,44 +57,55 @@ function substitutionTriHex(tile){
 
             var newtiles = [];
             var bounds = tile.bounds;
+            var new_bounds = [];
 
             // new Wtriangle1
             var Wtriangle1 = tile.myclone();
             Wtriangle1.id.push('W1');
-            Wtriangle1.scale(tile.bounds[0], tile.bounds[1], 2);
+            new_bounds.push((bounds[0] + bounds[4]) / 2, (bounds[1] + bounds[5]) / 2);
+            new_bounds.push((bounds[2] + bounds[4]) / 2, (bounds[3] + bounds[5]) / 2);
+            new_bounds.push(bounds[4], bounds[5]);
+            Wtriangle1.bounds = new_bounds;
+            Wtriangle1.scale(0, 0, scaling_ratio);
             newtiles.push(Wtriangle1);
 
             // new Wtriangle2
 
+            new_bounds = [];
             var Wtriangle2 = tile.myclone();
             Wtriangle2.id.push('W2');
-            Wtriangle2.rotate(tile.bounds[2], tile.bounds[3], -(Math.PI/2 + Math.PI/6));
-            Wtriangle2.shift(tile.bounds[4] - tile.bounds[2], tile.bounds[3] - tile.bounds[5]);
-            Wtriangle2.scale(tile.bounds[0], tile.bounds[1], 2);
+            new_bounds.push( ( (bounds[2] + bounds[4]) / 2 + bounds[0]) / 2, ( (bounds[3] + bounds[5]) / 2 + bounds[1]) / 2);
+            new_bounds.push(bounds[0], bounds[1]);
+            new_bounds.push(bounds[2], bounds[3]);
+            Wtriangle2.bounds = new_bounds;
+            Wtriangle2.scale(0, 0, scaling_ratio);
             newtiles.push(Wtriangle2);
 
             // new Btriangle1
 
+            new_bounds = [];
             var Btriangle1 = tile.myclone();
             Btriangle1.Wtriangle2Btriangle();
             Btriangle1.id.push('B1');
-            var reflectedPoint = rotatePoint(tile.bounds[4], tile.bounds[5], tile.bounds[0], tile.bounds[1], Math.PI);
-            Btriangle1.bounds[4] = reflectedPoint[0];
-            Btriangle1.bounds[5] = reflectedPoint[1];
-            Btriangle1.scale(tile.bounds[0], tile.bounds[1], 2);
+            new_bounds.push( ( (bounds[2] + bounds[4]) / 2 + bounds[0]) / 2, ( (bounds[3] + bounds[5]) / 2 + bounds[1]) / 2);
+            new_bounds.push((bounds[2] + bounds[4]) / 2, (bounds[3] + bounds[5]) / 2);
+            new_bounds.push(bounds[2], bounds[3]);
+            Btriangle1.bounds = new_bounds;
+            Btriangle1.scale(0, 0, scaling_ratio);
             newtiles.push(Btriangle1);
             
             
             // new Btriangle2
 
+            new_bounds = [];
             var Btriangle2 = tile.myclone();
             Btriangle2.Wtriangle2Btriangle();
             Btriangle2.id.push('B2');
-            var reflectedPoint = rotatePoint(tile.bounds[4], tile.bounds[5], tile.bounds[0], tile.bounds[1], Math.PI);
-            Btriangle2.bounds[4] = reflectedPoint[0];
-            Btriangle2.bounds[5] = reflectedPoint[1];
-            Btriangle2.rotate(bounds[2], bounds[3], Math.PI/3);
-            Btriangle2.scale(tile.bounds[0], tile.bounds[1], 2);
+            new_bounds.push((bounds[0] + bounds[4]) / 2, (bounds[1] + bounds[5]) / 2);
+            new_bounds.push((bounds[2] + bounds[4]) / 2, (bounds[3] + bounds[5]) / 2);
+            new_bounds.push(bounds[0], bounds[1]);
+            Btriangle2.bounds = new_bounds;
+            Btriangle2.scale(0, 0, scaling_ratio);
             newtiles.push(Btriangle2);
 
             return newtiles;
@@ -108,44 +120,54 @@ function substitutionTriHex(tile){
 
             var newtiles = [];
             var bounds = tile.bounds;
+            var new_bounds = [];
 
             // new Btriangle1
             var Btriangle1 = tile.myclone();
             Btriangle1.id.push('B1')
-            Btriangle1.scale(tile.bounds[0], tile.bounds[1], 2);
+            new_bounds.push((bounds[0] + bounds[4]) / 2, (bounds[1] + bounds[5]) / 2);
+            new_bounds.push((bounds[2] + bounds[4]) / 2, (bounds[3] + bounds[5]) / 2);
+            new_bounds.push(bounds[4], bounds[5]);
+            Btriangle1.bounds = new_bounds;
+            Btriangle1.scale(0, 0, scaling_ratio);
             newtiles.push(Btriangle1);
 
             // new Btriangle2
 
+            new_bounds = [];
             var Btriangle2 = tile.myclone();
             Btriangle2.id.push('B2');
-            Btriangle2.rotate(tile.bounds[2], tile.bounds[3], -(Math.PI/2 + Math.PI/6));
-            Btriangle2.shift(tile.bounds[4] - tile.bounds[2], tile.bounds[3] - tile.bounds[5]);
-            Btriangle2.scale(tile.bounds[0], tile.bounds[1], 2);
+            new_bounds.push( ( (bounds[2] + bounds[4]) / 2 + bounds[0]) / 2, ( (bounds[3] + bounds[5]) / 2 + bounds[1]) / 2);
+            new_bounds.push(bounds[0], bounds[1]);
+            new_bounds.push(bounds[2], bounds[3]);
+            Btriangle2.bounds = new_bounds;
+            Btriangle2.scale(0, 0, scaling_ratio);
             newtiles.push(Btriangle2);
 
             // new Wtriangle1
 
+            new_bounds = [];
             var Wtriangle1 = tile.myclone();
             Wtriangle1.Btriangle2Wtriangle();
             Wtriangle1.id.push('W1');
-            var reflectedPoint = rotatePoint(tile.bounds[4], tile.bounds[5], tile.bounds[0], tile.bounds[1], Math.PI);
-            Wtriangle1.bounds[4] = reflectedPoint[0];
-            Wtriangle1.bounds[5] = reflectedPoint[1];
-            Wtriangle1.scale(tile.bounds[0], tile.bounds[1], 2);
+            new_bounds.push( ( (bounds[2] + bounds[4]) / 2 + bounds[0]) / 2, ( (bounds[3] + bounds[5]) / 2 + bounds[1]) / 2);
+            new_bounds.push((bounds[2] + bounds[4]) / 2, (bounds[3] + bounds[5]) / 2);
+            new_bounds.push(bounds[2], bounds[3]);
+            Wtriangle1.bounds = new_bounds;
+            Wtriangle1.scale(0, 0, scaling_ratio);
             newtiles.push(Wtriangle1);
-            
             
             // new Wtriangle2
 
+            new_bounds = [];
             var Wtriangle2 = tile.myclone();
             Wtriangle2.Btriangle2Wtriangle();
             Wtriangle2.id.push('W2');
-            var reflectedPoint = rotatePoint(tile.bounds[4], tile.bounds[5], tile.bounds[0], tile.bounds[1], Math.PI);
-            Wtriangle2.bounds[4] = reflectedPoint[0];
-            Wtriangle2.bounds[5] = reflectedPoint[1];
-            Wtriangle2.rotate(bounds[2], bounds[3], Math.PI/3);
-            Wtriangle2.scale(tile.bounds[0], tile.bounds[1], 2);
+            new_bounds.push((bounds[0] + bounds[4]) / 2, (bounds[1] + bounds[5]) / 2);
+            new_bounds.push((bounds[2] + bounds[4]) / 2, (bounds[3] + bounds[5]) / 2);
+            new_bounds.push(bounds[0], bounds[1]);
+            Wtriangle2.bounds = new_bounds;
+            Wtriangle2.scale(0, 0, scaling_ratio);
             newtiles.push(Wtriangle2);
 
             return newtiles;
@@ -188,13 +210,23 @@ neighbors2boundsTriHex.set('Btriangle',default_neighbors2bounds(3));
 // prepare decoration
 decorateTriHex = new Map();
 decorateTriHex.set('Wtriangle',0);
-decorateTriHex.set('Btriangle',0);
+decorateTriHex.set('Btriangle',1);
 
 Tiling.TriHex = function({iterations}={}){
     var tiles = [];
     // push base tiling
-    var myTriangle = Wtriangle.myclone();
-    tiles.push(myTriangle);
+    var myTriangle1 = Wtriangle.myclone();
+    var myTriangle2 = Btriangle.myclone();
+    myTriangle2.bounds[2] = -myTriangle2.bounds[2];
+    var myTriangle3 = Wtriangle.myclone();
+    myTriangle3.bounds[2] = -myTriangle3.bounds[2];
+    myTriangle3.bounds[5] = -myTriangle3.bounds[5];
+    var myTriangle4 = Btriangle.myclone();
+    myTriangle4.bounds[5] = -myTriangle4.bounds[5];
+    tiles.push(myTriangle1);
+    tiles.push(myTriangle2);
+    tiles.push(myTriangle3);
+    tiles.push(myTriangle4);
     
     // call the substitution
     tiles = substitute(
