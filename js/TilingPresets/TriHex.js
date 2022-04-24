@@ -22,17 +22,17 @@ var scaling_ratio = 2;
 // White triangles
 
 var bounds = [];
-bounds.push(0,0);
-bounds.push(x_side,0);
 bounds.push(0,y_side);
+bounds.push(x_side,y_side);
+bounds.push(0,0);
 var Wtriangle = new Tile(['Wtriangle'],[],bounds,3);
 
 // Black triangles
 
 bounds = []
-bounds.push(0,0);
-bounds.push(x_side,0);
 bounds.push(0,y_side);
+bounds.push(-x_side,y_side);
+bounds.push(0,0);
 var Btriangle = new Tile(['Btriangle'],[],bounds,3);
 
 Tile.prototype.Btriangle2Wtriangle = function(){
@@ -96,6 +96,7 @@ function substitutionTriHex(tile){
             
             
             // new Btriangle2
+            // This tile is specific as it has 4 neighboors
 
             new_bounds = [];
             var Btriangle2 = tile.myclone();
@@ -106,6 +107,7 @@ function substitutionTriHex(tile){
             new_bounds.push(bounds[0], bounds[1]);
             Btriangle2.bounds = new_bounds;
             Btriangle2.scale(0, 0, scaling_ratio);
+            Btriangle2.limit = 4;
             newtiles.push(Btriangle2);
 
             return newtiles;
@@ -158,6 +160,7 @@ function substitutionTriHex(tile){
             newtiles.push(Wtriangle1);
             
             // new Wtriangle2
+            // This tile is specific as it has 4 neighboors
 
             new_bounds = [];
             var Wtriangle2 = tile.myclone();
@@ -168,6 +171,7 @@ function substitutionTriHex(tile){
             new_bounds.push(bounds[0], bounds[1]);
             Wtriangle2.bounds = new_bounds;
             Wtriangle2.scale(0, 0, scaling_ratio);
+            Wtriangle2.limit = 4;
             newtiles.push(Wtriangle2);
 
             return newtiles;
@@ -215,18 +219,17 @@ decorateTriHex.set('Btriangle',1);
 Tiling.TriHex = function({iterations}={}){
     var tiles = [];
     // push base tiling
-    var myTriangle1 = Wtriangle.myclone();
-    var myTriangle2 = Btriangle.myclone();
-    myTriangle2.bounds[2] = -myTriangle2.bounds[2];
-    var myTriangle3 = Wtriangle.myclone();
-    myTriangle3.bounds[2] = -myTriangle3.bounds[2];
-    myTriangle3.bounds[5] = -myTriangle3.bounds[5];
-    var myTriangle4 = Btriangle.myclone();
-    myTriangle4.bounds[5] = -myTriangle4.bounds[5];
-    tiles.push(myTriangle1);
-    tiles.push(myTriangle2);
-    tiles.push(myTriangle3);
-    tiles.push(myTriangle4);
+    for (var i = 0; i < 6; i++){
+        var newWtriangle = Wtriangle.myclone();
+        newWtriangle.id.push('W' + i);
+        newWtriangle.rotate(0, 0, i * Math.PI / 3);
+        tiles.push(newWtriangle)
+        
+        var newBtriangle = Btriangle.myclone();
+        newBtriangle.id.push('B' + i);
+        newBtriangle.rotate(0, 0, i * Math.PI / 3);
+        tiles.push(newBtriangle)
+    }
     
     // call the substitution
     tiles = substitute(
