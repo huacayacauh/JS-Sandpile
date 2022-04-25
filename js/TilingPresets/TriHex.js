@@ -219,16 +219,16 @@ decorateTriHex.set('Btriangle',1);
 Tiling.TriHex = function({iterations}={}){
     var tiles = [];
     // push base tiling
-    for (var i = 0; i < 6; i++){
+    for (var i = 0; i < 1; i++){
         var newWtriangle = Wtriangle.myclone();
         newWtriangle.id.push('W' + i);
         newWtriangle.rotate(0, 0, i * Math.PI / 3);
         tiles.push(newWtriangle)
         
-        var newBtriangle = Btriangle.myclone();
-        newBtriangle.id.push('B' + i);
-        newBtriangle.rotate(0, 0, i * Math.PI / 3);
-        tiles.push(newBtriangle)
+        // var newBtriangle = Btriangle.myclone();
+        // newBtriangle.id.push('B' + i);
+        // newBtriangle.rotate(0, 0, i * Math.PI / 3);
+        // tiles.push(newBtriangle)
     }
     
     // call the substitution
@@ -246,6 +246,7 @@ Tiling.TriHex = function({iterations}={}){
 
     console.log(tiles)
     // construct tiling
+    console.log("test overlap : " + overlap(0, 0, 5, 5, 7, 7, 4, 4, 0.01))
     return new Tiling(tiles);
 }
 
