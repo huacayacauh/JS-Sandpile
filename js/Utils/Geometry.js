@@ -32,6 +32,34 @@ function distance(xA, yA, xB, yB){
   return Math.sqrt((xA-xB)*(xA-xB)+(yA-yB)*(yA-yB));
 }
 
+// compute if vectors AB and CD are collinear, with p_error tolerance
+
+function collinear(xA, yA, xB, yB, xC, yC, xD, yD, p_error){
+  return (Math.abs((xB - xA) * (yD - yC) - (yB - yA) * (xD - xC)) < p_error);
+}
+
+// compute if part of segment [A, B] overlaps [C, D] or vice-versa, accepting a p_error computing error
+// First checks that the two vectors are collinear, and then that a point of the second vector is in the first one
+function overlap(xA, yA, xB, yB, xC, yC, xD, yD, p_error){
+  if (!collinear(xA, yA, xB, yB, xC, yC, xD, yD, p_error)){
+    return false;
+  }
+  // compute equation of line between A and B : y = ax + b
+  a = (yB - yA) / (xB - xA);
+  b = yA - a * xA;
+  if (xC < Math.max(xA, xB) && xC > Math.min(xA, xB)){
+    return (Math.abs(a * xC + b - yC) < p_error);
+  }
+  else if (xD < Math.max(xA, xB) && xD > Math.min(xA, xB)){
+    console.log(2);
+    return (Math.abs(a * xD + b - yD) < p_error);
+  }
+  else{
+    console.log(3);
+    return false;
+  }
+}
+
 // compute the Euclidean distance from a point to a segment
 function distancePointSegment(x,y,xA,yA,xB,yB){
   //check if segment is a point
