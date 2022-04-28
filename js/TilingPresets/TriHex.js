@@ -67,6 +67,7 @@ function substitutionTriHex(tile){
             new_bounds.push(bounds[4], bounds[5]);
             Wtriangle1.bounds = new_bounds;
             Wtriangle1.scale(0, 0, scaling_ratio);
+            Wtriangle1.limit = 3;
             newtiles.push(Wtriangle1);
 
             // new Wtriangle2
@@ -79,6 +80,7 @@ function substitutionTriHex(tile){
             new_bounds.push(bounds[2], bounds[3]);
             Wtriangle2.bounds = new_bounds;
             Wtriangle2.scale(0, 0, scaling_ratio);
+            Wtriangle2.limit = 3;
             newtiles.push(Wtriangle2);
 
             // new Btriangle1
@@ -92,6 +94,7 @@ function substitutionTriHex(tile){
             new_bounds.push(bounds[2], bounds[3]);
             Btriangle1.bounds = new_bounds;
             Btriangle1.scale(0, 0, scaling_ratio);
+            Btriangle1.limit = 3;
             newtiles.push(Btriangle1);
             
             
@@ -132,6 +135,7 @@ function substitutionTriHex(tile){
             new_bounds.push(bounds[4], bounds[5]);
             Btriangle1.bounds = new_bounds;
             Btriangle1.scale(0, 0, scaling_ratio);
+            Btriangle1.limit = 3;
             newtiles.push(Btriangle1);
 
             // new Btriangle2
@@ -144,6 +148,7 @@ function substitutionTriHex(tile){
             new_bounds.push(bounds[2], bounds[3]);
             Btriangle2.bounds = new_bounds;
             Btriangle2.scale(0, 0, scaling_ratio);
+            Btriangle2.limit = 3;
             newtiles.push(Btriangle2);
 
             // new Wtriangle1
@@ -157,6 +162,7 @@ function substitutionTriHex(tile){
             new_bounds.push(bounds[2], bounds[3]);
             Wtriangle1.bounds = new_bounds;
             Wtriangle1.scale(0, 0, scaling_ratio);
+            Wtriangle1.limit = 3;
             newtiles.push(Wtriangle1);
             
             // new Wtriangle2
