@@ -198,14 +198,241 @@ mydupinfosoriented=[];
 // [4] fill neighbors informations in TriHex newtiles (by side effect)
 //
 
-myneighbors="I am lazy";
+function neighborsTriHex(tiles,tilesdict,newtiles,newtilesdict,newdup){
+    // iterate tiles and fill neighbors of newtiles
+    for(let tile of tiles) {
+        switch(tile.id[0]){
+        case 'Wtriangle':
+            //
+            // --------------------------------
+            // set Wtriangle's children neighbors
+            // --------------------------------
+            //
+            // new Wtriangle 1
+            //
+            if (tile.neighbors.length == 3){
+                // neighbor 0
+                setNeighbor(newtilesdict,tile.id,'W1','Wtriangle',0,tile.id,'B2','Btriangle');
+                // neighbor 1
+                if(tile.neighbors[1] != undefined){
+                    setNeighbor(newtilesdict,tile.id,'W1','Wtriangle',1,tile.neighbors[1],'B1','Btriangle');
+                }
+                else{
+                    setNeighborUndefined(newtilesdict,tile.id,'W1','Wtriangle',1);
+                }
+                // neighbor 2
+                if(tile.neighbors[2] != undefined){
+                    setNeighbor(newtilesdict,tile.id,'W1','Wtriangle',2,tile.neighbors[2],'B1','Btriangle');
+                }
+                else{
+                    setNeighborUndefined(newtilesdict,tile.id,'W1','Wtriangle',2);
+                }
+            }
+            else {
+                // neighbor 0
+                setNeighbor(newtilesdict,tile.id,'W1','Wtriangle',0,tile.id,'B2','Btriangle');
+                // neighbor 1
+                setNeighbor(newtilesdict,tile.id,'W1','Wtriangle',1,tile.neighbors[2],'B2','Btriangle');
+                // neighbor 2
+                if(tile.neighbors[3] != undefined){
+                    setNeighbor(newtilesdict,tile.id,'W1','Wtriangle',2,tile.neighbors[3],'B1','Btriangle');
+                }
+                else{
+                    setNeighborUndefined(newtilesdict,tile.id,'W1','Wtriangle',2);
+                }           
+            }
+            //
+            // new Wtriangle 2
+            //
+            // neighbor 0
+            setNeighbor(newtilesdict,tile.id,'W2','Wtriangle',0,tile.id,'B2','Btriangle');
+            // neighbor 1
+            if(tile.neighbors[0] != undefined){
+                switch(tile.neighbors[0][0]){
+                    case 'Wtriangle':
+                        setNeighbor(newtilesdict,tile.id,'W2','Wtriangle',1,tile.neighbors[0],'B1','Btriangle');
+                    case 'Btriangle':
+                        setNeighbor(newtilesdict,tile.id,'W2','Wtriangle',1,tile.neighbors[0],'B2','Btriangle');
+                }
+            }
+            else{
+                setNeighborUndefined(newtilesdict,tile.id,'W2','Wtriangle',1);
+            }
+            // neighbor 2
+            setNeighbor(newtilesdict,tile.id,'W2','Wtriangle',2,tile.id,'B1','Btriangle')
+            //
+            // new Btriangle 1
+            //
+            // neighbor 0
+            setNeighbor(newtilesdict,tile.id,'B1','Btriangle',0,tile.id,'B2','Btriangle');
+            // neighbor 1
+            if (tile.neighbors.length == 3){
+                if(tile.neighbors[1] != undefined){
+                    setNeighbor(newtilesdict,tile.id,'B1','Btriangle',1,tile.neighbors[1],'W1','Wtriangle');
+                }
+                else{
+                    setNeighborUndefined(newtilesdict,tile.id,'B1','Btriangle',1);
+                }
+            }
+            else{
+                setNeighbor(newtilesdict,tile.id,'B1','Btriangle',1,tile.neighbors[1],'W2','Wtriangle');
+            }
+            // neighbor 2
+            setNeighbor(newtilesdict,tile.id,'B1','Btriangle',2,tile.id,'W2','Wtriangle')
+            //
+            // new Btriangle 2
+            //
+            // neighbor 0
+            setNeighbor(newtilesdict,tile.id,'B2','Btriangle',0,tile.id,'W1','Wtriangle');
+            // neighbor 1
+            setNeighbor(newtilesdict,tile.id,'B2','Btriangle',1,tile.id,'B1','Btriangle');
+            // neighbor 2
+            setNeighbor(newtilesdict,tile.id,'B2','Btriangle',2,tile.id,'W2','Wtriangle');
+            // neighbor 3
+            if (tile.neighbors.length == 3){
+                if(tile.neighbors[2] != undefined){
+                    setNeighbor(newtilesdict,tile.id,'B2','Btriangle',3,tile.neighbors[2],'W2','Wtriangle');
+                }
+                else{
+                    setNeighborUndefined(newtilesdict,tile.id,'B2','Btriangle',3);
+                }
+            }
+            else{
+                if(tile.neighbors[3] != undefined){
+                    setNeighbor(newtilesdict,tile.id,'B2','Btriangle',3,tile.neighbors[3],'W2','Wtriangle');
+                }
+                else{
+                    setNeighborUndefined(newtilesdict,tile.id,'B2','Btriangle',3);
+                }
+
+            }
+            
+            //
+            // done
+            //
+            break;
+        case 'Btriangle':
+            //
+            // --------------------------------
+            // set Btriangle's children neighbors
+            // --------------------------------
+            //
+            // new Btriangle 1
+            //
+            if (tile.neighbors.length == 3){
+                // neighbor 0
+                setNeighbor(newtilesdict,tile.id,'B1','Btriangle',0,tile.id,'W2','Wtriangle');
+                // neighbor 1
+                if(tile.neighbors[1] != undefined){
+                    setNeighbor(newtilesdict,tile.id,'B1','Btriangle',1,tile.neighbors[1],'W1','Wtriangle');
+                }
+                else{
+                    setNeighborUndefined(newtilesdict,tile.id,'B1','Btriangle',1);
+                }
+                // neighbor 2
+                if(tile.neighbors[2] != undefined){
+                    setNeighbor(newtilesdict,tile.id,'B1','Btriangle',2,tile.neighbors[2],'W1','Wtriangle');
+                }
+                else{
+                    setNeighborUndefined(newtilesdict,tile.id,'B1','Btriangle',2);
+                }
+            }
+            else {
+                // neighbor 0
+                setNeighbor(newtilesdict,tile.id,'B1','Btriangle',0,tile.id,'W2','Wtriangle'); 
+                // neighbor 1
+                setNeighbor(newtilesdict,tile.id,'B1','Btriangle',1,tile.neighbors[2],'W2','Wtriangle');
+                // neighbor 2
+                if(tile.neighbors[3] != undefined){
+                    setNeighbor(newtilesdict,tile.id,'B1','Btriangle',2,tile.neighbors[3],'W1','Wtriangle');
+                }
+                else{
+                    setNeighborUndefined(newtilesdict,tile.id,'B1','Btriangle',2);
+                }
+            }
+            //
+            // new Btriangle 2
+            //
+            // neighbor 0
+            setNeighbor(newtilesdict,tile.id,'B2','Btriangle',0,tile.id,'W2','Wtriangle');
+            // neighbor 1
+            if(tile.neighbors[0] != undefined){
+                switch(tile.neighbors[0][0]){
+                case 'Btriangle':
+                    setNeighbor(newtilesdict,tile.id,'B2','Btriangle',1,tile.neighbors[0],'W1','Wtriangle');
+                case 'Wtriangle':
+                    setNeighbor(newtilesdict,tile.id,'B2','Btriangle',1,tile.neighbors[0],'W2','Wtriangle');
+                }
+            }
+            else{
+                setNeighborUndefined(newtilesdict,tile.id,'B2','Btriangle',1);
+            }
+            // neighbor 2
+            setNeighbor(newtilesdict,tile.id,'B2','Btriangle',2,tile.id,'W1','Wtriangle')
+            //
+            // new Wtriangle 1
+            //
+            // neighbor 0
+            setNeighbor(newtilesdict,tile.id,'W1','Wtriangle',0,tile.id,'W2','Wtriangle');
+            // neighbor 1
+            if (tile.neighbors.length == 3){
+                if(tile.neighbors[1] != undefined){
+                    setNeighbor(newtilesdict,tile.id,'W1','Wtriangle',1,tile.neighbors[1],'B1','Btriangle');
+                }
+                else{
+                    setNeighborUndefined(newtilesdict,tile.id,'W1','Wtriangle',1);
+                }
+            }
+            else{
+                setNeighbor(newtilesdict,tile.id,'W1','Wtriangle',1,tile.neighbors[1],'B2','Btriangle');
+            }
+            // neighbor 2
+            setNeighbor(newtilesdict,tile.id,'W1','Wtriangle',2,tile.id,'B2','Btriangle')
+            //
+            // new Wtriangle 2
+            //
+            // neighbor 0
+            setNeighbor(newtilesdict,tile.id,'W2','Wtriangle',0,tile.id,'B1','Btriangle');
+            // neighbor 1
+            setNeighbor(newtilesdict,tile.id,'W2','Wtriangle',1,tile.id,'W1','Wtriangle');
+            // neighbor 2
+            setNeighbor(newtilesdict,tile.id,'W2','Wtriangle',2,tile.id,'B2','Btriangle');
+            // neighbor 3
+            if (tile.neighbors.length == 3){
+                if(tile.neighbors[2] != undefined){
+                    setNeighbor(newtilesdict,tile.id,'W2','Wtriangle',3,tile.neighbors[2],'B2','Btriangle');
+                }
+                else{
+                    setNeighborUndefined(newtilesdict,tile.id,'W2','Wtriangle',3);
+                }
+            }
+            else{
+                if(tile.neighbors[3] != undefined){
+                    setNeighbor(newtilesdict,tile.id,'W2','Wtriangle',3,tile.neighbors[3],'B2','Btriangle');
+                }
+                else{
+                    setNeighborUndefined(newtilesdict,tile.id,'W2','Wtriangle',3);
+                }
+            }
+            //
+            // done
+            //
+            break;
+
+        default:
+            // all tiles should be kite or dart
+            console.log("caution: undefined tile type for TriHex, id="+tile.id);
+        }
+    }
+    // neighbors modified by side effect in tilesdict, nothing to return
+    return;
+}
 
 //
 // [6] use default neighbors2bounds
 // 
-var neighbors2boundsTriHex = new Map();
-neighbors2boundsTriHex.set('Wtriangle',default_neighbors2bounds(3));
-neighbors2boundsTriHex.set('Btriangle',default_neighbors2bounds(3));
+
+// Not using it
 
 //
 // [7] construct base tilings and call substitute
@@ -219,16 +446,30 @@ decorateTriHex.set('Btriangle',1);
 Tiling.TriHex = function({iterations}={}){
     var tiles = [];
     // push base tiling
-    for (var i = 0; i < 1; i++){
+    for (var i = 0; i < 6; i++){
+        // white triangles
         var newWtriangle = Wtriangle.myclone();
-        newWtriangle.id.push('W' + i);
+        newWtriangle.id.push('W'+i);
+
         newWtriangle.rotate(0, 0, i * Math.PI / 3);
-        tiles.push(newWtriangle)
+
+        newWtriangle.neighbors.push(undefined);
+        newWtriangle.neighbors.push(['Btriangle','B'+i]);
+        newWtriangle.neighbors.push(['Btriangle','B'+(i+5) % 6]);
+
+        tiles.push(newWtriangle);
         
-        // var newBtriangle = Btriangle.myclone();
-        // newBtriangle.id.push('B' + i);
-        // newBtriangle.rotate(0, 0, i * Math.PI / 3);
-        // tiles.push(newBtriangle)
+        // black triangles
+        var newBtriangle = Btriangle.myclone();
+        newBtriangle.id.push('B'+i);
+
+        newBtriangle.rotate(0, 0, i * Math.PI / 3);
+
+        newBtriangle.neighbors.push(undefined);
+        newBtriangle.neighbors.push(['Wtriangle','W'+(i+7) % 6]);
+        newBtriangle.neighbors.push(['Wtriangle','W'+i]);
+
+        tiles.push(newBtriangle);
     }
     
     // call the substitution
@@ -239,14 +480,13 @@ Tiling.TriHex = function({iterations}={}){
         substitutionTriHex,
         mydupinfos,
         mydupinfosoriented,
-        myneighbors,
-        neighbors2boundsTriHex,
+        neighborsTriHex,
+        false,
         decorateTriHex
     );
 
     console.log(tiles)
     // construct tiling
-    console.log("test overlap : " + overlap(0, 0, 5, 5, 7, 7, 4, 4, 0.01))
     return new Tiling(tiles);
 }
 
