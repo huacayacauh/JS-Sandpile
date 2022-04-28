@@ -454,8 +454,8 @@ Tiling.TriHex = function({iterations}={}){
         newWtriangle.rotate(0, 0, i * Math.PI / 3);
 
         newWtriangle.neighbors.push(undefined);
-        newWtriangle.neighbors.push(['Btriangle','B'+i]);
         newWtriangle.neighbors.push(['Btriangle','B'+(i+5) % 6]);
+        newWtriangle.neighbors.push(['Btriangle','B'+i]);
 
         tiles.push(newWtriangle);
         
