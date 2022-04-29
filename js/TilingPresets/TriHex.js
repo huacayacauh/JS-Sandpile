@@ -5,7 +5,8 @@
 // substitution described at
 // https://tilings.math.uni-bielefeld.de/substitution/trihex/
 
-
+// TODO White triangle and blakc triangle could be done in the same code instead of a duplicate one.
+// TODO Sanitize the neighbors code (remove possibly redundant conditions)
 
 //
 // [0] toolbox
@@ -67,7 +68,8 @@ function substitutionTriHex(tile){
             new_bounds.push(bounds[4], bounds[5]);
             Wtriangle1.bounds = new_bounds;
             Wtriangle1.scale(0, 0, scaling_ratio);
-            Wtriangle1.limit = 3;
+            Wtriangle1.limit = 3;                                    //sets the limit back to 3 in case parent's limit was 4
+            Wtriangle1.neighbors = Wtriangle1.neighbors.slice(0, 3); //removes 4th neighbor that can be inherited from parent
             newtiles.push(Wtriangle1);
 
             // new Wtriangle2
@@ -80,6 +82,7 @@ function substitutionTriHex(tile){
             new_bounds.push(bounds[2], bounds[3]);
             Wtriangle2.bounds = new_bounds;
             Wtriangle2.scale(0, 0, scaling_ratio);
+            Wtriangle2.neighbors = Wtriangle2.neighbors.slice(0, 3);
             Wtriangle2.limit = 3;
             newtiles.push(Wtriangle2);
 
@@ -94,6 +97,7 @@ function substitutionTriHex(tile){
             new_bounds.push(bounds[2], bounds[3]);
             Btriangle1.bounds = new_bounds;
             Btriangle1.scale(0, 0, scaling_ratio);
+            Btriangle1.neighbors = Btriangle1.neighbors.slice(0, 3);
             Btriangle1.limit = 3;
             newtiles.push(Btriangle1);
             
@@ -136,6 +140,7 @@ function substitutionTriHex(tile){
             Btriangle1.bounds = new_bounds;
             Btriangle1.scale(0, 0, scaling_ratio);
             Btriangle1.limit = 3;
+            Btriangle1.neighbors = Btriangle1.neighbors.slice(0, 3);
             newtiles.push(Btriangle1);
 
             // new Btriangle2
@@ -149,6 +154,7 @@ function substitutionTriHex(tile){
             Btriangle2.bounds = new_bounds;
             Btriangle2.scale(0, 0, scaling_ratio);
             Btriangle2.limit = 3;
+            Btriangle2.neighbors = Btriangle1.neighbors.slice(0, 3);
             newtiles.push(Btriangle2);
 
             // new Wtriangle1
@@ -163,6 +169,7 @@ function substitutionTriHex(tile){
             Wtriangle1.bounds = new_bounds;
             Wtriangle1.scale(0, 0, scaling_ratio);
             Wtriangle1.limit = 3;
+            Wtriangle1.neighbors = Wtriangle1.neighbors.slice(0, 3);
             newtiles.push(Wtriangle1);
             
             // new Wtriangle2
@@ -254,18 +261,28 @@ function neighborsTriHex(tiles,tilesdict,newtiles,newtilesdict,newdup){
             setNeighbor(newtilesdict,tile.id,'W2','Wtriangle',0,tile.id,'B2','Btriangle');
             // neighbor 1
             if(tile.neighbors[0] != undefined){
+
                 switch(tile.neighbors[0][0]){
                     case 'Wtriangle':
                         setNeighbor(newtilesdict,tile.id,'W2','Wtriangle',1,tile.neighbors[0],'B1','Btriangle');
+                        break;
                     case 'Btriangle':
-                        setNeighbor(newtilesdict,tile.id,'W2','Wtriangle',1,tile.neighbors[0],'B2','Btriangle');
+                        if(tile.neighbors.length == 4 || tile.id[tile.id.length - 1] == "W1"){
+                            setNeighbor(newtilesdict,tile.id,'W2','Wtriangle',1,tile.neighbors[0],'B2','Btriangle')
+                        }
+                        else {
+                            setNeighbor(newtilesdict,tile.id,'W2','Wtriangle',1,tile.neighbors[0],'B1','Btriangle');
+                        }
+                        break;
                 }
             }
+
             else{
                 setNeighborUndefined(newtilesdict,tile.id,'W2','Wtriangle',1);
             }
             // neighbor 2
             setNeighbor(newtilesdict,tile.id,'W2','Wtriangle',2,tile.id,'B1','Btriangle')
+
             //
             // new Btriangle 1
             //
@@ -310,9 +327,7 @@ function neighborsTriHex(tiles,tilesdict,newtiles,newtilesdict,newdup){
                 else{
                     setNeighborUndefined(newtilesdict,tile.id,'B2','Btriangle',3);
                 }
-
             }
-            
             //
             // done
             //
@@ -364,10 +379,17 @@ function neighborsTriHex(tiles,tilesdict,newtiles,newtilesdict,newdup){
             // neighbor 1
             if(tile.neighbors[0] != undefined){
                 switch(tile.neighbors[0][0]){
-                case 'Btriangle':
-                    setNeighbor(newtilesdict,tile.id,'B2','Btriangle',1,tile.neighbors[0],'W1','Wtriangle');
-                case 'Wtriangle':
-                    setNeighbor(newtilesdict,tile.id,'B2','Btriangle',1,tile.neighbors[0],'W2','Wtriangle');
+                    case 'Btriangle':
+                        setNeighbor(newtilesdict,tile.id,'B2','Btriangle',1,tile.neighbors[0],'W1','Wtriangle');
+                        break;
+                    case 'Wtriangle':
+                        if(tile.neighbors.length == 4 || tile.id[tile.id.length - 1] == "B1"){
+                            setNeighbor(newtilesdict,tile.id,'B2','Btriangle',1,tile.neighbors[0],'W2','Wtriangle');
+                        }
+                        else {
+                            setNeighbor(newtilesdict,tile.id,'B2','Btriangle',1,tile.neighbors[0],'W1','Wtriangle');
+                        }
+                        break;
                 }
             }
             else{
