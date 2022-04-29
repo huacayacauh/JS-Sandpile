@@ -1,7 +1,14 @@
+//Create the dual tiling of th given tiling
+
+//il reste encore à obtimiser l'algorithme:
+//- suprimer l'utilistion de parcouru et non parcouru en selectionnant à la ligne 20
+//les sommet que l'on parcour plus efficacement (liste à récuprer dans create id)
+
+//- chercher les sommets dans idProche plus efficacment (recherche dans les neighbor plutot que dans la liste des sommet parcouru) 
+
 function dualTiling(tiling){
-	//crée le pavage dual associé à tiling
 	let newTils = [];
-	//marg erreur sert à éviter les erreurs d'arrondi entre les bordures du pavage initiale
+	//margeErreur sert à éviter les erreurs d'arrondi entre les bordures du pavage initiale
   let margeErreur = dualDistance(coordVertex(tiling, 0, 0), coordVertex(tiling, 0, 1))/30;
   
   let newBounds = createNewBounds(tiling);
@@ -153,7 +160,7 @@ function coordVertex(tiling, i, j){
 	return [tiling.tiles[i].bounds[2*j], tiling.tiles[i].bounds[2*j +1]];
 }
 
-//calcule la distance entre deux sommets en norme infini
+//calcule la distance entre deux sommets en norme infini (elle s'appelle dual seulement pour eviter ls conflit de variable)
 function dualDistance(coord1, coord2){
   let sq = 0;
   for(var i=0; i<coord1.length; i++){
