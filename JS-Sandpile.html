@@ -99,6 +99,7 @@
 						<option value="pythagorean">Pythagorean</option>
 						<option value="truncSq">Truncated Square</option>
 						<option value="cairoPenta">Cairo Pentagonal</option>
+						<option value="triHexTiling">TriHexagonal</option>
 					</optgroup>
 				  
 				</select>
@@ -107,6 +108,9 @@
 					<input type="file" id="inputCustom" accept=".png,.jpg,.jpeg,.bmp" style="display:none;" />
 				</form>-->
 			<button onclick='drawTiling()' style="margin-left:25px; font-weight:bold;" class="btn btn-default">Make Tiling</button>
+			<br>
+
+			<button onclick='drawDual()' style="margin-left:140px; font-weight:bold;" class="btn btn-default">Make Dual</button>
 			<br>
 			
 
@@ -360,6 +364,7 @@
     <script src="./js/Utils/Matrix.js"></script>
     <script src="./js/Utils/Combinatorics.js"></script>
 	<script src="./js/Utils/gpu-browser.min.js"></script>
+	<script src="./js/Utils/dualTiling.js"></script>
 
 	<script src="./js/Tiling.js"></script>
 
@@ -371,6 +376,7 @@
 	<script src="./js/TilingPresets/Pythagorean.js"></script>
 	<script src="./js/TilingPresets/TruncSquare.js"></script>
 	<script src="./js/TilingPresets/CairoPentagonal.js"></script>
+	<script src="./js/TilingPresets/TriHexagonal.js"></script>
 	<script src="./js/TilingPresets/PenroseP0.js"></script>
 
     <script src="./js/TilingPresets/SubstitutionAPI.js"></script>
