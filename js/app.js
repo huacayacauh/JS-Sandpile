@@ -518,7 +518,6 @@ function drawTiling(){
 }
 
 function drawDual(){
-
 	while(app.scene.children.length > 0){
 		app.scene.remove(app.scene.children[0]);
 		console.log("cleared");
@@ -547,8 +546,6 @@ function drawDual(){
 	};
 	render();
 }
-
-
 
 function redraw(){
 	while(app.scene.children.length > 0){
