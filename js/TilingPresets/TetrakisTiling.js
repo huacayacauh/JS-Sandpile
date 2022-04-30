@@ -63,5 +63,5 @@ Tile.tetrakisTile = function(x, y, width, height, index){
 	neighbors.push([x, y, (index + 1) % 4]);
 	neighbors.push([x, y, (index + 3) % 4]);
 
-	return new Tile(id, neighbors, bounds, 4);
+	return new Tile(id, neighbors, bounds, 3);
 }

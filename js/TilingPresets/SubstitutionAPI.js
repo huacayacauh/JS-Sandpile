@@ -465,11 +465,12 @@ function findNeighbors(tiles,tilesdict,n2b){
   });
   // check if consecutive elements are identical => new neighbors!
   // (hypothesis: no three consecutive elements are identical)
+
   var fn = 0;
   for(let i=0; i<segments.length-1; i++){
     // check if points are identical (up to p_error)
-    if(  distance(segments[i][0],segments[i][1],segments[i+1][0],segments[i+1][1])<p_error
-      && distance(segments[i][2],segments[i][3],segments[i+1][2],segments[i+1][3])<p_error){
+    if( (distance(segments[i][0],segments[i][1],segments[i+1][0],segments[i+1][1])<p_error
+      && distance(segments[i][2],segments[i][3],segments[i+1][2],segments[i+1][3])<p_error)){
       // found two identical segments => set neighbors
       fn++;
       let ts1=segmentsMap.get(segment2key(segments[i]));
@@ -480,6 +481,7 @@ function findNeighbors(tiles,tilesdict,n2b){
       i++;
     }
   }
+
   // done
   return fn; // side effect
 }
