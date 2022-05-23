@@ -61,6 +61,9 @@
 						<option value="PenroseCutandproject">Penrose P3 (rhomb)</option>
 						<option value="AmmannBeenkerCutandproject">Ammann-Beenker</option>
 						<option value="TwelveFoldCutandproject">12-fold</option>
+						<option value="TwelveFoldCutandproject_sym">12-fold (offset 1/2)</option>
+						<option value="nfold_simple"> n-fold (automatic)</option>
+						<option value="nfold_custom"> n-fold (custom)</option>
 						<option value="GoldenOctogonalCutandproject">Golden octogonal (random shift)</option>
 						<option value="RauzyCutandproject">Rauzy (random shift)</option>
 					</optgroup>
@@ -126,8 +129,19 @@
 				
 				<span id="p_size" style="display:none;">
 				Size : 
-					<input type="number" id="size" min="0" value="20" style="width: 50px;" />
+					<input type="number" id="size" min="0" value="5" style="width: 50px;" />
 				<br></span>
+
+				<span id="p_order" style="display:none;">
+				Order :
+					<input type="number" id="order" min="3" value="5" style="width=50px;" />
+				<br> </span>
+				<!--
+				<span id="p_offset" style="display:none;">
+				Offset :
+					<input type="number" id="offset" min="0" value="0.5" style="width=50px;"/>
+				<br> </span>
+				-->
 
 				<!-- Penrose controls -->
 				<span id="p_iterations" style="display:none;">

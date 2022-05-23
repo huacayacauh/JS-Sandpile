@@ -481,6 +481,7 @@ function drawTiling(){
 	cH = document.getElementById("cH").value;
 	
 	var size = document.getElementById("size").value;
+	var order = document.getElementById("order").value;
 
 	selectedTile = null;
 	
@@ -488,7 +489,7 @@ function drawTiling(){
 
 	var nbIt = document.getElementById("penroseIt").value;
 	
-	var command = "currentTiling = Tiling." + preset + "({height:cH, width:cW, iterations:nbIt, size:size})";
+	var command = "currentTiling = Tiling." + preset + "({height:cH, width:cW, iterations:nbIt, size:size, order:order})";
 	
         console.log("BEGIN construct a new Tiling");
 	eval(command);
