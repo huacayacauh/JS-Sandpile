@@ -120,12 +120,26 @@ function cropn(tiles_info,k){
   tiles_info_croped = [];
   for(let tile of tiles_info){
     // note that coord are integers
-    let outside = tile[1].filter(coord => Math.abs(coord+1/2)>k);
-    if(outside.length==0){
+    let m_abs_coord = max_abs_coord_vertices_rn(tile);
+    if(m_abs_coord <= k){
       tiles_info_croped.push(tile);
     }
   }
   return tiles_info_croped;
+}
+
+// compute the maximum absolute value of the coordinates of the vertices of the tiles in RR^n
+function max_abs_coord_vertices_rn(tile){
+  let pos = tile[1];
+  let m_abs = 0; // max absolute value
+  for (let i=0; i< pos.length; i++) {
+    m_abs = Math.max(m_abs, Math.abs(pos[i]));
+  }
+  for (let a of[[0,0],[0,1],[1,1],[1,0]]) {
+    m_abs = Math.max(m_abs, Math.abs(pos[tile[0][0]]+a[0]));
+    m_abs = Math.max(m_abs, Math.abs(pos[tile[0][1]]+a[1]));
+  }
+  return m_abs
 }
 
 //
@@ -236,7 +250,7 @@ Tiling.TwelveFoldCutandproject = function({size}={}){
   // for each line: 2 coordinates of normal vector, shift, number of lines
   console.log("* set directions and shift");
   let tf_dir = generators_to_grid([[2,b,1,0,-1,-b],[0,1,b,2,b,1]]);
-  let tf_shift = [1/3,1/3,1/3,1/3,1/3,1/3];
+  let tf_shift = [1/2,1/2,1/2,1/2,1/2,1/2];
   let tf_draw = tf_dir;
   // construct tiles information
   console.log("* compute tiles information as multigrid dual");
