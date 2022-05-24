@@ -408,10 +408,10 @@ Tiling.nfold_simple = function({size, order}={}){
 Tiling.fourfold_debug = function({size, order}={}){
   console.log("Generating a simple multigrid tiling with global n-fold rotational symmetry");
   // if the order n is odd we compute the n-fold multigrid with offset 1/n, othewise we compute the n/2-fold multigrid with offset 1/2
-  size = 5;
+  size = 1;
   order = 8;
   dim = 4;
-  offset = 1/2;
+  offset = 0.1;
   theta = Math.PI / 4;
 //   //order = parseInt(order);
 //   if (order % 2 == 1){
@@ -428,28 +428,63 @@ Tiling.fourfold_debug = function({size, order}={}){
   console.log("* set directions and shift *");
   dir_one = [];
   dir_two = [];
-  nfold_draw = [];
+  // nfold_draw = [];
   for (let i = 0; i< dim; i++){
     dir_one.push(Math.cos(i*theta));
     dir_two.push(Math.sin(i*theta));
-    nfold_draw.push([Math.cos(i*theta), Math.sin(i*theta)]);
+    // nfold_draw.push([Math.cos(i*theta), Math.sin(i*theta)]);
   }
   console.log(dir_one, dir_two);
   let nfold_dir = generators_to_grid([dir_one, dir_two]);
   console.log(nfold_dir);
-  let nfold_shift = Array(dim).fill(offset);
+  let nfold_shift = [0.5, 0.5, 0.5 , 0.5];
   console.log(nfold_shift);
-  // // let nfold_draw = nfold_dir;
+  let nfold_draw = nfold_dir;
   console.log(nfold_draw);
   //construct tiles information
   console.log("* compute tiles information as multigrid dual*");
   let tiles_info = dual2(nfold_dir, nfold_shift, size);
   console.log(" "+tiles_info.length+" tiles");
   // crop to the hypercupe size^n
-  let tiles_info_croped = cropn(tiles_info, size);
+  let tiles_info_croped = tiles_info; // cropn(tiles_info, size);
   console.log(" "+tiles_info_croped.length+" tiles");
   console.log("* compute 2d tiles *");
-  let tiles = draw2(nfold_draw, tiles_info_croped);
+  let tiles_23 = [];
+  let tiles_other = [];
+  for (let x of tiles_info_croped){
+    if (x[0][0]==2 && x[0][1]==3) {
+      tiles_23.push(x);
+      console.log("add tile : "+x);
+    } else {
+      tiles_other.push(x);
+    }
+  }
+// we have an error because :
+//   tiles_23 == [ [[2, 3], (-1, -1, -1, -1)],
+//                 [[2, 3], (-2, -2, -1, 0)],
+//                 [[2, 3], (-4, -3, -1, 1)],
+//                 [[2, 3], (2, 2, 0, -1)],
+//                 [[2, 3], (1, 1, 0, 0)],
+//                 [[2, 3], (-1, 0, 0, 1)],
+//                 [[2, 3], (5, 5, 1, -1)],
+//                 [[2, 3], (4, 4, 1, 0)],
+//                 [[2, 3], (2, 3, 1, 1)]]
+// but we should have
+// [[[2, 3], (0, 0, -1, -1)],
+//  [[2, 3], (-1, -1, -1, 0)],
+//  [[2, 3], (-3, -2, -1, 1)],
+//  [[2, 3], (1, 1, 0, -1)],
+//  [[2, 3], (0, 0, 0, 0)],
+//  [[2, 3], (-2, -1, 0, 1)],
+//  [[2, 3], (2, 3, 1, -1)],
+//  [[2, 3], (1, 2, 1, 0)],
+//  [[2, 3], (-1, 1, 1, 1)]]
+  let tiles_23_fixed = [[[2, 3], [0, 0, -1, -1]], [[2, 3], [-1, -1, -1, 0]], [[2, 3], [-3, -2, -1, 1]], [[2, 3], [1, 1, 0, -1]], [[2, 3], [0, 0, 0, 0]], [[2, 3], [-2, -1, 0, 1]], [[2, 3], [2, 3, 1, -1]], [[2, 3], [1, 2, 1, 0]], [[2, 3], [-1, 1, 1, 1]]];
+  for (let t of tiles_23_fixed){
+    tiles_other.push(t);
+  }
+  let tiles_other_croped = cropn(tiles_other, 1);
+  let tiles = draw2(nfold_draw, tiles_other_croped);
   // find neighbors with findNeighbors from SubstitutionAPI
   console.log("* find neighbors (using findNeighbors from SubstitutionAPI)");
   resetAllNeighbors(tiles);
@@ -464,11 +499,9 @@ Tiling.fourfold_debug = function({size, order}={}){
   console.log("  found "+fn);
   // decorate tiles
   console.log("* decorate tiles");
-  let idkey_colored = [[0,2],[1,3]].map(t => id2key(t));
+  // let idkey_colored = [[0,2],[1,3]].map(t => id2key(t));
   tiles.forEach(tile => {
-    if(idkey_colored.includes(tile.id[0])){
-      tile.sand=1;
-    }
+      tile.sand=0;
   });
 // // copied from Penrose
 //   let tilesdict = new Map(tiles.map(i => [id2key(i.id), i]));
