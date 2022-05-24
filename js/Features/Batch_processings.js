@@ -410,14 +410,16 @@ function batch_identities_diff(){
   console.log("batch compute identities to compute differences...");
   let rid = confirm("Compute the identity difference for\n"
                    //+"** Square grid 50 to 250, step 50\n"
-                   +"** Square grid 200 to 210, step 2\n"
+                   //+"** Square grid 200 to 210, step 2\n"
                    //+"* Triangular grid 50 to 250 step 50\n"
                    //+"* Hexagonal grid 50 to 250 step 50\n"
-                   //+"** Ammann-Benker substitution 1 to 5\n"
+                   //+"** Ammann-Beenker substitution 1 to 5\n"
                    //+"** P3 substitution sun 1 to 8 iterations (order 4)\n"
                    //+"** P2 substitution sun 1 to 8 iterations (order 4)\n"
                    //+"** P2 substitution star 1 to 8 iterations (order 4)\n"
-                   //+"TODO: cut and project need to be croped nicely by Victor first\n"
+                   //+"** P2 cut and project size 1 to 20\n"
+                   //+"** Ammann-Beenker cut and project size 1 to 20\n"
+                   +"* 12-fold cut and project size 1 to 20\n"
                    +"?");
   if(rid == false){
     // cancel: abort
@@ -456,6 +458,7 @@ function batch_identities_diff(){
   }
   */
   // Square grid 200 to 210, step 2
+  /*
   console.log("* Square grid 200 to 210, step 2");
   currentTiling = Tiling.sqTiling({width:200,height:200});
   currentTiling.clear();
@@ -474,9 +477,10 @@ function batch_identities_diff(){
     tiling2.addConfiguration(tiling2.get_identity());
     tiling1 = tiling2;
   }
-  // Ammann-Benker substitution 1 to 5
+  */
+  // Ammann-Beenker substitution 1 to 5
   /*
-  console.log("* Ammann-Benker substitution 1 to 5");
+  console.log("* Ammann-Beenker substitution 1 to 5");
   currentTiling = Tiling.A5bysubst({iterations:1});
   currentTiling.clear();
   currentTiling.addConfiguration(currentTiling.get_identity());
@@ -486,7 +490,7 @@ function batch_identities_diff(){
     currentTiling.clear();
     currentTiling.addConfiguration(currentTiling.get_identity());
     tiling2 = currentTiling;
-    link.download = "AmmannBenkerSubst-diff-"+(n-1)+"-"+n+"-id.tex";
+    link.download = "AmmannBeenkerSubst-diff-"+(n-1)+"-"+n+"-id.tex";
     link.href = tilingToTIKZ(tilingDiff(tiling1,tiling2));
     link.click();
     // restore identity
@@ -546,6 +550,67 @@ function batch_identities_diff(){
     link.click();
   }
   */
+  // P2 cut and project size 1 to 20
+  /*
+  console.log("* P2 cut and project size 1 to 20");
+  currentTiling = Tiling.PenroseCutandproject({size:1});
+  currentTiling.clear();
+  currentTiling.addConfiguration(currentTiling.get_identity());
+  tiling1 = currentTiling;
+  for(let n=2; n<=20; n++){
+    currentTiling = Tiling.PenroseCutandproject({size:n});
+    currentTiling.clear();
+    currentTiling.addConfiguration(currentTiling.get_identity());
+    tiling2 = currentTiling;
+    link.download = "P2CutAndProject-diff-"+(n-1)+"-"+n+"-id.tex";
+    link.href = tilingToTIKZ(tilingDiff(tiling1,tiling2));
+    link.click();
+    // restore identity
+    tiling2.clear();
+    tiling2.addConfiguration(tiling2.get_identity());
+    tiling1 = tiling2;
+  }
+  */
+  // Ammann-Benker cut and project size 1 to 20
+  /*
+  console.log("* Ammann-Benker cut and project size 1 to 20");
+  currentTiling = Tiling.AmmannBeenkerCutandproject({size:1});
+  currentTiling.clear();
+  currentTiling.addConfiguration(currentTiling.get_identity());
+  tiling1 = currentTiling;
+  for(let n=2; n<=20; n++){
+    currentTiling = Tiling.AmmannBeenkerCutandproject({size:n});
+    currentTiling.clear();
+    currentTiling.addConfiguration(currentTiling.get_identity());
+    tiling2 = currentTiling;
+    link.download = "AmmannBeenkerCutAndProject-diff-"+(n-1)+"-"+n+"-id.tex";
+    link.href = tilingToTIKZ(tilingDiff(tiling1,tiling2));
+    link.click();
+    // restore identity
+    tiling2.clear();
+    tiling2.addConfiguration(tiling2.get_identity());
+    tiling1 = tiling2;
+  }
+  */
+  // 12-fold cut and project size 1 to 20
+  console.log("* 12-fold cut and project size 1 to 20");
+  currentTiling = Tiling.TwelveFoldCutandproject({size:1});
+  currentTiling.clear();
+  currentTiling.addConfiguration(currentTiling.get_identity());
+  tiling1 = currentTiling;
+  for(let n=2; n<=20; n++){
+    currentTiling = Tiling.TwelveFoldCutandproject({size:n});
+    currentTiling.clear();
+    currentTiling.addConfiguration(currentTiling.get_identity());
+    tiling2 = currentTiling;
+    link.download = "TwelveFoldCutAndProject-diff-"+(n-1)+"-"+n+"-id.tex";
+    link.href = tilingToTIKZ(tilingDiff(tiling1,tiling2));
+    link.click();
+    // restore identity
+    tiling2.clear();
+    tiling2.addConfiguration(tiling2.get_identity());
+    tiling1 = tiling2;
+  }
   // done
   console.log("done");
 }
