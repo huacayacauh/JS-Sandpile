@@ -62,8 +62,7 @@
 						<option value="AmmannBeenkerCutandproject">Ammann-Beenker</option>
 						<option value="TwelveFoldCutandproject">12-fold</option>
 						<option value="TwelveFoldCutandproject_sym">12-fold (offset 1/2)</option>
-						<option value="nfold_simple"> n-fold (automatic)</option>
-						<option value="fourfold_debug" selected> 4-fold (debug, tmp) </option>
+						<option value="nfold_simple" selected > n-fold (automatic)</option>
 						<!-- to implement later TODO
 						<option value="nfold_custom"> n-fold (custom)</option>
 						-->
@@ -120,22 +119,22 @@
 			<p class="groupTitle" id="paramTitle">Parameters</p>
 			<!-- Square controls -->
 			<div id="paramHide">
-				<span id="p_width">
+				<span id="p_width" style="display:none">
 				Width :
 					<input type="number" id="cW" min="0" value="100" style="width: 50px;" />
 				</span>
 
-				<span id="p_height">
+				<span id="p_height" style="display:none">
 				&nbsp; &nbsp; Height :
 					<input type="number" id="cH" min="0" value="100" style="width: 50px;" />
 				<br></span>
 
-				<span id="p_size" style="display:none;">
+				<span id="p_size"> <!--  style="display:none;"> -->
 				Size :
 					<input type="number" id="size" min="0" value="5" style="width: 50px;" />
 				<br></span>
 
-				<span id="p_order" style="display:none;">
+				<span id="p_order"> <!-- style="display:none;"> -->
 				Order :
 					<input type="number" id="order" min="3" value="5" style="width=50px;" />
 				<br> </span>
