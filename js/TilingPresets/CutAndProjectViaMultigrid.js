@@ -116,12 +116,14 @@ function draw2(directions,tiles_info){
 // [4]
 // Crop tiling (as tiles_info) in order to keep only tiles "living"
 // within the lines of index +-k
-// todo: understand and modify TODO TODO
 function cropn(tiles_info,k){
   tiles_info_croped = [];
   for(let tile of tiles_info){
     // note that coord are integers
     // let outside = tile[1].filter(coord => Math.abs(coord+1/2)>k); // old_method
+    // if(outside.length==0){
+    //  tiles_info_croped.push(tile);
+    // }
     let m_abs_coord = max_abs_coord_vertices_rn(tile);
     if(m_abs_coord <= k){
       tiles_info_croped.push(tile);
@@ -214,11 +216,11 @@ Tiling.AmmannBeenkerCutandproject = function({size}={}){
   let ab_draw = ab_dir;
   // construct tiles information
   console.log("* compute tiles information as multigrid dual");
-  let tiles_info = dual2(ab_dir,ab_shift,size); // TODO understand creation de la liste de tuiles par dualité
+  let tiles_info = dual2(ab_dir,ab_shift,size);
   console.log("  "+tiles_info.length+" tiles");
   // crop to the projection of the hypercude +-size^4
   console.log("* crop to the projection of the hypercube +-size^4");
-  let tiles_info_croped = cropn(tiles_info,size); // TODO understand
+  let tiles_info_croped = cropn(tiles_info,size);
   console.log("  "+tiles_info_croped.length+" tiles");
   // construct tiles
   console.log("* compute 2d tiles");
@@ -342,7 +344,8 @@ Tiling.TwelveFoldCutandproject_sym = function({size}={}){
   return new Tiling(tiles);
 }
 
-// n-fold simple : computes a tiling with global n-fold rotational symmetry //TODO
+// n-fold simple : computes a tiling with global n-fold rotational symmetry
+//TODO : there is a BUG when order is a multiple of 4, TODO fix the bug
 Tiling.nfold_simple = function({size, order}={}){
   console.log("Generating a simple multigrid tiling with global n-fold rotational symmetry");
   // if the order n is odd we compute the n-fold multigrid with offset 1/n, othewise we compute the n/2-fold multigrid with offset 1/2
@@ -479,10 +482,12 @@ Tiling.fourfold_debug = function({size, order}={}){
 //  [[2, 3], (2, 3, 1, -1)],
 //  [[2, 3], (1, 2, 1, 0)],
 //  [[2, 3], (-1, 1, 1, 1)]]
+  console.log("tiles of type [2,3] : "+ tiles_23);
   let tiles_23_fixed = [[[2, 3], [0, 0, -1, -1]], [[2, 3], [-1, -1, -1, 0]], [[2, 3], [-3, -2, -1, 1]], [[2, 3], [1, 1, 0, -1]], [[2, 3], [0, 0, 0, 0]], [[2, 3], [-2, -1, 0, 1]], [[2, 3], [2, 3, 1, -1]], [[2, 3], [1, 2, 1, 0]], [[2, 3], [-1, 1, 1, 1]]];
-  for (let t of tiles_23_fixed){
-    tiles_other.push(t);
-  }
+  console.log("what it should be : "+tiles_23_fixed);
+//   for (let t of tiles_23_fixed){
+//     tiles_other.push(t);
+//   }
   let tiles_other_croped = cropn(tiles_other, 1);
   let tiles = draw2(nfold_draw, tiles_other_croped);
   // find neighbors with findNeighbors from SubstitutionAPI
