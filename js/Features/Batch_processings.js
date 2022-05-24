@@ -294,3 +294,260 @@ async function batch_frontiers_identities(identities){
   export_frontierTikz();
 }
 
+
+//
+// [4] expot some identities differences to tikz
+//
+
+// rounding error when comparing coordinates
+var p_error_diff=0.01;
+
+// return minimum (x,y) among bounds
+// used as "let [xmin,ymin] = minimumBounds(bounds)"
+function minimumBounds(bounds){
+  let x = bounds[0];
+  let y = bounds[1];
+  for(let i=2; i<bounds.length; i+=2){
+    if(bounds[i]-x<=p_error_diff){
+      if(bounds[i+1]-y<=p_error_diff){
+        x = bounds[i];
+        y = bounds[i+1];
+      }
+    }
+  }
+  return [x, y];
+}
+
+// order the tiles by smallest minimum (x,y)
+// takes into account rounding errors (up to p_error_diff)
+function compareTileBounds(tile1,tile2){
+  let [xmin1,ymin1] = minimumBounds(tile1.bounds);
+  let [xmin2,ymin2] = minimumBounds(tile2.bounds);
+  if(Math.abs(xmin1-xmin2)>p_error_diff){
+    return xmin1-xmin2;
+  }
+  return ymin1-ymin2;
+}
+
+// return true when the two tiles have the same SET of bounds, false otherwise
+function sameTile(tile1,tile2){
+  if(tile1.bounds.length != tile2.bounds.length){ return false;}
+  for(i=0; i<tile1.bounds.length; i+=2){
+    let found = false;
+    for(j=0; j<tile2.bounds.length; j+=2){
+      if(Math.abs(tile1.bounds[i]-tile2.bounds[j])<=p_error_diff &&
+        Math.abs(tile1.bounds[i+1]-tile2.bounds[j+1])<=p_error_diff){
+        found = true;
+        break;
+      }
+    }
+    if(!found){ return false; }
+  }
+  return true;
+}
+
+// TODO: minimumBounds is used crazily too ofter, it should be kept in a Map
+
+// return the diff of two tilings
+// tiling1 is supposed to be included in tiling2
+// both sandpiles are supposed to be stable
+// tiling2 is returned with difference marked by .sand = .limit
+function tilingDiff(tiling1,tiling2){
+  let p_error=0.01;
+  // order the tiles by smallest minimum (x,y)
+  tiling1.tiles.sort(compareTileBounds);
+  tiling2.tiles.sort(compareTileBounds);
+  // parse the list of tiles1 and look for each of them in tiles2
+  // mark the correspondance in the identifier map same
+  let same = new Map(); // id1 -> id2
+  let i2 = 0;// retains the current position in tiles2 to optimize search
+  tiling1.tiles.forEach(tile1 => {
+    let [xmin1,ymin1] = minimumBounds(tile1.bounds);
+    let [xmin2,ymin2] = minimumBounds(tiling2.tiles[i2].bounds);
+    if(Math.abs(xmin1-xmin2)>p_error_diff){
+      // time to move i2 onward
+      while(i2<tiling2.tiles.length-1 && Math.abs(xmin1-minimumBounds(tiling2.tiles[i2].bounds)[0])>p_error_diff){
+        i2+=1;
+      }
+    }
+    // compare tile1 with the tiles at i2 onward with the same x
+    for(let i2bis=i2; i2bis<tiling2.tiles.length && Math.abs(xmin1-minimumBounds(tiling2.tiles[i2bis].bounds)[0])<=p_error_diff && minimumBounds(tiling2.tiles[i2bis].bounds)[1]-ymin1<=p_error_diff; i2bis+=1){
+      // are tile1 and tiling2.tiles[i2bis] the same ?
+      if(sameTile(tile1,tiling2.tiles[i2bis])){
+        // mark it in same and go to next
+        same.set(tile1.id,tiling2.tiles[i2bis].id);
+        break;
+      }
+    }
+  });
+  // use the same map to change .sand of tiling2
+  // 0. sort again tiles by id
+  tiling1.tiles.sort((tile1,tile2) => tile1.id - tile2.id);
+  tiling2.tiles.sort((tile1,tile2) => tile1.id - tile2.id);
+  // 1. different sand content => .sand = .limit
+  same.forEach((id2,id1)=>{
+    if(tiling1.tiles[id1].sand != tiling2.tiles[id2].sand){
+      // contents are different
+      tiling2.tiles[id2].sand = tiling2.tiles[id2].limit;
+    }
+  });
+  // 2. do not exist in tiling1 => .sand = .limit+1
+  let same_rev = new Map(Array.from(same, entry => [entry[1], entry[0]])); // source: https://stackoverflow.com/a/56550600
+  tiling2.tiles.forEach(tile2 => {
+    if(!same_rev.has(tile2.id)){
+      // tile2 not in tiling1
+      tile2.sand = tile2.limit+1;
+    }
+  });
+  // 3. update tile colors
+  tiling2.cmap = []; // meuh :-(
+  tiling2.colorTiles();
+  // done
+  return tiling2;
+}
+
+function batch_identities_diff(){
+  console.log("batch compute identities to compute differences...");
+  let rid = confirm("Compute the identity difference for\n"
+                   //+"** Square grid 50 to 250, step 50\n"
+                   +"** Square grid 200 to 210, step 2\n"
+                   //+"* Triangular grid 50 to 250 step 50\n"
+                   //+"* Hexagonal grid 50 to 250 step 50\n"
+                   //+"** Ammann-Benker substitution 1 to 5\n"
+                   //+"** P3 substitution sun 1 to 8 iterations (order 4)\n"
+                   //+"** P2 substitution sun 1 to 8 iterations (order 4)\n"
+                   //+"** P2 substitution star 1 to 8 iterations (order 4)\n"
+                   //+"TODO: cut and project need to be croped nicely by Victor first\n"
+                   +"?");
+  if(rid == false){
+    // cancel: abort
+    console.log("abort");
+    return;
+  }
+  // ok
+  let link = document.getElementById('downloadlink');
+  // unlock files download...
+  console.log("* unlock files download");
+  currentTiling = Tiling.sqTiling({width:5,height:5});
+  currentTiling.clear();
+  currentTiling.addConfiguration(currentTiling.get_identity());
+  link.download = "trash.tex";
+  link.href = tilingToTIKZ(currentTiling);
+  link.click();
+  // Square grid 50 to 250, step 50
+  /*
+  console.log("* Square grid 50 to 250, step 50");
+  currentTiling = Tiling.sqTiling({width:50,height:50});
+  currentTiling.clear();
+  currentTiling.addConfiguration(currentTiling.get_identity());
+  tiling1 = currentTiling;
+  for(let n=100; n<=250; n+=50){
+    currentTiling = Tiling.sqTiling({width:n,height:n});
+    currentTiling.clear();
+    currentTiling.addConfiguration(currentTiling.get_identity());
+    tiling2 = currentTiling;
+    link.download = "SquareGrid-diff-"+(n-50)+"-"+n+"-id.tex";
+    link.href = tilingToTIKZ(tilingDiff(tiling1,tiling2));
+    link.click();
+    // restore identity
+    tiling2.clear();
+    tiling2.addConfiguration(tiling2.get_identity());
+    tiling1 = tiling2;
+  }
+  */
+  // Square grid 200 to 210, step 2
+  console.log("* Square grid 200 to 210, step 2");
+  currentTiling = Tiling.sqTiling({width:200,height:200});
+  currentTiling.clear();
+  currentTiling.addConfiguration(currentTiling.get_identity());
+  tiling1 = currentTiling;
+  for(let n=202; n<=210; n+=2){
+    currentTiling = Tiling.sqTiling({width:n,height:n});
+    currentTiling.clear();
+    currentTiling.addConfiguration(currentTiling.get_identity());
+    tiling2 = currentTiling;
+    link.download = "SquareGrid-diff-"+(n-2)+"-"+n+"-id.tex";
+    link.href = tilingToTIKZ(tilingDiff(tiling1,tiling2));
+    link.click();
+    // restore identity
+    tiling2.clear();
+    tiling2.addConfiguration(tiling2.get_identity());
+    tiling1 = tiling2;
+  }
+  // Ammann-Benker substitution 1 to 5
+  /*
+  console.log("* Ammann-Benker substitution 1 to 5");
+  currentTiling = Tiling.A5bysubst({iterations:1});
+  currentTiling.clear();
+  currentTiling.addConfiguration(currentTiling.get_identity());
+  tiling1 = currentTiling;
+  for(let n=2; n<=5; n++){
+    currentTiling = Tiling.A5bysubst({iterations:n});
+    currentTiling.clear();
+    currentTiling.addConfiguration(currentTiling.get_identity());
+    tiling2 = currentTiling;
+    link.download = "AmmannBenkerSubst-diff-"+(n-1)+"-"+n+"-id.tex";
+    link.href = tilingToTIKZ(tilingDiff(tiling1,tiling2));
+    link.click();
+    // restore identity
+    tiling2.clear();
+    tiling2.addConfiguration(tiling2.get_identity());
+    tiling1 = tiling2;
+  }
+  */
+  // P3 substitution sun 1 to 8 iterations (order 4)
+  /*
+  console.log("* P3 substitution sun 1 to 8 iterations (order 4)");
+  for(let n=1; n<=4; n++){
+    currentTiling = Tiling.P3sunbysubst({iterations:n});
+    currentTiling.clear();
+    currentTiling.addConfiguration(currentTiling.get_identity());
+    tiling1 = currentTiling;
+    currentTiling = Tiling.P3sunbysubst({iterations:(n+4)});
+    currentTiling.clear();
+    currentTiling.addConfiguration(currentTiling.get_identity());
+    tiling2 = currentTiling;
+    link.download = "P3SunSubst-diff-"+n+"-"+(n+4)+"-id.tex";
+    link.href = tilingToTIKZ(tilingDiff(tiling1,tiling2));
+    link.click();
+  }
+  */
+  // P2 substitution sun 1 to 8 iterations (order 4)
+  /*
+  console.log("* P2 substitution sun 1 to 8 iterations (order 4)");
+  for(let n=1; n<=4; n++){
+    currentTiling = Tiling.P2sunbysubst({iterations:n});
+    currentTiling.clear();
+    currentTiling.addConfiguration(currentTiling.get_identity());
+    tiling1 = currentTiling;
+    currentTiling = Tiling.P2sunbysubst({iterations:(n+4)});
+    currentTiling.clear();
+    currentTiling.addConfiguration(currentTiling.get_identity());
+    tiling2 = currentTiling;
+    link.download = "P2SunSubst-diff-"+n+"-"+(n+4)+"-id.tex";
+    link.href = tilingToTIKZ(tilingDiff(tiling1,tiling2));
+    link.click();
+  }
+  */
+  // P2 substitution star 1 to 8 iterations (order 4)
+  /*
+  console.log("* P2 substitution star 1 to 8 iterations (order 4)");
+  for(let n=1; n<=4; n++){
+    currentTiling = Tiling.P2starbysubst({iterations:n});
+    currentTiling.clear();
+    currentTiling.addConfiguration(currentTiling.get_identity());
+    tiling1 = currentTiling;
+    currentTiling = Tiling.P2starbysubst({iterations:(n+4)});
+    currentTiling.clear();
+    currentTiling.addConfiguration(currentTiling.get_identity());
+    tiling2 = currentTiling;
+    link.download = "P2StarSubst-diff-"+n+"-"+(n+4)+"-id.tex";
+    link.href = tilingToTIKZ(tilingDiff(tiling1,tiling2));
+    link.click();
+  }
+  */
+  // done
+  console.log("done");
+}
+
+
