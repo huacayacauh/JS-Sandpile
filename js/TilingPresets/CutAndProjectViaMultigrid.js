@@ -403,6 +403,94 @@ Tiling.nfold_simple = function({size, order}={}){
   return new Tiling(tiles);
 }
 
+// n-fold simple : computes a tiling with global n-fold rotational symmetry //TODO
+// temporary function to debug the 4-fold case of the n-fold function
+Tiling.fourfold_debug = function({size, order}={}){
+  console.log("Generating a simple multigrid tiling with global n-fold rotational symmetry");
+  // if the order n is odd we compute the n-fold multigrid with offset 1/n, othewise we compute the n/2-fold multigrid with offset 1/2
+  size = 5;
+  order = 8;
+  dim = 4;
+  offset = 1/2;
+  theta = Math.PI / 4;
+//   //order = parseInt(order);
+//   if (order % 2 == 1){
+//     dim = order;
+//     offset = 1 / dim;
+//     theta = 2 * Math.PI / order;
+//   }
+//   else {
+//     dim = order / 2;
+//     offset = 1 / 2 ;
+//     theta = 2 * Math.PI / order;
+//   }
+  console.log("dim : "+dim+" ; offset: "+offset+" ; theta : "+theta);
+  console.log("* set directions and shift *");
+  dir_one = [];
+  dir_two = [];
+  nfold_draw = [];
+  for (let i = 0; i< dim; i++){
+    dir_one.push(Math.cos(i*theta));
+    dir_two.push(Math.sin(i*theta));
+    nfold_draw.push([Math.cos(i*theta), Math.sin(i*theta)]);
+  }
+  console.log(dir_one, dir_two);
+  let nfold_dir = generators_to_grid([dir_one, dir_two]);
+  console.log(nfold_dir);
+  let nfold_shift = Array(dim).fill(offset);
+  console.log(nfold_shift);
+  // // let nfold_draw = nfold_dir;
+  console.log(nfold_draw);
+  //construct tiles information
+  console.log("* compute tiles information as multigrid dual*");
+  let tiles_info = dual2(nfold_dir, nfold_shift, size);
+  console.log(" "+tiles_info.length+" tiles");
+  // crop to the hypercupe size^n
+  let tiles_info_croped = cropn(tiles_info, size);
+  console.log(" "+tiles_info_croped.length+" tiles");
+  console.log("* compute 2d tiles *");
+  let tiles = draw2(nfold_draw, tiles_info_croped);
+  // find neighbors with findNeighbors from SubstitutionAPI
+  console.log("* find neighbors (using findNeighbors from SubstitutionAPI)");
+  resetAllNeighbors(tiles);
+  // // copied from Ammann Beenker
+  resetAllNeighbors(tiles);
+  let tilesdict = new Map(tiles.map(i => [id2key(i.id), i]));
+  let neighbors2bounds = new Map();
+  for(let t of combinations(Array.from(Array(4).keys()),2)){
+    neighbors2bounds.set(id2key(t),default_neighbors2bounds(4));
+  }
+  let fn=findNeighbors(tiles,tilesdict,neighbors2bounds);
+  console.log("  found "+fn);
+  // decorate tiles
+  console.log("* decorate tiles");
+  let idkey_colored = [[0,2],[1,3]].map(t => id2key(t));
+  tiles.forEach(tile => {
+    if(idkey_colored.includes(tile.id[0])){
+      tile.sand=1;
+    }
+  });
+// // copied from Penrose
+//   let tilesdict = new Map(tiles.map(i => [id2key(i.id), i]));
+//   let neighbors2bounds = new Map();
+//   for(let t of combinations(Array.from(Array(dim).keys()),2)){
+//     neighbors2bounds.set(id2key(t),default_neighbors2bounds(4));
+//   }
+//   let fn=findNeighbors(tiles,tilesdict,neighbors2bounds);
+//   console.log("  found "+fn);
+//   // decorate tiles
+//   console.log("* decorate tiles");
+//   let idkey_colored = [[0,1],[1,2],[2,3],[3,4],[0,4]].map(t => id2key(t));
+//   tiles.forEach(tile => {
+//     if(idkey_colored.includes(tile.id[0])){
+//       tile.sand=1;
+//     }
+//   });
+  // done
+  console.log("done");
+  return new Tiling(tiles);
+}
+
 // [5.4] Golden octogonal
 Tiling.GoldenOctogonalCutandproject = function({size}={}){
   console.log("Generating Golden octogonal cut and project via multigrid...");  
