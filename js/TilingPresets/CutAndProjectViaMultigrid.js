@@ -34,11 +34,20 @@ function generators_to_grid(G){
   for(let i=0; i<n; i++){
     let newline = [];
     for(let j=0; j<d; j++){
-      newline.push(H[j][i]/vector_norm(H[j]));
+      newline.push(round_to_zero(H[j][i]/vector_norm(H[j])));
     }
     I.push(newline);
   }
   return I;
+}
+// due to the high sensibility of the inverse function to zero VS non-zero (even if very small) values we have had to add a round to zero function that rounds to zero the values below some precision
+function round_to_zero(x) {
+  precision = 1e-14;
+  if (Math.abs(x) < precision) {
+    return 0;
+  } else {
+    return x;
+  }
 }
 
 // [2]
@@ -345,7 +354,7 @@ Tiling.TwelveFoldCutandproject_sym = function({size}={}){
 }
 
 // n-fold simple : computes a tiling with global n-fold rotational symmetry
-//TODO : there is a BUG when order is a multiple of 4, TODO fix the bug
+// TODO add a function to color some of the tiles
 Tiling.nfold_simple = function({size, order}={}){
   console.log("Generating a simple multigrid tiling with global n-fold rotational symmetry");
   // if the order n is odd we compute the n-fold multigrid with offset 1/n, othewise we compute the n/2-fold multigrid with offset 1/2
@@ -395,139 +404,18 @@ Tiling.nfold_simple = function({size, order}={}){
   console.log("  found "+fn);
   // decorate tiles
   console.log("* decorate tiles");
-  let idkey_colored = [[0,1],[1,2],[2,3],[3,4],[0,4]].map(t => id2key(t));
-  tiles.forEach(tile => {
-    if(idkey_colored.includes(tile.id[0])){
-      tile.sand=1;
-    }
-  });
-  // done
-  console.log("done");
-  return new Tiling(tiles);
-}
-
-// n-fold simple : computes a tiling with global n-fold rotational symmetry //TODO
-// temporary function to debug the 4-fold case of the n-fold function
-Tiling.fourfold_debug = function({size, order}={}){
-  console.log("Generating a simple multigrid tiling with global n-fold rotational symmetry");
-  // if the order n is odd we compute the n-fold multigrid with offset 1/n, othewise we compute the n/2-fold multigrid with offset 1/2
-  size = 1;
-  order = 8;
-  dim = 4;
-  offset = 0.1;
-  theta = Math.PI / 4;
-//   //order = parseInt(order);
-//   if (order % 2 == 1){
-//     dim = order;
-//     offset = 1 / dim;
-//     theta = 2 * Math.PI / order;
-//   }
-//   else {
-//     dim = order / 2;
-//     offset = 1 / 2 ;
-//     theta = 2 * Math.PI / order;
-//   }
-  console.log("dim : "+dim+" ; offset: "+offset+" ; theta : "+theta);
-  console.log("* set directions and shift *");
-  dir_one = [];
-  dir_two = [];
-  // nfold_draw = [];
-  for (let i = 0; i< dim; i++){
-    dir_one.push(Math.cos(i*theta));
-    dir_two.push(Math.sin(i*theta));
-    // nfold_draw.push([Math.cos(i*theta), Math.sin(i*theta)]);
-  }
-  console.log(dir_one, dir_two);
-  let nfold_dir = generators_to_grid([dir_one, dir_two]);
-  console.log(nfold_dir);
-  let nfold_shift = [0.5, 0.5, 0.5 , 0.5];
-  console.log(nfold_shift);
-  let nfold_draw = nfold_dir;
-  console.log(nfold_draw);
-  //construct tiles information
-  console.log("* compute tiles information as multigrid dual*");
-  let tiles_info = dual2(nfold_dir, nfold_shift, size);
-  console.log(" "+tiles_info.length+" tiles");
-  // crop to the hypercupe size^n
-  let tiles_info_croped = tiles_info; // cropn(tiles_info, size);
-  console.log(" "+tiles_info_croped.length+" tiles");
-  console.log("* compute 2d tiles *");
-  let tiles_23 = [];
-  let tiles_other = [];
-  for (let x of tiles_info_croped){
-    if (x[0][0]==2 && x[0][1]==3) {
-      tiles_23.push(x);
-      console.log("add tile : "+x);
-    } else {
-      tiles_other.push(x);
-    }
-  }
-// we have an error because :
-//   tiles_23 == [ [[2, 3], (-1, -1, -1, -1)],
-//                 [[2, 3], (-2, -2, -1, 0)],
-//                 [[2, 3], (-4, -3, -1, 1)],
-//                 [[2, 3], (2, 2, 0, -1)],
-//                 [[2, 3], (1, 1, 0, 0)],
-//                 [[2, 3], (-1, 0, 0, 1)],
-//                 [[2, 3], (5, 5, 1, -1)],
-//                 [[2, 3], (4, 4, 1, 0)],
-//                 [[2, 3], (2, 3, 1, 1)]]
-// but we should have
-// [[[2, 3], (0, 0, -1, -1)],
-//  [[2, 3], (-1, -1, -1, 0)],
-//  [[2, 3], (-3, -2, -1, 1)],
-//  [[2, 3], (1, 1, 0, -1)],
-//  [[2, 3], (0, 0, 0, 0)],
-//  [[2, 3], (-2, -1, 0, 1)],
-//  [[2, 3], (2, 3, 1, -1)],
-//  [[2, 3], (1, 2, 1, 0)],
-//  [[2, 3], (-1, 1, 1, 1)]]
-  console.log("tiles of type [2,3] : "+ tiles_23);
-  let tiles_23_fixed = [[[2, 3], [0, 0, -1, -1]], [[2, 3], [-1, -1, -1, 0]], [[2, 3], [-3, -2, -1, 1]], [[2, 3], [1, 1, 0, -1]], [[2, 3], [0, 0, 0, 0]], [[2, 3], [-2, -1, 0, 1]], [[2, 3], [2, 3, 1, -1]], [[2, 3], [1, 2, 1, 0]], [[2, 3], [-1, 1, 1, 1]]];
-  console.log("what it should be : "+tiles_23_fixed);
-//   for (let t of tiles_23_fixed){
-//     tiles_other.push(t);
-//   }
-  let tiles_other_croped = cropn(tiles_other, 1);
-  let tiles = draw2(nfold_draw, tiles_other_croped);
-  // find neighbors with findNeighbors from SubstitutionAPI
-  console.log("* find neighbors (using findNeighbors from SubstitutionAPI)");
-  resetAllNeighbors(tiles);
-  // // copied from Ammann Beenker
-  resetAllNeighbors(tiles);
-  let tilesdict = new Map(tiles.map(i => [id2key(i.id), i]));
-  let neighbors2bounds = new Map();
-  for(let t of combinations(Array.from(Array(4).keys()),2)){
-    neighbors2bounds.set(id2key(t),default_neighbors2bounds(4));
-  }
-  let fn=findNeighbors(tiles,tilesdict,neighbors2bounds);
-  console.log("  found "+fn);
-  // decorate tiles
-  console.log("* decorate tiles");
-  // let idkey_colored = [[0,2],[1,3]].map(t => id2key(t));
-  tiles.forEach(tile => {
-      tile.sand=0;
-  });
-// // copied from Penrose
-//   let tilesdict = new Map(tiles.map(i => [id2key(i.id), i]));
-//   let neighbors2bounds = new Map();
-//   for(let t of combinations(Array.from(Array(dim).keys()),2)){
-//     neighbors2bounds.set(id2key(t),default_neighbors2bounds(4));
-//   }
-//   let fn=findNeighbors(tiles,tilesdict,neighbors2bounds);
-//   console.log("  found "+fn);
-//   // decorate tiles
-//   console.log("* decorate tiles");
 //   let idkey_colored = [[0,1],[1,2],[2,3],[3,4],[0,4]].map(t => id2key(t));
 //   tiles.forEach(tile => {
 //     if(idkey_colored.includes(tile.id[0])){
 //       tile.sand=1;
 //     }
 //   });
+  tiles.forEach(tile=>{ tile.sand=0; });
   // done
   console.log("done");
   return new Tiling(tiles);
 }
+
 
 // [5.4] Golden octogonal
 Tiling.GoldenOctogonalCutandproject = function({size}={}){
