@@ -123,8 +123,10 @@ function draw2(directions,tiles_info){
 }
 
 // [4]
-// Crop tiling (as tiles_info) in order to keep only tiles "living"
-// within the lines of index +-k
+// Crop tiling (as tiles_info), three available methods for cropping
+//    maxCoord : keep only tiles whose maximum abs value of the coordinates of the vertices is at most k
+//    sumCoord : keep only tiles whose maximum sum of the abs value of the coordinates of the vertices is at most k
+//    euclideanNorm : keep only tiles whose maximum euclidean norm of the vertices is at most k
 function cropn(tiles_info,k, crop_method = "maxCoord"){
   tiles_info_croped = [];
   switch( crop_method)
@@ -205,20 +207,6 @@ function cropn(tiles_info,k, crop_method = "maxCoord"){
   return tiles_info_croped;
 }
 
-// compute the maximum absolute value of the coordinates of the vertices of the tiles in RR^n
-function max_abs_coord_vertices_rn(tile){
-  let pos = tile[1];
-  let m_abs = 0; // max absolute value
-  for (let i=0; i< pos.length; i++) {
-    m_abs = Math.max(m_abs, Math.abs(pos[i]));
-  }
-  for (let a of[[0,0],[0,1],[1,1],[1,0]]) {
-    m_abs = Math.max(m_abs, Math.abs(pos[tile[0][0]]+a[0]));
-    m_abs = Math.max(m_abs, Math.abs(pos[tile[0][1]]+a[1]));
-  }
-  return m_abs
-}
-
 
 
 //
@@ -226,6 +214,7 @@ function max_abs_coord_vertices_rn(tile){
 // * Penrose,
 // * Ammann-Beenker,
 // * 12-fold,
+// * n-fold_simple,
 // * Golden octagonal,
 // * Rauzy
 //
@@ -369,7 +358,8 @@ Tiling.TwelveFoldCutandproject = function({size}={}){
   return new Tiling(tiles);
 }
 
-//  12-fold with offset 1/2, actually has 12-fold rotationnal symmetry around the origin
+
+// [5.3.1]  12-fold with offset 1/2, actually has 12-fold rotationnal symmetry around the origin
 Tiling.TwelveFoldCutandproject_sym = function({size}={}){
   console.log("Generating 12-fold cut and project via multigrid...");
   let b=Math.sqrt(3);
@@ -417,7 +407,7 @@ Tiling.TwelveFoldCutandproject_sym = function({size}={}){
   return new Tiling(tiles);
 }
 
-// n-fold simple : computes a tiling with global n-fold rotational symmetry
+// [5.4] n-fold simple : computes a tiling with global n-fold rotational symmetry
 // TODO add a function to color some of the tiles
 Tiling.nfold_simple = function({size, order, cropMethod}={}){
   console.log("Generating a simple multigrid tiling with global n-fold rotational symmetry");
@@ -482,7 +472,7 @@ Tiling.nfold_simple = function({size, order, cropMethod}={}){
 }
 
 
-// [5.4] Golden octogonal
+// [5.5] Golden octogonal
 Tiling.GoldenOctogonalCutandproject = function({size}={}){
   console.log("Generating Golden octogonal cut and project via multigrid...");  
   let phi=(1+Math.sqrt(5))/2;
@@ -533,7 +523,7 @@ Tiling.GoldenOctogonalCutandproject = function({size}={}){
   return new Tiling(tiles);
 }
 
-// [5.5] Rauzy
+// [5.6] Rauzy
 Tiling.RauzyCutandproject = function({size}={}){
   console.log("Generating Rauzy cut and project via multigrid...");  
   let c=1.839286755214161; // the unique real root of x^3-x^2-x-1
