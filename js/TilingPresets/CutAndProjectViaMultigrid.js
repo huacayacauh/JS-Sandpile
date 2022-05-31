@@ -461,13 +461,39 @@ Tiling.nfold_simple = function({size, order, cropMethod}={}){
   console.log("  found "+fn);
   // decorate tiles
   console.log("* decorate tiles");
+  let nb_losanges = Math.floor(dim/2);
+  let nb_losanges_color = Math.min(nb_losanges, 4);
+  let color_dict = {} ;
+  if (dim % 2 == 0){
+    for (let k = 0; k<nb_losanges_color; k++){
+      for (let i = 0; i<dim; i++) {
+        j = (i+k+1)%dim;
+        color_dict[id2key([Math.min(i,j),Math.max(i,j)])] = nb_losanges_color - 1 - k ;
+      }
+    }
+  } else {
+    for (let k = 0; k<nb_losanges_color; k++){
+      for (let i = 0; i<dim; i++) {
+        j = (i+ (k+1)*((dim+1)/2))%dim;
+        color_dict[id2key([Math.min(i,j),Math.max(i,j)])] = nb_losanges_color - 1 - k ;
+      }
+    }
+  }
+  tiles.forEach( tile => {
+    let tile_color = color_dict[tile.id[0]];
+    if (tile_color == undefined) {
+      tile.sand = 0;
+    } else {
+      tile.sand = parseInt(tile_color);
+    }
+  });
 //   let idkey_colored = [[0,1],[1,2],[2,3],[3,4],[0,4]].map(t => id2key(t));
 //   tiles.forEach(tile => {
 //     if(idkey_colored.includes(tile.id[0])){
 //       tile.sand=1;
 //     }
 //   });
-  tiles.forEach(tile=>{ tile.sand=0; });
+  // tiles.forEach(tile=>{ tile.sand=0; });
   // done
   console.log("done");
   return new Tiling(tiles);
