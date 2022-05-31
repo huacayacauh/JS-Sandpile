@@ -464,6 +464,8 @@ Tiling.nfold_simple = function({size, order, cropMethod}={}){
   let nb_losanges = Math.floor(dim/2);
   let nb_losanges_color = Math.min(nb_losanges, 4);
   let color_dict = {} ;
+  // we have to differentiate depending on the parity of the dimension
+  // indeed depending on the parity of the dimension a tile of directing vectors [0,1] is not necessarily a tile with angle pi/dimension
   if (dim % 2 == 0){
     for (let k = 0; k<nb_losanges_color; k++){
       for (let i = 0; i<dim; i++) {
@@ -487,14 +489,6 @@ Tiling.nfold_simple = function({size, order, cropMethod}={}){
       tile.sand = parseInt(tile_color);
     }
   });
-//   let idkey_colored = [[0,1],[1,2],[2,3],[3,4],[0,4]].map(t => id2key(t));
-//   tiles.forEach(tile => {
-//     if(idkey_colored.includes(tile.id[0])){
-//       tile.sand=1;
-//     }
-//   });
-  // tiles.forEach(tile=>{ tile.sand=0; });
-  // done
   console.log("done");
   return new Tiling(tiles);
 }
