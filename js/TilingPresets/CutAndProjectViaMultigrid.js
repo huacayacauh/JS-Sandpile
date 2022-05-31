@@ -8,6 +8,8 @@
 // TODO: add neighbors computation during tile creation instead of calling findNeighbors
 //
 
+// note that function id2key(a) is defined in SubstitutionAPI.js as return JSON.stringify(a);
+
 // [1]
 // construct the directions of the multigrid lines associated to the plane described by
 // * G: the grassmannian coordinates of the tiling slope
