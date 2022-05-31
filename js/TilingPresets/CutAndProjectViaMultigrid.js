@@ -125,18 +125,82 @@ function draw2(directions,tiles_info){
 // [4]
 // Crop tiling (as tiles_info) in order to keep only tiles "living"
 // within the lines of index +-k
-function cropn(tiles_info,k){
+function cropn(tiles_info,k, crop_method = "maxCoord"){
   tiles_info_croped = [];
-  for(let tile of tiles_info){
-    // note that coord are integers
-    // let outside = tile[1].filter(coord => Math.abs(coord+1/2)>k); // old_method
-    // if(outside.length==0){
-    //  tiles_info_croped.push(tile);
-    // }
-    let m_abs_coord = max_abs_coord_vertices_rn(tile);
-    if(m_abs_coord <= k){
-      tiles_info_croped.push(tile);
-    }
+  switch( crop_method)
+  {
+    case "maxCoord":
+      for(let tile of tiles_info){
+        let pos = tile[1];
+        let m_abs = 0; // max absolute value
+        // compute the maximum absolute values of the coordinates of the position of the tile
+        for (let i=0; i< pos.length; i++) {
+          m_abs = Math.max(m_abs, Math.abs(pos[i]));
+        }
+        // compute the absolute value of the other coordinates of the other vertices of the tiles
+        // note that we simply have to compute the coordinates that differ from the original position, not the maximum again
+        let modifier_10 = Math.abs(pos[tile[0][0]] + 1);
+        let modifier_01 = Math.abs(pos[tile[0][1]] + 1);
+        // compute the max of these
+        let m_abs_vertices = Math.max(m_abs, modifier_01, modifier_10);
+        if(m_abs_vertices <= k){
+          tiles_info_croped.push(tile);
+        }
+      }
+    break;
+
+    case "sumCoord":
+      for(let tile of tiles_info){
+        let sum_coord = 0;
+        let pos = tile[1];
+        // compute the sum of the absolute values of coordinates of the position of the tile
+        for (let i=0; i<pos.length; i++){
+          sum_coord += Math.abs(pos[i]);
+        }
+        // compute the sum of the coordinates of the other vertices of the tiles
+        //    first we compute modifiers corresponding to the two edge directions of the tiles
+        let modifier_10 = Math.abs(pos[tile[0][0]]+1) - Math.abs(pos[tile[0][0]]);
+        let modifier_01 = Math.abs(pos[tile[0][1]]+1) - Math.abs(pos[tile[0][1]]);
+        //    then we compute the other sums
+        let sum_coord_01 = sum_coord + modifier_01;
+        let sum_coord_11 = sum_coord + modifier_01 + modifier_10;
+        let sum_coord_10 = sum_coord + modifier_10;
+        //    finaly take the max
+        let max_sum_coord = Math.max(sum_coord, sum_coord_01, sum_coord_11, sum_coord_10);
+        if (max_sum_coord <= k){
+          tiles_info_croped.push(tile);
+        }
+      }
+    break;
+
+    case "euclideanNorm":
+      for(let tile of tiles_info){
+        let sum_square = 0;
+        let pos = tile[1];
+        // compute the sum of the square of the coordinates of the position of the tile
+        for (let i=0; i<pos.length; i++){
+          sum_square += Math.pow(pos[i],2);
+        }
+        // compute the sum of the square of the coordinates for the other vertices of the tile
+        //     first compute modifiers corresponding to the two edge directions of the tile
+        let modifier_10 = Math.pow(pos[tile[0][0]]+1, 2) - Math.pow(pos[tile[0][0]],2);
+        let modifier_01 = Math.pow(pos[tile[0][1]]+1, 2) - Math.pow(pos[tile[0][1]],2);
+        //     use the modifiers to compute the new sums
+        let sum_square_01 = sum_square + modifier_01;
+        let sum_square_11 = sum_square + modifier_01 + modifier_10;
+        let sum_square_10 = sum_square + modifier_10;
+        //     compute the square root of the maximum sum to obtain the maximum euclidean norm
+        max_euclidean_norm = Math.sqrt(Math.max(sum_square, sum_square_01, sum_square_11, sum_square_10));
+        if (max_euclidean_norm <= k){
+          tiles_info_croped.push(tile);
+        }
+      }
+    break;
+
+    default:
+      console.log("Crop method not implemented");
+    break;
+
   }
   return tiles_info_croped;
 }
@@ -355,10 +419,11 @@ Tiling.TwelveFoldCutandproject_sym = function({size}={}){
 
 // n-fold simple : computes a tiling with global n-fold rotational symmetry
 // TODO add a function to color some of the tiles
-Tiling.nfold_simple = function({size, order}={}){
+Tiling.nfold_simple = function({size, order, cropMethod}={}){
   console.log("Generating a simple multigrid tiling with global n-fold rotational symmetry");
   // if the order n is odd we compute the n-fold multigrid with offset 1/n, othewise we compute the n/2-fold multigrid with offset 1/2
   order = parseInt(order);
+  console.log("Crop method : "+ cropMethod);
   if (order % 2 == 1){
     dim = order;
     offset = 1 / dim;
@@ -388,7 +453,7 @@ Tiling.nfold_simple = function({size, order}={}){
   let tiles_info = dual2(nfold_dir, nfold_shift, size);
   console.log(" "+tiles_info.length+" tiles");
   // crop to the hypercupe size^n
-  let tiles_info_croped = cropn(tiles_info, size);
+  let tiles_info_croped = cropn(tiles_info, size, cropMethod);
   console.log(" "+tiles_info_croped.length+" tiles");
   console.log("* compute 2d tiles *");
   let tiles = draw2(nfold_draw, tiles_info_croped);
