@@ -8,6 +8,8 @@
 // TODO: add neighbors computation during tile creation instead of calling findNeighbors
 //
 
+// note that function id2key(a) is defined in SubstitutionAPI.js as return JSON.stringify(a);
+
 // [1]
 // construct the directions of the multigrid lines associated to the plane described by
 // * G: the grassmannian coordinates of the tiling slope
@@ -34,11 +36,20 @@ function generators_to_grid(G){
   for(let i=0; i<n; i++){
     let newline = [];
     for(let j=0; j<d; j++){
-      newline.push(H[j][i]/vector_norm(H[j]));
+      newline.push(round_to_zero(H[j][i]/vector_norm(H[j])));
     }
     I.push(newline);
   }
   return I;
+}
+// due to the high sensibility of the inverse function to zero VS non-zero (even if very small) values we have had to add a round to zero function that rounds to zero the values below some precision
+function round_to_zero(x) {
+  precision = 1e-14;
+  if (Math.abs(x) < precision) {
+    return 0;
+  } else {
+    return x;
+  }
 }
 
 // [2]
@@ -101,7 +112,7 @@ function draw2(directions,tiles_info){
   for(let tile of tiles_info){
     let bounds = [];
     for(let a of [[0,0],[0,1],[1,1],[1,0]]){
-      let q = JSON.parse(JSON.stringify(tile[1]));
+      let q = JSON.parse(JSON.stringify(tile[1])); // q = coordinate of the vertices in RR^n??
       q[tile[0][0]] = q[tile[0][0]]+a[0];
       q[tile[0][1]] = q[tile[0][1]]+a[1];
       let coord = vector_mult_matrix(q,directions);
@@ -114,16 +125,86 @@ function draw2(directions,tiles_info){
 }
 
 // [4]
-// Crop tiling (as tiles_info) in order to keep only tiles "living"
-// within the lines of index +-k
-function cropn(tiles_info,k){
+// Crop tiling (as tiles_info), three available methods for cropping
+//    maxCoord : keep only tiles whose maximum abs value of the coordinates of the vertices is at most k
+//    sumCoord : keep only tiles whose maximum sum of the abs value of the coordinates of the vertices is at most k
+//    euclideanNorm : keep only tiles whose maximum euclidean norm of the vertices is at most k
+function cropn(tiles_info,k, crop_method = "maxCoord"){
   tiles_info_croped = [];
-  for(let tile of tiles_info){
-    // note that coord are integers
-    let m_abs_coord = max_abs_coord_vertices_rn(tile);
-    if(m_abs_coord <= k){
-      tiles_info_croped.push(tile);
-    }
+  switch( crop_method)
+  {
+    case "maxCoord":
+      for(let tile of tiles_info){
+        let pos = tile[1];
+        let m_abs = 0; // max absolute value
+        // compute the maximum absolute values of the coordinates of the position of the tile
+        for (let i=0; i< pos.length; i++) {
+          m_abs = Math.max(m_abs, Math.abs(pos[i]));
+        }
+        // compute the absolute value of the other coordinates of the other vertices of the tiles
+        // note that we simply have to compute the coordinates that differ from the original position, not the maximum again
+        let modifier_10 = Math.abs(pos[tile[0][0]] + 1);
+        let modifier_01 = Math.abs(pos[tile[0][1]] + 1);
+        // compute the max of these
+        let m_abs_vertices = Math.max(m_abs, modifier_01, modifier_10);
+        if(m_abs_vertices <= k){
+          tiles_info_croped.push(tile);
+        }
+      }
+    break;
+
+    case "sumCoord":
+      for(let tile of tiles_info){
+        let sum_coord = 0;
+        let pos = tile[1];
+        // compute the sum of the absolute values of coordinates of the position of the tile
+        for (let i=0; i<pos.length; i++){
+          sum_coord += Math.abs(pos[i]);
+        }
+        // compute the sum of the coordinates of the other vertices of the tiles
+        //    first we compute modifiers corresponding to the two edge directions of the tiles
+        let modifier_10 = Math.abs(pos[tile[0][0]]+1) - Math.abs(pos[tile[0][0]]);
+        let modifier_01 = Math.abs(pos[tile[0][1]]+1) - Math.abs(pos[tile[0][1]]);
+        //    then we compute the other sums
+        let sum_coord_01 = sum_coord + modifier_01;
+        let sum_coord_11 = sum_coord + modifier_01 + modifier_10;
+        let sum_coord_10 = sum_coord + modifier_10;
+        //    finaly take the max
+        let max_sum_coord = Math.max(sum_coord, sum_coord_01, sum_coord_11, sum_coord_10);
+        if (max_sum_coord <= k){
+          tiles_info_croped.push(tile);
+        }
+      }
+    break;
+
+    case "euclideanNorm":
+      for(let tile of tiles_info){
+        let sum_square = 0;
+        let pos = tile[1];
+        // compute the sum of the square of the coordinates of the position of the tile
+        for (let i=0; i<pos.length; i++){
+          sum_square += Math.pow(pos[i],2);
+        }
+        // compute the sum of the square of the coordinates for the other vertices of the tile
+        //     first compute modifiers corresponding to the two edge directions of the tile
+        let modifier_10 = Math.pow(pos[tile[0][0]]+1, 2) - Math.pow(pos[tile[0][0]],2);
+        let modifier_01 = Math.pow(pos[tile[0][1]]+1, 2) - Math.pow(pos[tile[0][1]],2);
+        //     use the modifiers to compute the new sums
+        let sum_square_01 = sum_square + modifier_01;
+        let sum_square_11 = sum_square + modifier_01 + modifier_10;
+        let sum_square_10 = sum_square + modifier_10;
+        //     compute the square root of the maximum sum to obtain the maximum euclidean norm
+        max_euclidean_norm = Math.sqrt(Math.max(sum_square, sum_square_01, sum_square_11, sum_square_10));
+        if (max_euclidean_norm <= k){
+          tiles_info_croped.push(tile);
+        }
+      }
+    break;
+
+    default:
+      console.log("Crop method not implemented");
+    break;
+
   }
   return tiles_info_croped;
 }
@@ -147,6 +228,7 @@ function max_abs_coord_vertices_rn(tile){
 // * Penrose,
 // * Ammann-Beenker,
 // * 12-fold,
+// * n-fold_simple,
 // * Golden octagonal,
 // * Rauzy
 //
@@ -290,7 +372,141 @@ Tiling.TwelveFoldCutandproject = function({size}={}){
   return new Tiling(tiles);
 }
 
-// [5.4] Golden octogonal
+
+// [5.3.1]  12-fold with offset 1/2, actually has 12-fold rotationnal symmetry around the origin
+Tiling.TwelveFoldCutandproject_sym = function({size}={}){
+  console.log("Generating 12-fold cut and project via multigrid...");
+  let b=Math.sqrt(3);
+  // use grassmannian coordinates
+  // for each line: 2 coordinates of normal vector, shift, number of lines
+  console.log("* set directions and shift");
+  let tf_dir = generators_to_grid([[2,b,1,0,-1,-b],[0,1,b,2,b,1]]);
+  let tf_shift = [1/2,1/2,1/2,1/2,1/2,1/2];
+  let tf_draw = tf_dir;
+  // construct tiles information
+  console.log("* compute tiles information as multigrid dual");
+  let tiles_info = dual2(tf_dir,tf_shift,size);
+  console.log("  "+tiles_info.length+" tiles");
+  // crop to the projection of the hypercude +-size^6
+  console.log("* crop to the projection of the hypercube +-size^6");
+  let tiles_info_croped = cropn(tiles_info,size);
+  console.log("  "+tiles_info_croped.length+" tiles");
+  // construct tiles
+  console.log("* compute 2d tiles");
+  let tiles = draw2(tf_draw,tiles_info_croped);
+  // find neighbors with findNeighbors from SubstitutionAPI
+  console.log("* find neighbors (using findNeighbors from SubstitutionAPI)");
+  resetAllNeighbors(tiles);
+  let tilesdict = new Map(tiles.map(i => [id2key(i.id), i]));
+  let neighbors2bounds = new Map();
+  for(let t of combinations(Array.from(Array(6).keys()),2)){
+    neighbors2bounds.set(id2key(t),default_neighbors2bounds(4));
+  }
+  let fn=findNeighbors(tiles,tilesdict,neighbors2bounds);
+  console.log("  found "+fn);
+  // decorate tiles
+  console.log("* decorate tiles");
+  let idkey_colored1 = [[0,2],[1,3],[2,4],[3,5],[0,4],[1,5]].map(t => id2key(t));
+  let idkey_colored2 = [[0,3],[1,4],[2,5]].map(t => id2key(t));
+  tiles.forEach(tile => {
+    if(idkey_colored1.includes(tile.id[0])){
+      tile.sand=1;
+    }
+    else if(idkey_colored2.includes(tile.id[0])){
+      tile.sand=2;
+    }
+  });
+  // done
+  console.log("done");
+  return new Tiling(tiles);
+}
+
+// [5.4] n-fold simple : computes a tiling with global n-fold rotational symmetry
+// TODO add a function to color some of the tiles
+Tiling.nfold_simple = function({size, order, cropMethod}={}){
+  console.log("Generating a simple multigrid tiling with global n-fold rotational symmetry");
+  // if the order n is odd we compute the n-fold multigrid with offset 1/n, othewise we compute the n/2-fold multigrid with offset 1/2
+  order = parseInt(order);
+  console.log("Crop method : "+ cropMethod);
+  if (order % 2 == 1){
+    dim = order;
+    offset = 1 / dim;
+    theta = 2 * Math.PI / order;
+  }
+  else {
+    dim = order / 2;
+    offset = 1 / 2 ;
+    theta = 2 * Math.PI / order;
+  }
+  console.log("dim : "+dim+" ; offset: "+offset+" ; theta : "+theta);
+  console.log("* set directions and shift *");
+  dir_one = [];
+  dir_two = [];
+  //nfold_draw = [];
+  for (let i = 0; i< dim; i++){
+    dir_one.push(Math.cos(i*theta));
+    dir_two.push(Math.sin(i*theta));
+    //nfold_draw.push([Math.cos(i*theta), Math.sin(i*theta)]);
+  }
+  console.log(dir_one, dir_two);
+  let nfold_dir = generators_to_grid([dir_one, dir_two]);
+  let nfold_shift = Array(dim).fill(offset);
+  let nfold_draw = nfold_dir;
+  //construct tiles information
+  console.log("* compute tiles inforamtion as multigrid dual*");
+  let tiles_info = dual2(nfold_dir, nfold_shift, size);
+  console.log(" "+tiles_info.length+" tiles");
+  // crop to the hypercupe size^n
+  let tiles_info_croped = cropn(tiles_info, size, cropMethod);
+  console.log(" "+tiles_info_croped.length+" tiles");
+  console.log("* compute 2d tiles *");
+  let tiles = draw2(nfold_draw, tiles_info_croped);
+  // find neighbors with findNeighbors from SubstitutionAPI
+  console.log("* find neighbors (using findNeighbors from SubstitutionAPI)");
+  resetAllNeighbors(tiles);
+  let tilesdict = new Map(tiles.map(i => [id2key(i.id), i]));
+  let neighbors2bounds = new Map();
+  for(let t of combinations(Array.from(Array(dim).keys()),2)){
+    neighbors2bounds.set(id2key(t),default_neighbors2bounds(4));
+  }
+  let fn=findNeighbors(tiles,tilesdict,neighbors2bounds);
+  console.log("  found "+fn);
+  // decorate tiles
+  console.log("* decorate tiles");
+  let nb_losanges = Math.floor(dim/2);
+  let nb_losanges_color = Math.min(nb_losanges, 4);
+  let color_dict = {} ;
+  // we have to differentiate depending on the parity of the dimension
+  // indeed depending on the parity of the dimension a tile of directing vectors [0,1] is not necessarily a tile with angle pi/dimension
+  if (dim % 2 == 0){
+    for (let k = 0; k<nb_losanges_color; k++){
+      for (let i = 0; i<dim; i++) {
+        j = (i+k+1)%dim;
+        color_dict[id2key([Math.min(i,j),Math.max(i,j)])] = nb_losanges_color - 1 - k ;
+      }
+    }
+  } else {
+    for (let k = 0; k<nb_losanges_color; k++){
+      for (let i = 0; i<dim; i++) {
+        j = (i+ (k+1)*((dim+1)/2))%dim;
+        color_dict[id2key([Math.min(i,j),Math.max(i,j)])] = nb_losanges_color - 1 - k ;
+      }
+    }
+  }
+  tiles.forEach( tile => {
+    let tile_color = color_dict[tile.id[0]];
+    if (tile_color == undefined) {
+      tile.sand = 0;
+    } else {
+      tile.sand = parseInt(tile_color);
+    }
+  });
+  console.log("done");
+  return new Tiling(tiles);
+}
+
+
+// [5.5] Golden octogonal
 Tiling.GoldenOctogonalCutandproject = function({size}={}){
   console.log("Generating Golden octogonal cut and project via multigrid...");  
   let phi=(1+Math.sqrt(5))/2;
@@ -341,7 +557,7 @@ Tiling.GoldenOctogonalCutandproject = function({size}={}){
   return new Tiling(tiles);
 }
 
-// [5.5] Rauzy
+// [5.6] Rauzy
 Tiling.RauzyCutandproject = function({size}={}){
   console.log("Generating Rauzy cut and project via multigrid...");  
   let c=1.839286755214161; // the unique real root of x^3-x^2-x-1
