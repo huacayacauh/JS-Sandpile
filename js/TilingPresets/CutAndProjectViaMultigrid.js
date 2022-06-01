@@ -112,7 +112,7 @@ function draw2(directions,tiles_info){
   for(let tile of tiles_info){
     let bounds = [];
     for(let a of [[0,0],[0,1],[1,1],[1,0]]){
-      let q = JSON.parse(JSON.stringify(tile[1])); // q = coordinate of the vertices in RR^n??
+      let q = JSON.parse(JSON.stringify(tile[1])); // q = coordinate of the vertices in RR^n
       q[tile[0][0]] = q[tile[0][0]]+a[0];
       q[tile[0][1]] = q[tile[0][1]]+a[1];
       let coord = vector_mult_matrix(q,directions);
@@ -372,57 +372,7 @@ Tiling.TwelveFoldCutandproject = function({size}={}){
   return new Tiling(tiles);
 }
 
-
-// [5.3.1]  12-fold with offset 1/2, actually has 12-fold rotationnal symmetry around the origin
-Tiling.TwelveFoldCutandproject_sym = function({size}={}){
-  console.log("Generating 12-fold cut and project via multigrid...");
-  let b=Math.sqrt(3);
-  // use grassmannian coordinates
-  // for each line: 2 coordinates of normal vector, shift, number of lines
-  console.log("* set directions and shift");
-  let tf_dir = generators_to_grid([[2,b,1,0,-1,-b],[0,1,b,2,b,1]]);
-  let tf_shift = [1/2,1/2,1/2,1/2,1/2,1/2];
-  let tf_draw = tf_dir;
-  // construct tiles information
-  console.log("* compute tiles information as multigrid dual");
-  let tiles_info = dual2(tf_dir,tf_shift,size);
-  console.log("  "+tiles_info.length+" tiles");
-  // crop to the projection of the hypercude +-size^6
-  console.log("* crop to the projection of the hypercube +-size^6");
-  let tiles_info_croped = cropn(tiles_info,size);
-  console.log("  "+tiles_info_croped.length+" tiles");
-  // construct tiles
-  console.log("* compute 2d tiles");
-  let tiles = draw2(tf_draw,tiles_info_croped);
-  // find neighbors with findNeighbors from SubstitutionAPI
-  console.log("* find neighbors (using findNeighbors from SubstitutionAPI)");
-  resetAllNeighbors(tiles);
-  let tilesdict = new Map(tiles.map(i => [id2key(i.id), i]));
-  let neighbors2bounds = new Map();
-  for(let t of combinations(Array.from(Array(6).keys()),2)){
-    neighbors2bounds.set(id2key(t),default_neighbors2bounds(4));
-  }
-  let fn=findNeighbors(tiles,tilesdict,neighbors2bounds);
-  console.log("  found "+fn);
-  // decorate tiles
-  console.log("* decorate tiles");
-  let idkey_colored1 = [[0,2],[1,3],[2,4],[3,5],[0,4],[1,5]].map(t => id2key(t));
-  let idkey_colored2 = [[0,3],[1,4],[2,5]].map(t => id2key(t));
-  tiles.forEach(tile => {
-    if(idkey_colored1.includes(tile.id[0])){
-      tile.sand=1;
-    }
-    else if(idkey_colored2.includes(tile.id[0])){
-      tile.sand=2;
-    }
-  });
-  // done
-  console.log("done");
-  return new Tiling(tiles);
-}
-
 // [5.4] n-fold simple : computes a tiling with global n-fold rotational symmetry
-// TODO add a function to color some of the tiles
 Tiling.nfold_simple = function({size, order, cropMethod}={}){
   console.log("Generating a simple multigrid tiling with global n-fold rotational symmetry");
   // if the order n is odd we compute the n-fold multigrid with offset 1/n, othewise we compute the n/2-fold multigrid with offset 1/2
