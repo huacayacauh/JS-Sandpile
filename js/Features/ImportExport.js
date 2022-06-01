@@ -140,7 +140,7 @@ function tilingToSvg(sandpile){
 // [3] Export to tikz
 //
 
-function tilingToTIKZ (sandpile){
+function tilingToTIKZtxt(sandpile){
     let tikz = "";
     // construct color_map: sand -> svg_color
     let color_map = new Map();
@@ -176,7 +176,11 @@ function tilingToTIKZ (sandpile){
 	tikz += tikz_tile;
     }
     tikz += "\\end{tikzpicture}";
+    return tikz;
+}
 
+function tilingToTIKZ(sandpile){
+    let tikz = tilingToTIKZtxt(sandpile);
     var data = new Blob([tikz], {type: 'text/plain'});
     // If we are replacing a previously generated file we need to
     // manually revoke the object URL to avoid memory leaks.

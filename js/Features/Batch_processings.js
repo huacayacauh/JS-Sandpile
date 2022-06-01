@@ -419,7 +419,7 @@ function batch_identities_diff(){
                    //+"** P2 substitution star 1 to 8 iterations (order 4)\n"
                    //+"** P2 cut and project size 1 to 20\n"
                    //+"** Ammann-Beenker cut and project size 1 to 20\n"
-                   +"* 12-fold cut and project size 1 to 20\n"
+                   +"* n-fold cut and project, n=5 to 12, three crop methods, 10 sizes each\n"
                    +"?");
   if(rid == false){
     // cancel: abort
@@ -592,25 +592,52 @@ function batch_identities_diff(){
     tiling1 = tiling2;
   }
   */
-  // 12-fold cut and project size 1 to 20
-  console.log("* 12-fold cut and project size 1 to 20");
-  currentTiling = Tiling.TwelveFoldCutandproject({size:1});
-  currentTiling.clear();
-  currentTiling.addConfiguration(currentTiling.get_identity());
-  tiling1 = currentTiling;
-  for(let n=2; n<=20; n++){
-    currentTiling = Tiling.TwelveFoldCutandproject({size:n});
-    currentTiling.clear();
-    currentTiling.addConfiguration(currentTiling.get_identity());
-    tiling2 = currentTiling;
-    link.download = "TwelveFoldCutAndProject-diff-"+(n-1)+"-"+n+"-id.tex";
-    link.href = tilingToTIKZ(tilingDiff(tiling1,tiling2));
-    link.click();
-    // restore identity
-    tiling2.clear();
-    tiling2.addConfiguration(tiling2.get_identity());
-    tiling1 = tiling2;
+  // n-fold cut and project, n=5 to 12, three crop methods, 10 sizes each
+  console.log("* n-fold cut and project, n=5 to 12, three crop methods, 10 sizes each");
+  let zip = new JSZip();
+  // n-fold
+  for(let n=5; n<=12; n++){
+    // crop methods
+    let crops=["maxCoord","sumCoord","euclideanNorm"];
+    for(let c=0; c<crops.length; c++){
+      // sizes
+      // maxCoord: 1 to 10
+      // sumCoord: 3 to 10
+      // euclideanNorm: 2 to 10
+      let x=1; // maxCoord
+      switch (crops[c]){
+        case "sumCoord":
+          x=3;
+          break;
+        case "euclideanNorm":
+          x=2;
+          break;
+      }
+      currentTiling = Tiling.nfold_simple({size:x,order:n,cropMethod:crops[c]});
+      currentTiling.clear();
+      currentTiling.addConfiguration(currentTiling.get_identity());
+      tiling1 = currentTiling;
+      for(++x; x<=10; x++){
+        currentTiling = Tiling.nfold_simple({size:x,order:n,cropMethod:crops[c]});
+        currentTiling.clear();
+        currentTiling.addConfiguration(currentTiling.get_identity());
+        tiling2 = currentTiling;
+        //link.download = n+"-fold-"+crops[c]+"-diff-"+(x-1)+"-"+x+"-id.tex";
+        //link.href = tilingToTIKZ(tilingDiff(tiling1,tiling2));
+        //link.click();
+        let filenamezip = n+"-fold-"+crops[c]+"-diff-"+(x-1)+"-"+x+"-id.tex";
+        let contentzip = tilingToTIKZtxt(tilingDiff(tiling1,tiling2));
+        zip.file(filenamezip, contentzip);
+        // restore identity
+        tiling2.clear();
+        tiling2.addConfiguration(tiling2.get_identity());
+        tiling1 = tiling2;
+      }
+    }
   }
+  zip.generateAsync({type:"blob"}).then(function(content){
+    saveAs(content,"n-fold-diff-id.zip");
+  }); // download
   // done
   console.log("done");
 }
