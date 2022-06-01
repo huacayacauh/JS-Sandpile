@@ -3,7 +3,7 @@
 	<meta charset="UTF-8">
 	<title>JS-Sandpile</title>
 	<link rel="icon" href="favicon.ico" />
-	
+
 	<!-- ####################################################### CSS IMPORTS -->
 	<style>
 		@import "./css/bootstrap.min.css";
@@ -26,29 +26,29 @@
 		<button onclick="step()" style="margin-right:20px" class="btn btn-default">Step</button>
         <span id="number_of_steps"></span>
 		<button onclick="reset_number_of_steps()" style="margin-right:20px" class="btn btn-default">Reset counter</button>
-			
+
 		<!-- <button id="stabilizeButton"  onclick="stabTiling()" class="btn btn-primary">Stabilize</button> -->
-		
+
 		<!-- Upper right alignment -->
 		<span style="position:absolute; top:10px; right:50px"> Auto-pause : </span>
 			<label class="switch" style="position:absolute; top:12px; right:10px">
 			  <input type="checkbox" id="pauseToggle" checked = "true">
 			  <span class="slider round"></span>
 			</label>
-		
+
 		<!-- Upper right alignment -->
 		<span style="position:absolute; top:30px; right:50px"> Draw-tiles : </span>
 			<label class="switch" style="position:absolute; top:32px; right:10px">
 			  <input type="checkbox" id="wireFrameToggle" oninput="enableWireFrame(this);" checked = "false">
 			  <span class="slider round"></span>
 			</label>
-		
+
 	</header>
 
 	<!-- ################################################################ CONTROL (LEFT) BAR -->
 	<nav>
-	
-		<!-- ############################################################ Main Controls -->		
+
+		<!-- ############################################################ Main Controls -->
 		<div id="main controls" class="controlGroup">
 			<p class="groupTitle">Tiling selection</p>
 				<select id="TilingSelect" onchange="hideParams()">
@@ -61,6 +61,7 @@
 						<option value="PenroseCutandproject">Penrose P3 (rhomb)</option>
 						<option value="AmmannBeenkerCutandproject">Ammann-Beenker</option>
 						<option value="TwelveFoldCutandproject">12-fold</option>
+						<option value="nfold_simple"> n-fold (automatic)</option>
 						<option value="GoldenOctogonalCutandproject">Golden octogonal (random shift)</option>
 						<option value="RauzyCutandproject">Rauzy (random shift)</option>
 					</optgroup>
@@ -100,45 +101,59 @@
 						<option value="truncSq">Truncated Square</option>
 						<option value="cairoPenta">Cairo Pentagonal</option>
 					</optgroup>
-				  
+
 				</select>
-				
+
 				<!--<form id="postCustom" enctype="multipart/form-data" action="/upload/image" method="post">
 					<input type="file" id="inputCustom" accept=".png,.jpg,.jpeg,.bmp" style="display:none;" />
 				</form>-->
 			<button onclick='drawTiling()' style="margin-left:25px; font-weight:bold;" class="btn btn-default">Make Tiling</button>
 			<br>
-			
+
 
 			<!-- Tiling-specific controls -->
 			<p class="groupTitle" id="paramTitle">Parameters</p>
 			<!-- Square controls -->
 			<div id="paramHide">
 				<span id="p_width">
-				Width : 
+				Width :
 					<input type="number" id="cW" min="0" value="100" style="width: 50px;" />
 				</span>
-				
+
 				<span id="p_height">
-				&nbsp; &nbsp; Height : 
+				&nbsp; &nbsp; Height :
 					<input type="number" id="cH" min="0" value="100" style="width: 50px;" />
-				<br></span> 
-				
+				<br></span>
+
 				<span id="p_size" style="display:none;">
-				Size : 
+				Size :
 					<input type="number" id="size" min="0" value="20" style="width: 50px;" />
 				<br></span>
 
+				<!-- control for the n-fold cut-and-project tilings -->
+				<span id="p_order" style="display:none;">
+				Order :
+					<input type="number" id="order" min="3" value="5" style="width=50px;" />
+				<br> </span>
+
+				<!-- control for the selection of crop method for cut-and-project tilings-->
+				<span id="p_cropMethod" style="display:none">
+				Crop method :
+					<select id="cropMethod">
+						<option value="maxCoord"> Maximum coordinate </option>
+						<option value="sumCoord"> Sum of the coordinates </option>
+						<option value="euclideanNorm"> Euclidean norm </option>
+					</select>
 				<!-- Penrose controls -->
 				<span id="p_iterations" style="display:none;">
-				Iterations : 
+				Iterations :
 					<input type="number" style="width: 50px;" id="penroseIt" min="0" value="4"/>
 				<br></span>
-				
+
 			</div>
 		</div> <!-- Main controls  -->
 
-		<!-- ############################################################ Mouse Controls -->		
+		<!-- ############################################################ Mouse Controls -->
 		<div id="mouse controls" class="controlGroup">
 			<p class="groupTitle">Mouse controls</p>
 			<select id="mouseOperation">
@@ -153,7 +168,7 @@
 			</div>
 			<br><br>
 			<div style="display:flex;">
-			  Mouse radius : 
+			  Mouse radius :
 			  <input type="range" min="1" max="8" value="1" step="1" id="brushRange" style="width:150px;margin-left:10px;" list="steplist">
 			  <datalist id="steplist">
 				<option>1</option>
@@ -168,7 +183,7 @@
 			</div>
 		</div> <!-- Mouse controls -->
 
-		<!-- ############################################################ Operations / Secondary Controls -->		
+		<!-- ############################################################ Operations / Secondary Controls -->
 		<div id="secondary controls" class="controlGroup">
 			<p class="groupTitle">Sandpile operations</p>
 			<select id="complexOperationValue">
@@ -194,14 +209,14 @@
 			</div>
 			<button onclick="clearTiling()" class="btn btn-default" style="margin-top:10px;display: table;width: -webkit-fill-available;">Clear</button>
 			<button id="saveConfig" onclick="saveConfiguration()" style="margin-top:10px;display: table;width: -webkit-fill-available;;" class="btn btn-default">Save Configuration</button>
-			
+
 			<!-- Random Seeding -->
 			<div id="seedMask" style="margin-top:10px;">
-				Random seed : 
+				Random seed :
 				<input id="randSeed" value="1" oninput="changeSeed(this);" style="width: 60px;" />
 			</div>
 		</div> <!-- Operations controls -->
-			
+
 		<!-- ############################################################ Stabilization -->
 		<div class="controlGroup">
 			<p class="groupTitle">Sandpile process</p>
@@ -214,7 +229,7 @@
             </div>
         </div>
 
-		<!-- ############################################################ Import/Export -->		
+		<!-- ############################################################ Import/Export -->
 		<div class="controlGroup">
 			<!-- File importing -->
 			<p class="groupTitle">Import/Export</p>
@@ -222,14 +237,14 @@
 				<label for="files" class="btn btn-default">
 					Import from JSON
 				</label>
-				<button id="createjson" style="margin-top:5px;" class="btn btn-default">Export to JSON</button> 
+				<button id="createjson" style="margin-top:5px;" class="btn btn-default">Export to JSON</button>
 				<button id="createsvg" style="margin-top:5px;" class="btn btn-default">Export to SVG</button>
 				<button id="createtikz" style="margin-top:5px;" class="btn btn-default">Export to TIKZ</button>
 				<label for="filesPIC" class="btn btn-default" style="margin-top:5px;">
 					Square Tiling from image
 				</label>
 			</div>
-			
+
 			<!-- File button not displayed, and a JS command clicks on them. -->
 			<input type="file" id="files" name="files[]" accept=".JSON" multiple style="display:none;" />
 			<input type="file" id="filesPIC" name="files2[]" accept=".png,.jpg,.jpeg,.bmp" multiple style="display:none;" />
@@ -237,28 +252,28 @@
 
 			<a download="sandpile.json" id="downloadlink" style="display: none">Download</a>
         </div>
-			
-		<!-- ############################################################ Misc Controls -->		
+
+		<!-- ############################################################ Misc Controls -->
 		<div class="controlGroup">
 			<p class="groupTitle">Misc controls</p>
 			<button id="colorButton"  style="margin-left:auto;margin-right:auto;display:block;" class="btn btn-default">Change colors</button>
         </div>
 
-		<!-- ############################################################ Informations -->		
+		<!-- ############################################################ Informations -->
 		<div  class="controlGroup" style="height:400px; position:relative;">
 			<p class="groupTitle">Informations</p>
 
 			<span id="tileInfo">Selected tile info</span>
-			  
+
 			<br>
 			<button id="statsButton" style="position:absolute; top:32px; right:10px;" onclick="show_stats()" class="btn btn-default"> Get stats </button>
 			<br>
 			<p id="statsInfo"></p>
-			  
+
 			<button id="createStats" style="position:absolute; bottom:10px; left:10px;" class="btn btn-default">Stabilization stats file</button>
         </div>
-			  
-		<!-- ############################################################ Roundness -->		
+
+		<!-- ############################################################ Roundness -->
 		<div class="controlGroup" style="height:360px;">
 			<p class="groupTitle">Roundness</p>
             <!-- Animate -->
@@ -297,7 +312,7 @@
             </div>
         </div>
 
-		<!-- ############################################################ Harmonics -->		
+		<!-- ############################################################ Harmonics -->
 		<div class="controlGroup">
 			<p class="groupTitle">Harmonics</p>
             <!-- Harmonics -->
@@ -326,32 +341,32 @@
             </div>
         </div>
 
-		<!-- ############################################################ Credits -->		
+		<!-- ############################################################ Credits -->
 		<div class="credits">
           <img src="./css/cc-heart.png" style="height:16px">
           <a href="https://creativecommons.org/licenses/by/4.0/">CC-BY</a><br />
           Valentin Darrigo<br />
           Jeremy Fersula<br />
           Kevin Perrot<br />
-          See the <a href="https://github.com/huacayacauh/JS-Sandpile/wiki">wiki</a> 
+          See the <a href="https://github.com/huacayacauh/JS-Sandpile/wiki">wiki</a>
           and <a href="https://github.com/huacayacauh/JS-Sandpile/">code</a> on github
 		</div>
 
-	</nav> <!-- ######################################################### End of Control bar -->		
+	</nav> <!-- ######################################################### End of Control bar -->
 
 
-	<!-- ################################################################ Color picking window -->		
+	<!-- ################################################################ Color picking window -->
 	<div id="colors" class="modal">
 	  <div class="modal-content">
 		<span class="close">&times;</span>
 	  </div>
 	</div>
 
-	<!-- ################################################################ Canvas -->		
+	<!-- ################################################################ Canvas -->
 	<div class="canvasDiv" id="canvasHolder">
 	</div>
 
-	<!-- ################################################################ JS Imports -->	
+	<!-- ################################################################ JS Imports -->
 	<script src="./js/Utils/jquery.min.js"></script>
 	<script src="./js/Utils/three.min.js"></script>
 	<script src="./js/Utils/OrthographicTrackballControls.js"></script>
