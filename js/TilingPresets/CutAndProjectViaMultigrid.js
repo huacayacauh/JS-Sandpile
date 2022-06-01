@@ -398,7 +398,6 @@ Tiling.nfold_simple = function({size, order, cropMethod}={}){
     dir_two.push(Math.sin(i*theta));
     //nfold_draw.push([Math.cos(i*theta), Math.sin(i*theta)]);
   }
-  console.log(dir_one, dir_two);
   let nfold_dir = generators_to_grid([dir_one, dir_two]);
   let nfold_shift = Array(dim).fill(offset);
   let nfold_draw = nfold_dir;
