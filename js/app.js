@@ -618,7 +618,9 @@ app.renderer.domElement.addEventListener('mousemove', function( event ) {
   
 
 app.renderer.domElement.addEventListener('mousedown', function( event ) {
-	CanvasClick(event, true);
+	if(event.buttons==1){
+          CanvasClick(event, true);
+        }
   }, false);
  
   
@@ -695,15 +697,12 @@ function CanvasClick(event, force){
 	}
 }
   
-app.renderer.domElement.onmousedown = function() {
-
-holdMouse = true;
-
+// mouse up/down for mouse painting (left click only)
+app.renderer.domElement.onmousedown = function(event) {
+  if(event.buttons==1){ holdMouse = true; }
 }
-
 document.body.onmouseup = function() {
-holdMouse = false;
-
+  holdMouse = false;
 }
 
 function depth_first(index, size, shared=[]){
