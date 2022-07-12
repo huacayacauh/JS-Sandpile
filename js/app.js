@@ -489,8 +489,11 @@ function drawTiling(){
 	preset = document.getElementById("TilingSelect").value;
 
 	var nbIt = document.getElementById("penroseIt").value;
+
+	var kplace = document.getElementById("kplace").valueAsNumber;
+	var kwidth = document.getElementById("kwidth").valueAsNumber;
 	
-	var command = "currentTiling = Tiling." + preset + "({height:cH, width:cW, iterations:nbIt, size:size, order:order, cropMethod:cropMethod})";
+	var command = "currentTiling = Tiling." + preset + "({height:cH, width:cW, iterations:nbIt, size:size, order:order, cropMethod:cropMethod, kplace:kplace, kwidth:kwidth})";
 	
         console.log("BEGIN construct a new Tiling");
 	eval(command);

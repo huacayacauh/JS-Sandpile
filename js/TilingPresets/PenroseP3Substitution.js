@@ -793,7 +793,12 @@ Tiling.P3sunbysubst = function({iterations}={}){
 // [8] laser cut: add knotches and crop to rectangle
 // 
 
-Tiling.P3lasercut = function({iterations,width,height}={}){
+Tiling.P3lasercut = function({iterations,width,height,kplace,kwidth}={}){
+  /*
+   * this first part of the code (tiles generation) is copied form the sun
+   *
+   * BEGIN
+   */
   var tiles = [];
   // push base "sun" tiling
   for(var i=0; i<5; i++){
@@ -830,7 +835,11 @@ Tiling.P3lasercut = function({iterations,width,height}={}){
     neighbors2boundsP3,
     decorateP3
   );
+  /*
+   * END
+   */
   // crop to rectangle
+  console.log("laser cut: crop to rectangle width="+width+" height="+height);
   newtiles = [];
   tiles.forEach(tile => {
     let allboundsinside = true;
@@ -848,8 +857,9 @@ Tiling.P3lasercut = function({iterations,width,height}={}){
   });
   tiles = newtiles;
   // add knotches
-  let nplace = 2/3;
-  let nwidth = 0.15;
+  console.log("laser cut: add knotches place="+kplace+" width="+kwidth);
+  //let kplace = 2/3;
+  //let kwidth = 0.15;
   tiles.forEach(tile => {
     let x=0;
     let y=0;
@@ -869,13 +879,13 @@ Tiling.P3lasercut = function({iterations,width,height}={}){
       y=tile.bounds[3];
       xx=tile.bounds[4];
       yy=tile.bounds[5];
-      newbounds.push(...knotch1f(x,y,xx,yy,nplace,nwidth));
+      newbounds.push(...knotch1f(x,y,xx,yy,kplace,kwidth));
       // replace the segment 2--3 with a knotch (includes point 3)
       x=tile.bounds[4];
       y=tile.bounds[5];
       xx=tile.bounds[6];
       yy=tile.bounds[7];
-      newbounds.push(...knotch1m(x,y,xx,yy,nplace,nwidth));
+      newbounds.push(...knotch1m(x,y,xx,yy,kplace,kwidth));
       // update tile.bounds
       tile.bounds=newbounds;
     }
@@ -893,13 +903,13 @@ Tiling.P3lasercut = function({iterations,width,height}={}){
       let y=tile.bounds[3];
       let xx=tile.bounds[4];
       let yy=tile.bounds[5];
-      newbounds.push(...knotch1m(x,y,xx,yy,nplace,nwidth));
+      newbounds.push(...knotch1m(x,y,xx,yy,kplace,kwidth));
       // replace the segment 2--3 with a knotch (includes point 3)
       x=tile.bounds[4];
       y=tile.bounds[5];
       xx=tile.bounds[6];
       yy=tile.bounds[7];
-      newbounds.push(...knotch1f(x,y,xx,yy,nplace,nwidth));
+      newbounds.push(...knotch1f(x,y,xx,yy,kplace,kwidth));
       // update tile.bounds
       tile.bounds=newbounds;
     }
