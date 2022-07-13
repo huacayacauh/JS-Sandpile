@@ -793,9 +793,9 @@ Tiling.P3sunbysubst = function({iterations}={}){
 // [8] laser cut: add knotches and crop to rectangle
 // 
 
-Tiling.P3lasercut = function({iterations,width,height,kplace,kwidth}={}){
+Tiling.P3lasercut = function({iterations,width,height,kplace,kwidth,knotchA}={}){
   /*
-   * this first part of the code (tiles generation) is copied form the sun
+   * this first part of the code (tiles generation) is copied (bouh) form the sun
    *
    * BEGIN
    */
@@ -857,7 +857,7 @@ Tiling.P3lasercut = function({iterations,width,height,kplace,kwidth}={}){
   });
   tiles = newtiles;
   // add knotches
-  console.log("laser cut: add knotches place="+kplace+" width="+kwidth);
+  console.log("laser cut: add knotches place="+kplace+" width="+kwidth+" knotchA="+knotchA);
   //let kplace = 2/3;
   //let kwidth = 0.15;
   tiles.forEach(tile => {
@@ -879,13 +879,33 @@ Tiling.P3lasercut = function({iterations,width,height,kplace,kwidth}={}){
       y=tile.bounds[3];
       xx=tile.bounds[4];
       yy=tile.bounds[5];
-      newbounds.push(...knotch1f(x,y,xx,yy,kplace,kwidth));
+      switch(knotchA){
+        case "claw":
+          newbounds.push(...knotchClawF(x,y,xx,yy,kplace,kwidth));
+          break;
+        case "trapezoid":
+          newbounds.push(...knotchTrapezoidF(x,y,xx,yy,kplace,kwidth));
+          break;
+        default:
+          newbounds.push(...knotchTrapezoidF(x,y,xx,yy,kplace,kwidth));
+          break;
+      }
       // replace the segment 2--3 with a knotch (includes point 3)
       x=tile.bounds[4];
       y=tile.bounds[5];
       xx=tile.bounds[6];
       yy=tile.bounds[7];
-      newbounds.push(...knotch1m(x,y,xx,yy,kplace,kwidth));
+      switch(knotchA){
+        case "claw":
+          newbounds.push(...knotchClawM(x,y,xx,yy,kplace,kwidth));
+          break;
+        case "trapezoid":
+          newbounds.push(...knotchTrapezoidM(x,y,xx,yy,kplace,kwidth));
+          break;
+        default:
+          newbounds.push(...knotchTrapezoidM(x,y,xx,yy,kplace,kwidth));
+          break;
+      }
       // update tile.bounds
       tile.bounds=newbounds;
     }
@@ -903,13 +923,33 @@ Tiling.P3lasercut = function({iterations,width,height,kplace,kwidth}={}){
       let y=tile.bounds[3];
       let xx=tile.bounds[4];
       let yy=tile.bounds[5];
-      newbounds.push(...knotch1m(x,y,xx,yy,kplace,kwidth));
+      switch(knotchA){
+        case "claw":
+          newbounds.push(...knotchClawM(x,y,xx,yy,kplace,kwidth));
+          break;
+        case "trapezoid":
+          newbounds.push(...knotchTrapezoidM(x,y,xx,yy,kplace,kwidth));
+          break;
+        default:
+          newbounds.push(...knotchTrapezoidM(x,y,xx,yy,kplace,kwidth));
+          break;
+      }
       // replace the segment 2--3 with a knotch (includes point 3)
       x=tile.bounds[4];
       y=tile.bounds[5];
       xx=tile.bounds[6];
       yy=tile.bounds[7];
-      newbounds.push(...knotch1f(x,y,xx,yy,kplace,kwidth));
+      switch(knotchA){
+        case "claw":
+          newbounds.push(...knotchClawF(x,y,xx,yy,kplace,kwidth));
+          break;
+        case "trapezoid":
+          newbounds.push(...knotchTrapezoidF(x,y,xx,yy,kplace,kwidth));
+          break;
+        default:
+          newbounds.push(...knotchTrapezoidF(x,y,xx,yy,kplace,kwidth));
+          break;
+      }
       // update tile.bounds
       tile.bounds=newbounds;
     }

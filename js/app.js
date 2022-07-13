@@ -492,8 +492,9 @@ function drawTiling(){
 
 	var kplace = document.getElementById("kplace").valueAsNumber;
 	var kwidth = document.getElementById("kwidth").valueAsNumber;
+	var knotchA = document.getElementById("knotchA").value;
 	
-	var command = "currentTiling = Tiling." + preset + "({height:cH, width:cW, iterations:nbIt, size:size, order:order, cropMethod:cropMethod, kplace:kplace, kwidth:kwidth})";
+	var command = "currentTiling = Tiling." + preset + "({height:cH, width:cW, iterations:nbIt, size:size, order:order, cropMethod:cropMethod, kplace:kplace, kwidth:kwidth, knotchA:knotchA})";
 	
         console.log("BEGIN construct a new Tiling");
 	eval(command);

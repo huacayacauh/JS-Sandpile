@@ -7,7 +7,7 @@
 // return a list of bounds, excluding [x,y]
 
 // knotch1 male/female on (x,y)--(xx,yy) with fractions
-function knotch1m(x,y,xx,yy,place,width){
+function knotchClawM(x,y,xx,yy,place,width){
   let bounds = [];
   let startx = 0;
   let starty = 0;
@@ -15,11 +15,11 @@ function knotch1m(x,y,xx,yy,place,width){
   let endx = 0;
   let endy = 0;
   [endx,endy] = scalePoint(xx,yy,x,y,place+width/2);
-  bounds.push(...knotch1(startx,starty,endx,endy));
+  bounds.push(...knotchClaw(startx,starty,endx,endy));
   bounds.push(xx,yy);
   return bounds;
 }
-function knotch1f(x,y,xx,yy,place,width){
+function knotchClawF(x,y,xx,yy,place,width){
   let bounds = [];
   let startx = 0;
   let starty = 0;
@@ -27,13 +27,13 @@ function knotch1f(x,y,xx,yy,place,width){
   let endx = 0;
   let endy = 0;
   [endx,endy] = scalePoint(xx,yy,x,y,(1-place)+width/2);
-  bounds.push(...knotch1(startx,starty,endx,endy));
+  bounds.push(...knotchClaw(startx,starty,endx,endy));
   bounds.push(xx,yy);
   return bounds;
 }
 
 // knotch1 alone (returned array includes x,y,xx,yy)
-function knotch1(x,y,xx,yy){
+function knotchClaw(x,y,xx,yy){
   let bounds = [];
   let A=[x,y];
   let H=[xx,yy];
@@ -47,3 +47,42 @@ function knotch1(x,y,xx,yy){
   return bounds;
 }
 
+// knotch2 male/female on (x,y)--(xx,yy) with fractions
+function knotchTrapezoidM(x,y,xx,yy,place,width){
+  let bounds = [];
+  let startx = 0;
+  let starty = 0;
+  [startx,starty] = scalePoint(xx,yy,x,y,place-width/2);
+  let endx = 0;
+  let endy = 0;
+  [endx,endy] = scalePoint(xx,yy,x,y,place+width/2);
+  bounds.push(...knotchTrapezoid(startx,starty,endx,endy));
+  bounds.push(xx,yy);
+  return bounds;
+}
+function knotchTrapezoidF(x,y,xx,yy,place,width){
+  let bounds = [];
+  let startx = 0;
+  let starty = 0;
+  [startx,starty] = scalePoint(xx,yy,x,y,(1-place)-width/2);
+  let endx = 0;
+  let endy = 0;
+  [endx,endy] = scalePoint(xx,yy,x,y,(1-place)+width/2);
+  bounds.push(...knotchTrapezoid(startx,starty,endx,endy));
+  bounds.push(xx,yy);
+  return bounds;
+}
+
+// knotch2 alone (returned array includes x,y,xx,yy)
+function knotchTrapezoid(x,y,xx,yy){
+  let bounds = [];
+  let A=[x,y];
+  let F=[xx,yy];
+  let M=scalePoint(...A,...F,1/2);
+  let B=rotatePoint(...M,...A,3*Math.PI/5);
+  let C=rotatePoint(...A,...M,-3*Math.PI/5);
+  let D=rotatePoint(...F,...M,-3*Math.PI/5);
+  let E=rotatePoint(...M,...F,3*Math.PI/5);
+  bounds.push(...A,...B,...C,...D,...E,...F);
+  return bounds;
+}
