@@ -503,3 +503,110 @@ Tiling.P2starbysubst = function({iterations}={}){
   return new Tiling(tiles);
 }
 
+//
+// [8] laser cut: add knotches and engraving, and crop to rectangle
+// 
+
+// decorations taken from:
+// https://en.wikipedia.org/wiki/Penrose_tiling#Kite_and_dart_tiling_(P2)
+Tiling.P2lasercut = function({iterations,width,height,kwidth,linespace}={}){
+  /*
+   * this first part of the code (tiles generation) is copied (bouh) form the sun
+   *
+   * BEGIN
+   */
+  var tiles = [];
+  // push base "sun" tiling
+  for(var i=0; i<5; i++){
+    // construct tiles
+    var mykite = kite.myclone();
+    mykite.id.push(i);
+    mykite.rotate(0,0,i*2*Math.PI/5);
+    // define neighbors with undefined on the boundary
+    mykite.neighbors.push(['kite',(i-1+5)%5]); // 0
+    mykite.neighbors.push(undefined); // 1
+    mykite.neighbors.push(undefined); // 2
+    mykite.neighbors.push(['kite',(i+1)%5]); // 3
+    tiles.push(mykite);
+  }
+  // call the substitution
+  tiles = substitute(
+    iterations,
+    tiles,
+    phi,
+    substitutionP2,
+    duplicatedP2,
+    duplicatedP2oriented,
+    neighborsP2,
+    neighbors2boundsP2,
+    decorateP2
+  );
+  /*
+   * END
+   */
+  // crop to rectangle 
+  console.log("laser cut: crop to rectangle width="+width+" height="+height);
+  tiles = cropTilingToRectangle(tiles,width,height);
+  // add knotches+engravings
+  /*
+   * NOTE ON HOW IT WORKS:
+   * knotches are at the center and any pair of tiles match them, their purpose is to maintain the tiles together
+   * engravings is a list of [center-x, center-y, radius, start-angle-x, start-angle-y, end-angle-x, end-angle-y]
+   * (bounds definiting the angle in counterclockwise order), they must match to enforce P3
+   * engravings are processed when generating the "SVG for laser-cut"
+   */ 
+  let engravings = []; 
+  console.log("laser cut: add knotches+engravings width="+kwidth+" linespace="+linespace);
+  tiles.forEach(tile => {
+    // 1. add knotches to all tile segments
+    let newbounds = [];
+    for(let i=0; i<tile.bounds.length; i=i+2){
+      let blen = tile.bounds.length;
+      let x=tile.bounds[i];
+      let y=tile.bounds[i+1];
+      let xx=tile.bounds[(i+2)%blen];
+      let yy=tile.bounds[(i+3)%blen];
+      // caution: there are two side lengths: 1 and phi
+      let sidelength = distance(x,y,xx,yy);
+      newbounds.push(...knotchTrapezoidF(x,y,xx,yy,0.5,kwidth/sidelength));
+    }
+    // update tile.bounds
+    tile.bounds=newbounds;
+    // 2. add engravings
+    // points A,B,C,D
+    let Ax=tile.bounds[0];
+    let Ay=tile.bounds[1];
+    let Bx=tile.bounds[2];
+    let By=tile.bounds[3];
+    let Cx=tile.bounds[4];
+    let Cy=tile.bounds[5];
+    let Dx=tile.bounds[6];
+    let Dy=tile.bounds[7];
+    switch(tile.id[0]){
+      case 'kite':
+        // DOUBLE (wikipedia green line)
+        engravings.push([Ax,Ay,1,Bx,By,Dx,Dy]);
+        engravings.push([Ax,Ay,1-linespace,Bx,By,Dx,Dy]);
+        // SIMPLE (wikipedia red line)
+        engravings.push([Cx,Cy,phi-1,Dx,Dy,Bx,By]);
+        break;
+      case 'dart':
+        // DOUBLE (wikipedia green line)
+        engravings.push([Ax,Ay,phi-1,Bx,By,Dx,Dy]);
+        engravings.push([Ax,Ay,phi-1-linespace,Bx,By,Dx,Dy]);
+        // SIMPLE (wikipedia red line)
+        engravings.push([Cx,Cy,2-phi,Dx,Dy,Bx,By]);
+        break;
+      default:
+        console.log("oups: tile type expected 'kite' or 'dart', found "+tile.id[0]+" .");
+        break;
+    }
+  });
+  console.log("laser-cut: engravings ready");
+  //TODO: save engravings... where???
+  //TODO: produce SVG code of engravings here as text, and print it in "SVG for laser-cut" ? also TODO: remove line doublons in tile segments
+  //TODO: DOUBLE green lines overlap :-/
+  // construct tiling
+  return new Tiling(tiles);
+}
+

@@ -793,6 +793,11 @@ Tiling.P3sunbysubst = function({iterations}={}){
 // [8] laser cut: add knotches and crop to rectangle
 // 
 
+// decorations taken from:
+// https://tilings.math.uni-bielefeld.de/substitution/penrose-rhomb/
+// looks more minimal than wikipedia:
+// https://en.wikipedia.org/wiki/Penrose_tiling#/media/File:Penrose_rhombs_matching_rules.svg
+// TODO: is it ok?
 Tiling.P3lasercut = function({iterations,width,height,kplace,kwidth,knotchA}={}){
   /*
    * this first part of the code (tiles generation) is copied (bouh) form the sun
@@ -840,26 +845,9 @@ Tiling.P3lasercut = function({iterations,width,height,kplace,kwidth,knotchA}={})
    */
   // crop to rectangle
   console.log("laser cut: crop to rectangle width="+width+" height="+height);
-  newtiles = [];
-  tiles.forEach(tile => {
-    let allboundsinside = true;
-    for(let i=0; i<tile.bounds.length; i=i+2){
-      if(  -width/2 > tile.bounds[i]
-        || tile.bounds[i] > width/2 
-        || -height/2 > tile.bounds[i+1]
-        || tile.bounds[i+1] > height/2 ){
-        allboundsinside = false;
-      }
-    }
-    if(allboundsinside){
-      newtiles.push(tile);
-    }
-  });
-  tiles = newtiles;
+  tiles = cropTilingToRectangle(tiles,width,height);
   // add knotches
   console.log("laser cut: add knotches place="+kplace+" width="+kwidth+" knotchA="+knotchA);
-  //let kplace = 2/3;
-  //let kwidth = 0.15;
   tiles.forEach(tile => {
     let x=0;
     let y=0;
@@ -867,7 +855,7 @@ Tiling.P3lasercut = function({iterations,width,height,kplace,kwidth,knotchA}={})
     let yy=0;
     if(tile.id[0] == 'fat'){
       // fat
-      newbounds = [];
+      let newbounds = [];
       // point 0 identical
       newbounds.push(tile.bounds[0]);
       newbounds.push(tile.bounds[1]);
@@ -911,7 +899,7 @@ Tiling.P3lasercut = function({iterations,width,height,kplace,kwidth,knotchA}={})
     }
     else{
       // thin
-      newbounds = [];
+      let newbounds = [];
       // point 0 identical
       newbounds.push(tile.bounds[0]);
       newbounds.push(tile.bounds[1]);
