@@ -552,7 +552,7 @@ Tiling.P2lasercut = function({iterations,width,height,kwidth,linespace}={}){
    * NOTE ON HOW IT WORKS:
    * knotches are at the center and any pair of tiles match them, their purpose is to maintain the tiles together
    * engravings is a list of [center-x, center-y, radius, start-angle-x, start-angle-y, end-angle-x, end-angle-y]
-   * (bounds definiting the angle in counterclockwise order), they must match to enforce P3
+   * (start and end bounds definiting the angle are given counterclockwise), they must match to enforce P3
    * engravings are processed when generating the "SVG for laser-cut"
    */ 
   let engravings = []; 
@@ -598,7 +598,7 @@ Tiling.P2lasercut = function({iterations,width,height,kwidth,linespace}={}){
         engravings.push([Cx,Cy,2-phi,Dx,Dy,Bx,By]);
         break;
       default:
-        console.log("oups: tile type expected 'kite' or 'dart', found "+tile.id[0]+" .");
+        console.log("oups: tile type expected 'kite' or 'dart', found "+tile.id[0]+".");
         break;
     }
   });
