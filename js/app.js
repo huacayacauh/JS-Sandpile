@@ -106,6 +106,9 @@ var tileInfo = document.getElementById("tileInfo");
 
 var check_copy = true; // Copy the tiling once in a while to see if it is stable
 
+var engravingArcs = []; // Array of [center-x, center-y, radius, start-angle-x, start-angle-y, end-angle-x, end-angle-y] where start and end bounds definiting the angle are given counterclockwise
+var engravingLines = []; // Array of [start-x, start-y, end-x, end-y]
+
 // ---------------------- Routines
 
 setInterval(colorSelected, 200); //		[ 4.2 ]
@@ -477,24 +480,29 @@ function drawTiling(){
 	
 	check_stable = 0;
 	
+        // get buttons
 	cW = document.getElementById("cW").value;
 	cH = document.getElementById("cH").value;
-	
 	var size = document.getElementById("size").value;
 	var order = document.getElementById("order").value;
 	var cropMethod = document.getElementById("cropMethod").value;
-
-	selectedTile = null;
-	
-	preset = document.getElementById("TilingSelect").value;
-
 	var nbIt = document.getElementById("penroseIt").value;
-
 	var kplace = document.getElementById("kplace").valueAsNumber;
 	var kwidth = document.getElementById("kwidth").valueAsNumber;
 	var knotchA = document.getElementById("knotchA").value;
-	var linespace = document.getElementById("linespace").value;
+	var linespace = document.getElementById("linespace").valueAsNumber;
+
+        // and the most important...
+	preset = document.getElementById("TilingSelect").value;
+
+        // reset selected tile
+	selectedTile = null;
+
+        // reset engravings
+	engravingArcs = [];
+	engravingLines = [];
 	
+        // prepare command and call the tiling generator
 	var command = "currentTiling = Tiling." + preset + "({height:cH, width:cW, iterations:nbIt, size:size, order:order, cropMethod:cropMethod, kplace:kplace, kwidth:kwidth, knotchA:knotchA, linespace:linespace})";
 	
         console.log("BEGIN construct a new Tiling");
@@ -502,6 +510,7 @@ function drawTiling(){
         console.log("END construct a new Tiling");
         console.log("INFO the current Tiling has "+currentTiling.tiles.length+" tiles");
 	
+        // bla
 	currentTiling.cmap = cmap;
 	
 	app.controls.zoomCamera();
