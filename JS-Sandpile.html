@@ -142,9 +142,9 @@
 				<span id="p_cropMethod" style="display:none">
 				Crop method :
 					<select id="cropMethod">
-						<option value="maxCoord"> Maximum coordinate </option>
-						<option value="sumCoord"> Sum of the coordinates </option>
-						<option value="euclideanNorm"> Euclidean norm </option>
+                        <option value="maxCoord"> L&#8734; (maximum coordinate) </option>
+                        <option value="sumCoord"> L1 (sum of coordinates) </option>
+                        <option value="euclideanNorm"> L2 (Euclidean norm) </option>
 					</select>
 				<br></span>
 
@@ -158,8 +158,8 @@
 				<span id="p_knotchA" style="display:none;">
 				Knotch type A :
 					<select id="knotchA">
-						<option value="claw"> Claw </option>
-						<option value="trapezoid"> Trapezoid </option>
+						<option value="claw"> claw </option>
+						<option value="trapezoid"> trapezoid </option>
 					</select>
 				<br></span>
 
@@ -176,6 +176,14 @@
 				<span id="p_linespace" style="display:none;">
 				Line space [0,1]:
 					<input type="number" step=0.01 style="width: 50px;" id="linespace" min="0" max="1" value="0.04"/>
+				<br></span>
+
+				<span id="p_kposlist" style="display:none;">
+				Knotch place :
+				  <select id="kposlist">
+				  	<option value="along"> along engravings </option>
+				  	<option value="center"> center of sides </option>
+				  </select>
 				<br></span>
 
 			</div>

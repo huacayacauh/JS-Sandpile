@@ -509,7 +509,7 @@ Tiling.P2starbysubst = function({iterations}={}){
 
 // decorations taken from:
 // https://en.wikipedia.org/wiki/Penrose_tiling#Kite_and_dart_tiling_(P2)
-Tiling.P2lasercut = function({iterations,width,height,kwidth,linespace}={}){
+Tiling.P2lasercut = function({iterations,width,height,kwidth,kposlist}={}){
   /*
    * this first part of the code (tiles generation) is copied (bouh) form the sun
    *
@@ -555,7 +555,7 @@ Tiling.P2lasercut = function({iterations,width,height,kwidth,linespace}={}){
    * (start and end bounds definiting the angle are given counterclockwise), they must match to enforce P3
    * engravingArcs are processed when generating the "SVG for laser-cut"
    */ 
-  console.log("laser cut: add knotches+engravings width="+kwidth+" linespace="+linespace);
+  console.log("laser cut: add knotches+engravings width="+kwidth+" kposlist="+kposlist);
   tiles.forEach(tile => {
     // points A,B,C,D
     let Ax=tile.bounds[0];
@@ -569,19 +569,19 @@ Tiling.P2lasercut = function({iterations,width,height,kwidth,linespace}={}){
     // 1. add engravings (CAUTION: before knotches!)
     switch(tile.id[0]){
       case 'kite':
-        // DOUBLE (wikipedia green line)
-        // v1: engravingArcs.push([Ax,Ay,1+linespace,Bx,By,Dx,Dy]);
-        // v1: engravingArcs.push([Ax,Ay,1-linespace,Bx,By,Dx,Dy]);
+        // v1: DOUBLE (wikipedia green line)
+        // v1: engravingArcs.push([Ax,Ay,1+paramlinespac,Bx,By,Dx,Dy]);
+        // v1: engravingArcs.push([Ax,Ay,1-param_linespac,Bx,By,Dx,Dy]);
         engravingArcs.push([Ax,Ay,1,Bx,By,Dx,Dy]);
-        // SIMPLE (wikipedia red line)
+        // v1: SIMPLE (wikipedia red line)
         engravingArcs.push([Cx,Cy,phi-1,Dx,Dy,Bx,By]);
         break;
       case 'dart':
-        // DOUBLE (wikipedia green line)
-        // v1: engravingArcs.push([Ax,Ay,phi-1+linespace,Bx,By,Dx,Dy]);
-        // v1: engravingArcs.push([Ax,Ay,phi-1-linespace,Bx,By,Dx,Dy]);
+        // v1: DOUBLE (wikipedia green line)
+        // v1: engravingArcs.push([Ax,Ay,phi-1+param_linespac,Bx,By,Dx,Dy]);
+        // v1: engravingArcs.push([Ax,Ay,phi-1-param_linespac,Bx,By,Dx,Dy]);
         engravingArcs.push([Ax,Ay,phi-1,Bx,By,Dx,Dy]);
-        // SIMPLE (wikipedia red line)
+        // v1: SIMPLE (wikipedia red line)
         engravingArcs.push([Cx,Cy,2-phi,Dx,Dy,Bx,By]);
         break;
       default:
@@ -590,38 +590,43 @@ Tiling.P2lasercut = function({iterations,width,height,kwidth,linespace}={}){
     }
     // 2. add knotches to all tile segments
     let newbounds = [];
-    // v1: for(let i=0; i<tile.bounds.length; i=i+2){
-    // v1:   let blen = tile.bounds.length;
-    // v1:   let x=tile.bounds[i];
-    // v1:   let y=tile.bounds[i+1];
-    // v1:   let xx=tile.bounds[(i+2)%blen];
-    // v1:   let yy=tile.bounds[(i+3)%blen];
-    // v1:   // caution: there are two side lengths: 1 and phi
-    // v1:   let sidelength = distance(x,y,xx,yy);
-    // v1:   newbounds.push(...knotchTrapezoidF(x,y,xx,yy,0.5,kwidth/sidelength));
-    // v1: }
-    switch(tile.id[0]){
-      case 'kite':
-        newbounds.push(...knotchTrapezoidF(Ax,Ay,Bx,By,1-1/phi,kwidth/phi));
-        newbounds.push(...knotchTrapezoidF(Bx,By,Cx,Cy,phi-1,kwidth));
-        newbounds.push(...knotchTrapezoidF(Cx,Cy,Dx,Dy,2-phi,kwidth));
-        newbounds.push(...knotchTrapezoidF(Dx,Dy,Ax,Ay,1/phi,kwidth/phi));
+    switch(kposlist){
+      case 'along':
+        switch(tile.id[0]){
+          case 'kite':
+            newbounds.push(...knotchTrapezoidF(Ax,Ay,Bx,By,1-1/phi,kwidth/phi));
+            newbounds.push(...knotchTrapezoidF(Bx,By,Cx,Cy,phi-1,kwidth));
+            newbounds.push(...knotchTrapezoidF(Cx,Cy,Dx,Dy,2-phi,kwidth));
+            newbounds.push(...knotchTrapezoidF(Dx,Dy,Ax,Ay,1/phi,kwidth/phi));
+            break;
+          case 'dart':
+            newbounds.push(...knotchTrapezoidF(Ax,Ay,Bx,By,1/phi,kwidth/phi));
+            newbounds.push(...knotchTrapezoidF(Bx,By,Cx,Cy,2-phi,kwidth));
+            newbounds.push(...knotchTrapezoidF(Cx,Cy,Dx,Dy,phi-1,kwidth));
+            newbounds.push(...knotchTrapezoidF(Dx,Dy,Ax,Ay,1-1/phi,kwidth/phi));
+            break;
+          default:
+            console.log("oups: tile type expected 'kite' or 'dart', found "+tile.id[0]+".");
+            break;
+        }
         break;
-      case 'dart':
-        newbounds.push(...knotchTrapezoidF(Ax,Ay,Bx,By,1/phi,kwidth/phi));
-        newbounds.push(...knotchTrapezoidF(Bx,By,Cx,Cy,2-phi,kwidth));
-        newbounds.push(...knotchTrapezoidF(Cx,Cy,Dx,Dy,phi-1,kwidth));
-        newbounds.push(...knotchTrapezoidF(Dx,Dy,Ax,Ay,1-1/phi,kwidth/phi));
-        break;
-      default:
-        console.log("oups: tile type expected 'kite' or 'dart', found "+tile.id[0]+".");
+      case 'center':
+        for(let i=0; i<tile.bounds.length; i=i+2){
+          let blen = tile.bounds.length;
+          let x=tile.bounds[i];
+          let y=tile.bounds[i+1];
+          let xx=tile.bounds[(i+2)%blen];
+          let yy=tile.bounds[(i+3)%blen];
+          // caution: there are two side lengths: 1 and phi
+          let sidelength = distance(x,y,xx,yy);
+          newbounds.push(...knotchTrapezoidF(x,y,xx,yy,0.5,kwidth/sidelength));
+        }
         break;
     }
     // update tile.bounds
     tile.bounds=newbounds;
   });
   console.log("laser-cut: engravings ready");
-  //TODO: document laser-cut stuff in wiki (Knotches.js + new SVG generation with engravings) : see note on HOW IT WORKS above. Global state variable ``engravingArcs`` and ``engravingLines``
   // construct tiling
   return new Tiling(tiles);
 }

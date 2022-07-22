@@ -491,6 +491,7 @@ function drawTiling(){
 	var kwidth = document.getElementById("kwidth").valueAsNumber;
 	var knotchA = document.getElementById("knotchA").value;
 	var linespace = document.getElementById("linespace").valueAsNumber;
+	var kposlist = document.getElementById("kposlist").value;
 
         // and the most important...
 	preset = document.getElementById("TilingSelect").value;
@@ -503,7 +504,7 @@ function drawTiling(){
 	engravingLines = [];
 	
         // prepare command and call the tiling generator
-	var command = "currentTiling = Tiling." + preset + "({height:cH, width:cW, iterations:nbIt, size:size, order:order, cropMethod:cropMethod, kplace:kplace, kwidth:kwidth, knotchA:knotchA, linespace:linespace})";
+	var command = "currentTiling = Tiling." + preset + "({height:cH, width:cW, iterations:nbIt, size:size, order:order, cropMethod:cropMethod, kplace:kplace, kwidth:kwidth, knotchA:knotchA, linespace:linespace, kposlist:kposlist})";
 	
         console.log("BEGIN construct a new Tiling");
 	eval(command);
