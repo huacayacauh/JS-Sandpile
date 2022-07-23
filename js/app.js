@@ -492,16 +492,18 @@ function drawTiling(){
 	var order = document.getElementById("order").value;
 	var cropMethod = document.getElementById("cropMethod").value;
 	var nbIt = document.getElementById("penroseIt").value;
-	var kplace = document.getElementById("kplace").valueAsNumber;
 	var kwidth = document.getElementById("kwidth").valueAsNumber;
 	var knotchA = document.getElementById("knotchA").value;
+	var knotchB = document.getElementById("knotchB").value;
+	var lineplace = document.getElementById("lineplace").valueAsNumber;
 	var linespace = document.getElementById("linespace").valueAsNumber;
+	var kpos = document.getElementById("kpos").valueAsNumber;
 	var kposlist = document.getElementById("kposlist").value;
         // the most important...
 	preset = document.getElementById("TilingSelect").value;
 
         // prepare command and call the tiling generator
-	var command = "currentTiling = Tiling." + preset + "({height:cH, width:cW, iterations:nbIt, size:size, order:order, cropMethod:cropMethod, kplace:kplace, kwidth:kwidth, knotchA:knotchA, linespace:linespace, kposlist:kposlist})";
+	var command = "currentTiling = Tiling." + preset + "({height:cH, width:cW, iterations:nbIt, size:size, order:order, cropMethod:cropMethod, kwidth:kwidth, knotchA:knotchA, knotchB:knotchB, lineplace:lineplace, linespace:linespace, kpos:kpos, kposlist:kposlist})";
         console.log("BEGIN construct a new Tiling");
 	eval(command);
         console.log("END construct a new Tiling");

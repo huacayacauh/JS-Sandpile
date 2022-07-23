@@ -794,11 +794,8 @@ Tiling.P3sunbysubst = function({iterations}={}){
 // 
 
 // decorations taken from:
-// https://tilings.math.uni-bielefeld.de/substitution/penrose-rhomb/
-// looks more minimal than wikipedia:
-// https://en.wikipedia.org/wiki/Penrose_tiling#/media/File:Penrose_rhombs_matching_rules.svg
-// TODO: is it ok?
-Tiling.P3lasercut = function({iterations,width,height,kplace,kwidth,knotchA}={}){
+// https://en.wikipedia.org/wiki/Penrose_tiling#Rhombus_tiling_(P3)
+Tiling.P3lasercut = function({iterations,width,height,kwidth,kpos,knotchA,knotchB,lineplace,linespace}={}){
   /*
    * this first part of the code (tiles generation) is copied (bouh) form the sun
    *
@@ -846,9 +843,153 @@ Tiling.P3lasercut = function({iterations,width,height,kplace,kwidth,knotchA}={})
   // crop to rectangle
   console.log("laser cut: crop to rectangle width="+width+" height="+height);
   tiles = cropTilingToRectangle(tiles,width,height);
-  // add knotches
-  console.log("laser cut: add knotches place="+kplace+" width="+kwidth+" knotchA="+knotchA);
+  // add knotches+engravings
+  console.log("laser cut: add knotches+engravings kwidth="+kwidth+" kpos="+kpos+" knotchA="+knotchA+" knotchB="+knotchB+" lineplace="+lineplace+" linespace="+linespace);
   tiles.forEach(tile => {
+    // points A,B,C,D
+    let Ax=tile.bounds[0];
+    let Ay=tile.bounds[1];
+    let Bx=tile.bounds[2];
+    let By=tile.bounds[3];
+    let Cx=tile.bounds[4];
+    let Cy=tile.bounds[5];
+    let Dx=tile.bounds[6];
+    let Dy=tile.bounds[7];
+    // 1. add engravings (CAUTION: before knotches!)
+    switch(tile.id[0]){
+      case 'fat':
+        // DOUBLE (wikipedia red line)
+        engravingArcs.push([Cx,Cy,1-lineplace-linespace,Dx,Dy,Bx,By]);
+        engravingArcs.push([Cx,Cy,1-lineplace+linespace,Dx,Dy,Bx,By]);
+        // SIMPLE (wikipedia blue line)
+        engravingArcs.push([Ax,Ay,lineplace,Bx,By,Dx,Dy]);
+        break;
+      case 'thin':
+        // DOUBLE (wikipedia red line)
+        engravingArcs.push([Cx,Cy,lineplace-linespace,Dx,Dy,Bx,By]);
+        engravingArcs.push([Cx,Cy,lineplace+linespace,Dx,Dy,Bx,By]);
+        // SIMPLE (wikipedia blue line)
+        engravingArcs.push([Ax,Ay,lineplace,Bx,By,Dx,Dy]);
+        break;
+      default:
+        console.log("oups: tile type expected 'fat' or 'thin', found "+tile.id[0]+".");
+        break;
+    }
+    // 2. add knotches to all tile segments
+    let newbounds = [];
+    switch(tile.id[0]){
+      case 'fat':
+        // side A--B is knotchA M at 1-kpos
+        switch(knotchA){
+          case "claw":
+            newbounds.push(...knotchClawM(Ax,Ay,Bx,By,1-kpos,kwidth));
+            break;
+          case "trapezoid":
+            newbounds.push(...knotchTrapezoidM(Ax,Ay,Bx,By,1-kpos,kwidth));
+            break;
+          default: // includes "none"
+            newbounds.push(Ax,Ay,Bx,By);
+            break;
+        }
+        // side B--C is knotchB M at 1-kpos
+        switch(knotchB){
+          case "claw":
+            newbounds.push(...knotchClawM(Bx,By,Cx,Cy,1-kpos,kwidth));
+            break;
+          case "trapezoid":
+            newbounds.push(...knotchTrapezoidM(Bx,By,Cx,Cy,1-kpos,kwidth));
+            break;
+          default: // includes "none"
+            newbounds.push(Bx,By,Cx,Cy);
+            break;
+        }
+        // side C--D is knotchB F at 1-kpos
+        switch(knotchB){
+          case "claw":
+            newbounds.push(...knotchClawF(Cx,Cy,Dx,Dy,1-kpos,kwidth));
+            break;
+          case "trapezoid":
+            newbounds.push(...knotchTrapezoidF(Cx,Cy,Dx,Dy,1-kpos,kwidth));
+            break;
+          default: // includes "none"
+            newbounds.push(Cx,Cy,Dx,Dy);
+            break;
+        }
+        // side D--A is knotchA F at 1-kpos
+        switch(knotchA){
+          case "claw":
+            newbounds.push(...knotchClawF(Dx,Dy,Ax,Ay,1-kpos,kwidth));
+            break;
+          case "trapezoid":
+            newbounds.push(...knotchTrapezoidF(Dx,Dy,Ax,Ay,1-kpos,kwidth));
+            break;
+          default: // includes "none"
+            newbounds.push(Dx,Dy,Ax,Ay);
+            break;
+        }
+        break;
+      case 'thin':
+        // side A--B is knotchA M at 1-kpos
+        switch(knotchA){
+          case "claw":
+            newbounds.push(...knotchClawM(Ax,Ay,Bx,By,1-kpos,kwidth));
+            break;
+          case "trapezoid":
+            newbounds.push(...knotchTrapezoidM(Ax,Ay,Bx,By,1-kpos,kwidth));
+            break;
+          default: // includes "none"
+            newbounds.push(Ax,Ay,Bx,By);
+            break;
+        }
+        // side B--C is knotchB M at kpos
+        switch(knotchB){
+          case "claw":
+            newbounds.push(...knotchClawM(Bx,By,Cx,Cy,kpos,kwidth));
+            break;
+          case "trapezoid":
+            newbounds.push(...knotchTrapezoidM(Bx,By,Cx,Cy,kpos,kwidth));
+            break;
+          default: // includes "none"
+            newbounds.push(Bx,By,Cx,Cy);
+            break;
+        }
+        // side C--D is knotchB F at kpos
+        switch(knotchB){
+          case "claw":
+            newbounds.push(...knotchClawF(Cx,Cy,Dx,Dy,kpos,kwidth));
+            break;
+          case "trapezoid":
+            newbounds.push(...knotchTrapezoidF(Cx,Cy,Dx,Dy,kpos,kwidth));
+            break;
+          default: // includes "none"
+            newbounds.push(Cx,Cy,Dx,Dy);
+            break;
+        }
+        // side D--A is knotchA F at 1-kpos
+        switch(knotchA){
+          case "claw":
+            newbounds.push(...knotchClawF(Dx,Dy,Ax,Ay,1-kpos,kwidth));
+            break;
+          case "trapezoid":
+            newbounds.push(...knotchTrapezoidF(Dx,Dy,Ax,Ay,1-kpos,kwidth));
+            break;
+          default: // includes "none"
+            newbounds.push(Dx,Dy,Ax,Ay);
+            break;
+        }
+        break;
+      default:
+        console.log("oups: tile type expected 'fat' or 'thin', found "+tile.id[0]+".");
+        break;
+    }
+    // update tile.bounds
+    tile.bounds=newbounds;
+
+
+
+
+
+/*
     let x=0;
     let y=0;
     let xx=0;
@@ -869,10 +1010,10 @@ Tiling.P3lasercut = function({iterations,width,height,kplace,kwidth,knotchA}={})
       yy=tile.bounds[5];
       switch(knotchA){
         case "claw":
-          newbounds.push(...knotchClawF(x,y,xx,yy,kplace,kwidth));
+          newbounds.push(...knotchClawF(x,y,xx,yy,1/2,kwidth));
           break;
         case "trapezoid":
-          newbounds.push(...knotchTrapezoidF(x,y,xx,yy,kplace,kwidth));
+          newbounds.push(...knotchTrapezoidF(x,y,xx,yy,1/2,kwidth));
           break;
         default: // includes "none"
           newbounds.push(xx,yy);
@@ -885,10 +1026,10 @@ Tiling.P3lasercut = function({iterations,width,height,kplace,kwidth,knotchA}={})
       yy=tile.bounds[7];
       switch(knotchA){
         case "claw":
-          newbounds.push(...knotchClawM(x,y,xx,yy,kplace,kwidth));
+          newbounds.push(...knotchClawM(x,y,xx,yy,1/2,kwidth));
           break;
         case "trapezoid":
-          newbounds.push(...knotchTrapezoidM(x,y,xx,yy,kplace,kwidth));
+          newbounds.push(...knotchTrapezoidM(x,y,xx,yy,1/2,kwidth));
           break;
         default: // includes "none"
           newbounds.push(xx,yy);
@@ -913,10 +1054,10 @@ Tiling.P3lasercut = function({iterations,width,height,kplace,kwidth,knotchA}={})
       let yy=tile.bounds[5];
       switch(knotchA){
         case "claw":
-          newbounds.push(...knotchClawM(x,y,xx,yy,kplace,kwidth));
+          newbounds.push(...knotchClawM(x,y,xx,yy,1/2,kwidth));
           break;
         case "trapezoid":
-          newbounds.push(...knotchTrapezoidM(x,y,xx,yy,kplace,kwidth));
+          newbounds.push(...knotchTrapezoidM(x,y,xx,yy,1/2,kwidth));
           break;
         default: // includes "none"
           newbounds.push(xx,yy);
@@ -929,10 +1070,10 @@ Tiling.P3lasercut = function({iterations,width,height,kplace,kwidth,knotchA}={})
       yy=tile.bounds[7];
       switch(knotchA){
         case "claw":
-          newbounds.push(...knotchClawF(x,y,xx,yy,kplace,kwidth));
+          newbounds.push(...knotchClawF(x,y,xx,yy,1/2,kwidth));
           break;
         case "trapezoid":
-          newbounds.push(...knotchTrapezoidF(x,y,xx,yy,kplace,kwidth));
+          newbounds.push(...knotchTrapezoidF(x,y,xx,yy,1/2,kwidth));
           break;
         default: // includes "none"
           newbounds.push(xx,yy);
@@ -941,6 +1082,12 @@ Tiling.P3lasercut = function({iterations,width,height,kplace,kwidth,knotchA}={})
       // update tile.bounds
       tile.bounds=newbounds;
     }
+
+*/
+
+
+
+
   });
   // construct tiling
   return new Tiling(tiles);
