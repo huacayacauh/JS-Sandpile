@@ -874,8 +874,8 @@ Tiling.P3lasercut = function({iterations,width,height,kplace,kwidth,knotchA}={})
         case "trapezoid":
           newbounds.push(...knotchTrapezoidF(x,y,xx,yy,kplace,kwidth));
           break;
-        default:
-          newbounds.push(...knotchTrapezoidF(x,y,xx,yy,kplace,kwidth));
+        default: // includes "none"
+          newbounds.push(xx,yy);
           break;
       }
       // replace the segment 2--3 with a knotch (includes point 3)
@@ -890,8 +890,8 @@ Tiling.P3lasercut = function({iterations,width,height,kplace,kwidth,knotchA}={})
         case "trapezoid":
           newbounds.push(...knotchTrapezoidM(x,y,xx,yy,kplace,kwidth));
           break;
-        default:
-          newbounds.push(...knotchTrapezoidM(x,y,xx,yy,kplace,kwidth));
+        default: // includes "none"
+          newbounds.push(xx,yy);
           break;
       }
       // update tile.bounds
@@ -918,8 +918,8 @@ Tiling.P3lasercut = function({iterations,width,height,kplace,kwidth,knotchA}={})
         case "trapezoid":
           newbounds.push(...knotchTrapezoidM(x,y,xx,yy,kplace,kwidth));
           break;
-        default:
-          newbounds.push(...knotchTrapezoidM(x,y,xx,yy,kplace,kwidth));
+        default: // includes "none"
+          newbounds.push(xx,yy);
           break;
       }
       // replace the segment 2--3 with a knotch (includes point 3)
@@ -934,8 +934,8 @@ Tiling.P3lasercut = function({iterations,width,height,kplace,kwidth,knotchA}={})
         case "trapezoid":
           newbounds.push(...knotchTrapezoidF(x,y,xx,yy,kplace,kwidth));
           break;
-        default:
-          newbounds.push(...knotchTrapezoidF(x,y,xx,yy,kplace,kwidth));
+        default: // includes "none"
+          newbounds.push(xx,yy);
           break;
       }
       // update tile.bounds

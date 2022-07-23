@@ -91,7 +91,7 @@ var selectedTile;
 
 var savedConfigs = [];
 
-var wireFrameEnabled = false;
+var wireFrameEnabled = true;
 
 var number_of_steps = 0; // count the number of steps (manually reset by user)
 reset_number_of_steps();
@@ -473,12 +473,17 @@ function enableWireFrame(elem){
 // ------------------------------------------------
 function drawTiling(){
 
+        // clear scene
 	while(app.scene.children.length > 0){
 		app.scene.remove(app.scene.children[0]);
 		console.log("cleared");
 	}
 	
+        // reset global-state-variable
 	check_stable = 0;
+	selectedTile = null;
+	engravingArcs = [];
+	engravingLines = [];
 	
         // get buttons
 	cW = document.getElementById("cW").value;
@@ -492,40 +497,37 @@ function drawTiling(){
 	var knotchA = document.getElementById("knotchA").value;
 	var linespace = document.getElementById("linespace").valueAsNumber;
 	var kposlist = document.getElementById("kposlist").value;
-
-        // and the most important...
+        // the most important...
 	preset = document.getElementById("TilingSelect").value;
 
-        // reset selected tile
-	selectedTile = null;
-
-        // reset engravings
-	engravingArcs = [];
-	engravingLines = [];
-	
         // prepare command and call the tiling generator
 	var command = "currentTiling = Tiling." + preset + "({height:cH, width:cW, iterations:nbIt, size:size, order:order, cropMethod:cropMethod, kplace:kplace, kwidth:kwidth, knotchA:knotchA, linespace:linespace, kposlist:kposlist})";
-	
         console.log("BEGIN construct a new Tiling");
 	eval(command);
         console.log("END construct a new Tiling");
         console.log("INFO the current Tiling has "+currentTiling.tiles.length+" tiles");
 	
-        // bla
+        // save color map
 	currentTiling.cmap = cmap;
 	
+        // manage camera
 	app.controls.zoomCamera();
 	app.controls.object.updateProjectionMatrix();
 
+        // add tiling and engravings to THREE.js scene
 	app.scene.add(currentTiling.mesh);
+        currentTiling.engravings.forEach( obj => { app.scene.add(obj); } );
 	
+        // apply color map to fill tiles
 	currentTiling.colorTiles();
-	//console.log(currentTiling);
 	
+        // draw tiles (?)
 	enableWireFrame(document.getElementById("wireFrameToggle"));
 
+        // ?
 	playWithDelay();
 
+        // render THREE.js scene
 	var render = function () {
 		requestAnimationFrame( render );
 		app.controls.update();

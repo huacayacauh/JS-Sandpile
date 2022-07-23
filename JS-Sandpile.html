@@ -39,7 +39,7 @@
 		<!-- Upper right alignment -->
 		<span style="position:absolute; top:30px; right:50px"> Draw-tiles : </span>
 			<label class="switch" style="position:absolute; top:32px; right:10px">
-			  <input type="checkbox" id="wireFrameToggle" oninput="enableWireFrame(this);" checked = "false">
+			  <input type="checkbox" id="wireFrameToggle" oninput="enableWireFrame(this);" checked = "true">
 			  <span class="slider round"></span>
 			</label>
 
@@ -158,8 +158,9 @@
 				<span id="p_knotchA" style="display:none;">
 				Knotch type A :
 					<select id="knotchA">
-						<option value="claw"> claw </option>
 						<option value="trapezoid"> trapezoid </option>
+						<option value="claw"> claw </option>
+				  	    <option value="none"> none </option>
 					</select>
 				<br></span>
 

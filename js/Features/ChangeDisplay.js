@@ -348,5 +348,5 @@ function hideParams(){
 }
 
 // Prevents wireFrameToggle from being automatcally set to true
-$('input[id="wireFrameToggle"]').removeAttr('checked');
+//$('input[id="wireFrameToggle"]').removeAttr('checked');
 

@@ -193,7 +193,30 @@ class Tiling{
 			var mat = new THREE.LineBasicMaterial( { color: 0x000000, linewidth: 1 } );
 			this.wireFrame = new THREE.LineSegments( wireFrameGeometry, mat );
 			
-			
+			// Engravings -----------------------------------------------------
+
+                        this.engravings = [];
+                        let engravingArcsMaterial = new THREE.LineBasicMaterial({color:0xff0000,linewidth:1});
+                        engravingArcs.forEach(eA => {
+                          let x=eA[0];
+                          let y=eA[1];
+                          let r=eA[2];
+                          let Ax=eA[3];
+                          let Ay=eA[4];
+                          let Bx=eA[5];
+                          let By=eA[6];
+                          // this loop is really too slow...
+                          let angleA = Math.atan2(Ay-y,Ax-x);
+                          if(angleA<0){ angleA += 2*Math.PI; }
+                          let angleB = Math.atan2(By-y,Bx-x);
+                          if(angleB<0){ angleB += 2*Math.PI; }
+                          let ellipse = new THREE.EllipseCurve(x,y,r,r,angleA,angleB,false,0);
+                          let ellipsePoints = ellipse.getPoints( 32 );
+                          let ellipseGeometry = new THREE.BufferGeometry().setFromPoints( ellipsePoints );
+                          let ellipseObject = new THREE.Line(ellipseGeometry, engravingArcsMaterial);
+                          this.engravings.push(ellipseObject);
+                        });
+                  
 			// Clicking -----------------------------------------------------
 			this.indexDict = {}; // Dict face index <-> tile index
 
