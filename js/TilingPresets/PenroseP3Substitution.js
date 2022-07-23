@@ -789,3 +789,307 @@ Tiling.P3sunbysubst = function({iterations}={}){
   return new Tiling(tiles);
 }
 
+//
+// [8] laser cut: add knotches and crop to rectangle
+// 
+
+// decorations taken from:
+// https://en.wikipedia.org/wiki/Penrose_tiling#Rhombus_tiling_(P3)
+Tiling.P3lasercut = function({iterations,width,height,kwidth,kpos,knotchA,knotchB,lineplace,linespace}={}){
+  /*
+   * this first part of the code (tiles generation) is copied (bouh) form the sun
+   *
+   * BEGIN
+   */
+  var tiles = [];
+  // push base "sun" tiling
+  for(var i=0; i<5; i++){
+    // construct tiles
+    var myfat = fat.myclone();
+    myfat.id.push('basefat'+i); // unique!
+    myfat.rotate(0,0,i*2*Math.PI/5);
+    var mythin = thin.myclone();
+    mythin.id.push('basethin'+i); // unique!
+    mythin.rotate(0,0,Math.PI);
+    mythin.shift(0,2*Math.cos(2*Math.PI/5)+1);
+    mythin.rotate(0,0,(i*2+1)*Math.PI/5);
+    // define neighbors with undefined on the boundary
+    myfat.neighbors.push(['fat','basefat'+(i-1+5)%5]); // 0
+    myfat.neighbors.push(['thin','basethin'+(i-1+5)%5]); // 1
+    myfat.neighbors.push(['thin','basethin'+i]); // 2
+    myfat.neighbors.push(['fat','basefat'+(i+1)%5]); // 3
+    mythin.neighbors.push(undefined); // 0
+    mythin.neighbors.push(['fat','basefat'+(i+1)%5]); // 1
+    mythin.neighbors.push(['fat','basefat'+i]); // 2
+    mythin.neighbors.push(undefined); // 3
+    tiles.push(myfat);
+    tiles.push(mythin);
+  }
+  // call the substitution
+  tiles = substitute(
+    iterations,
+    tiles,
+    phi,
+    substitutionP3,
+    duplicatedP3,
+    duplicatedP3oriented,
+    neighborsP3,
+    neighbors2boundsP3,
+    decorateP3
+  );
+  /*
+   * END
+   */
+  // crop to rectangle
+  console.log("laser cut: crop to rectangle width="+width+" height="+height);
+  tiles = cropTilingToRectangle(tiles,width,height);
+  // add knotches+engravings
+  console.log("laser cut: add knotches+engravings kwidth="+kwidth+" kpos="+kpos+" knotchA="+knotchA+" knotchB="+knotchB+" lineplace="+lineplace+" linespace="+linespace);
+  tiles.forEach(tile => {
+    // points A,B,C,D
+    let Ax=tile.bounds[0];
+    let Ay=tile.bounds[1];
+    let Bx=tile.bounds[2];
+    let By=tile.bounds[3];
+    let Cx=tile.bounds[4];
+    let Cy=tile.bounds[5];
+    let Dx=tile.bounds[6];
+    let Dy=tile.bounds[7];
+    // 1. add engravings (CAUTION: before knotches!)
+    switch(tile.id[0]){
+      case 'fat':
+        // DOUBLE (wikipedia red line)
+        engravingArcs.push([Cx,Cy,1-lineplace-linespace,Dx,Dy,Bx,By]);
+        engravingArcs.push([Cx,Cy,1-lineplace+linespace,Dx,Dy,Bx,By]);
+        // SIMPLE (wikipedia blue line)
+        engravingArcs.push([Ax,Ay,lineplace,Bx,By,Dx,Dy]);
+        break;
+      case 'thin':
+        // DOUBLE (wikipedia red line)
+        engravingArcs.push([Cx,Cy,lineplace-linespace,Dx,Dy,Bx,By]);
+        engravingArcs.push([Cx,Cy,lineplace+linespace,Dx,Dy,Bx,By]);
+        // SIMPLE (wikipedia blue line)
+        engravingArcs.push([Ax,Ay,lineplace,Bx,By,Dx,Dy]);
+        break;
+      default:
+        console.log("oups: tile type expected 'fat' or 'thin', found "+tile.id[0]+".");
+        break;
+    }
+    // 2. add knotches to all tile segments
+    let newbounds = [];
+    switch(tile.id[0]){
+      case 'fat':
+        // side A--B is knotchA M at 1-kpos
+        switch(knotchA){
+          case "claw":
+            newbounds.push(...knotchClawM(Ax,Ay,Bx,By,1-kpos,kwidth));
+            break;
+          case "trapezoid":
+            newbounds.push(...knotchTrapezoidM(Ax,Ay,Bx,By,1-kpos,kwidth));
+            break;
+          default: // includes "none"
+            newbounds.push(Ax,Ay,Bx,By);
+            break;
+        }
+        // side B--C is knotchB M at 1-kpos
+        switch(knotchB){
+          case "claw":
+            newbounds.push(...knotchClawM(Bx,By,Cx,Cy,1-kpos,kwidth));
+            break;
+          case "trapezoid":
+            newbounds.push(...knotchTrapezoidM(Bx,By,Cx,Cy,1-kpos,kwidth));
+            break;
+          default: // includes "none"
+            newbounds.push(Bx,By,Cx,Cy);
+            break;
+        }
+        // side C--D is knotchB F at 1-kpos
+        switch(knotchB){
+          case "claw":
+            newbounds.push(...knotchClawF(Cx,Cy,Dx,Dy,1-kpos,kwidth));
+            break;
+          case "trapezoid":
+            newbounds.push(...knotchTrapezoidF(Cx,Cy,Dx,Dy,1-kpos,kwidth));
+            break;
+          default: // includes "none"
+            newbounds.push(Cx,Cy,Dx,Dy);
+            break;
+        }
+        // side D--A is knotchA F at 1-kpos
+        switch(knotchA){
+          case "claw":
+            newbounds.push(...knotchClawF(Dx,Dy,Ax,Ay,1-kpos,kwidth));
+            break;
+          case "trapezoid":
+            newbounds.push(...knotchTrapezoidF(Dx,Dy,Ax,Ay,1-kpos,kwidth));
+            break;
+          default: // includes "none"
+            newbounds.push(Dx,Dy,Ax,Ay);
+            break;
+        }
+        break;
+      case 'thin':
+        // side A--B is knotchA M at 1-kpos
+        switch(knotchA){
+          case "claw":
+            newbounds.push(...knotchClawM(Ax,Ay,Bx,By,1-kpos,kwidth));
+            break;
+          case "trapezoid":
+            newbounds.push(...knotchTrapezoidM(Ax,Ay,Bx,By,1-kpos,kwidth));
+            break;
+          default: // includes "none"
+            newbounds.push(Ax,Ay,Bx,By);
+            break;
+        }
+        // side B--C is knotchB M at kpos
+        switch(knotchB){
+          case "claw":
+            newbounds.push(...knotchClawM(Bx,By,Cx,Cy,kpos,kwidth));
+            break;
+          case "trapezoid":
+            newbounds.push(...knotchTrapezoidM(Bx,By,Cx,Cy,kpos,kwidth));
+            break;
+          default: // includes "none"
+            newbounds.push(Bx,By,Cx,Cy);
+            break;
+        }
+        // side C--D is knotchB F at kpos
+        switch(knotchB){
+          case "claw":
+            newbounds.push(...knotchClawF(Cx,Cy,Dx,Dy,kpos,kwidth));
+            break;
+          case "trapezoid":
+            newbounds.push(...knotchTrapezoidF(Cx,Cy,Dx,Dy,kpos,kwidth));
+            break;
+          default: // includes "none"
+            newbounds.push(Cx,Cy,Dx,Dy);
+            break;
+        }
+        // side D--A is knotchA F at 1-kpos
+        switch(knotchA){
+          case "claw":
+            newbounds.push(...knotchClawF(Dx,Dy,Ax,Ay,1-kpos,kwidth));
+            break;
+          case "trapezoid":
+            newbounds.push(...knotchTrapezoidF(Dx,Dy,Ax,Ay,1-kpos,kwidth));
+            break;
+          default: // includes "none"
+            newbounds.push(Dx,Dy,Ax,Ay);
+            break;
+        }
+        break;
+      default:
+        console.log("oups: tile type expected 'fat' or 'thin', found "+tile.id[0]+".");
+        break;
+    }
+    // update tile.bounds
+    tile.bounds=newbounds;
+
+
+
+
+
+/*
+    let x=0;
+    let y=0;
+    let xx=0;
+    let yy=0;
+    if(tile.id[0] == 'fat'){
+      // fat
+      let newbounds = [];
+      // point 0 identical
+      newbounds.push(tile.bounds[0]);
+      newbounds.push(tile.bounds[1]);
+      // point 1 identical
+      newbounds.push(tile.bounds[2]);
+      newbounds.push(tile.bounds[3]);
+      // replace the segment 1--2 with a knotch (includes point 2)
+      x=tile.bounds[2];
+      y=tile.bounds[3];
+      xx=tile.bounds[4];
+      yy=tile.bounds[5];
+      switch(knotchA){
+        case "claw":
+          newbounds.push(...knotchClawF(x,y,xx,yy,1/2,kwidth));
+          break;
+        case "trapezoid":
+          newbounds.push(...knotchTrapezoidF(x,y,xx,yy,1/2,kwidth));
+          break;
+        default: // includes "none"
+          newbounds.push(xx,yy);
+          break;
+      }
+      // replace the segment 2--3 with a knotch (includes point 3)
+      x=tile.bounds[4];
+      y=tile.bounds[5];
+      xx=tile.bounds[6];
+      yy=tile.bounds[7];
+      switch(knotchA){
+        case "claw":
+          newbounds.push(...knotchClawM(x,y,xx,yy,1/2,kwidth));
+          break;
+        case "trapezoid":
+          newbounds.push(...knotchTrapezoidM(x,y,xx,yy,1/2,kwidth));
+          break;
+        default: // includes "none"
+          newbounds.push(xx,yy);
+          break;
+      }
+      // update tile.bounds
+      tile.bounds=newbounds;
+    }
+    else{
+      // thin
+      let newbounds = [];
+      // point 0 identical
+      newbounds.push(tile.bounds[0]);
+      newbounds.push(tile.bounds[1]);
+      // point 1 identical
+      newbounds.push(tile.bounds[2]);
+      newbounds.push(tile.bounds[3]);
+      // replace the segment 1--2 with a knotch (includes point 2)
+      let x=tile.bounds[2];
+      let y=tile.bounds[3];
+      let xx=tile.bounds[4];
+      let yy=tile.bounds[5];
+      switch(knotchA){
+        case "claw":
+          newbounds.push(...knotchClawM(x,y,xx,yy,1/2,kwidth));
+          break;
+        case "trapezoid":
+          newbounds.push(...knotchTrapezoidM(x,y,xx,yy,1/2,kwidth));
+          break;
+        default: // includes "none"
+          newbounds.push(xx,yy);
+          break;
+      }
+      // replace the segment 2--3 with a knotch (includes point 3)
+      x=tile.bounds[4];
+      y=tile.bounds[5];
+      xx=tile.bounds[6];
+      yy=tile.bounds[7];
+      switch(knotchA){
+        case "claw":
+          newbounds.push(...knotchClawF(x,y,xx,yy,1/2,kwidth));
+          break;
+        case "trapezoid":
+          newbounds.push(...knotchTrapezoidF(x,y,xx,yy,1/2,kwidth));
+          break;
+        default: // includes "none"
+          newbounds.push(xx,yy);
+          break;
+      }
+      // update tile.bounds
+      tile.bounds=newbounds;
+    }
+
+*/
+
+
+
+
+  });
+  // construct tiling
+  return new Tiling(tiles);
+}
+

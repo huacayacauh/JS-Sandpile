@@ -91,7 +91,7 @@ var selectedTile;
 
 var savedConfigs = [];
 
-var wireFrameEnabled = false;
+var wireFrameEnabled = true;
 
 var number_of_steps = 0; // count the number of steps (manually reset by user)
 reset_number_of_steps();
@@ -105,6 +105,9 @@ var color_select = new THREE.Color(); // Animation of selected tile color
 var tileInfo = document.getElementById("tileInfo"); 
 
 var check_copy = true; // Copy the tiling once in a while to see if it is stable
+
+var engravingArcs = []; // Array of [center-x, center-y, radius, start-angle-x, start-angle-y, end-angle-x, end-angle-y] where start and end bounds definiting the angle are given counterclockwise
+var engravingLines = []; // Array of [start-x, start-y, end-x, end-y]
 
 // ---------------------- Routines
 
@@ -470,47 +473,63 @@ function enableWireFrame(elem){
 // ------------------------------------------------
 function drawTiling(){
 
+        // clear scene
 	while(app.scene.children.length > 0){
 		app.scene.remove(app.scene.children[0]);
 		console.log("cleared");
 	}
 	
+        // reset global-state-variable
 	check_stable = 0;
+	selectedTile = null;
+	engravingArcs = [];
+	engravingLines = [];
 	
+        // get buttons
 	cW = document.getElementById("cW").value;
 	cH = document.getElementById("cH").value;
-	
 	var size = document.getElementById("size").value;
 	var order = document.getElementById("order").value;
 	var cropMethod = document.getElementById("cropMethod").value;
-
-	selectedTile = null;
-	
+	var nbIt = document.getElementById("penroseIt").value;
+	var kwidth = document.getElementById("kwidth").valueAsNumber;
+	var knotchA = document.getElementById("knotchA").value;
+	var knotchB = document.getElementById("knotchB").value;
+	var lineplace = document.getElementById("lineplace").valueAsNumber;
+	var linespace = document.getElementById("linespace").valueAsNumber;
+	var kpos = document.getElementById("kpos").valueAsNumber;
+	var kposlist = document.getElementById("kposlist").value;
+        // the most important...
 	preset = document.getElementById("TilingSelect").value;
 
-	var nbIt = document.getElementById("penroseIt").value;
-	
-	var command = "currentTiling = Tiling." + preset + "({height:cH, width:cW, iterations:nbIt, size:size, order:order, cropMethod:cropMethod})";
-	
+        // prepare command and call the tiling generator
+	var command = "currentTiling = Tiling." + preset + "({height:cH, width:cW, iterations:nbIt, size:size, order:order, cropMethod:cropMethod, kwidth:kwidth, knotchA:knotchA, knotchB:knotchB, lineplace:lineplace, linespace:linespace, kpos:kpos, kposlist:kposlist})";
         console.log("BEGIN construct a new Tiling");
 	eval(command);
         console.log("END construct a new Tiling");
         console.log("INFO the current Tiling has "+currentTiling.tiles.length+" tiles");
 	
+        // save color map
 	currentTiling.cmap = cmap;
 	
+        // manage camera
 	app.controls.zoomCamera();
 	app.controls.object.updateProjectionMatrix();
 
+        // add tiling and engravings to THREE.js scene
 	app.scene.add(currentTiling.mesh);
+        currentTiling.engravings.forEach( obj => { app.scene.add(obj); } );
 	
+        // apply color map to fill tiles
 	currentTiling.colorTiles();
-	//console.log(currentTiling);
 	
+        // draw tiles (?)
 	enableWireFrame(document.getElementById("wireFrameToggle"));
 
+        // ?
 	playWithDelay();
 
+        // render THREE.js scene
 	var render = function () {
 		requestAnimationFrame( render );
 		app.controls.update();

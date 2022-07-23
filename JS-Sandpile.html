@@ -39,7 +39,7 @@
 		<!-- Upper right alignment -->
 		<span style="position:absolute; top:30px; right:50px"> Draw-tiles : </span>
 			<label class="switch" style="position:absolute; top:32px; right:10px">
-			  <input type="checkbox" id="wireFrameToggle" oninput="enableWireFrame(this);" checked = "false">
+			  <input type="checkbox" id="wireFrameToggle" oninput="enableWireFrame(this);" checked = "true">
 			  <span class="slider round"></span>
 			</label>
 
@@ -68,11 +68,13 @@
 					<optgroup label="Substitution: Penrose P2 (kite-dart)">
 						<option value="P2sunbysubst">Sun</option>
 						<option value="P2starbysubst">Star</option>
+						<option value="P2lasercut">Laser-cut (adds knotches+engravings)</option>
 					</optgroup>
 					<optgroup label="Substitution: Penrose P3 (rhomb)">
 						<option value="P3sunbysubst">Sun</option>
 						<option value="P3star1bysubst">Star1</option>
 						<option value="P3star2bysubst">Star2</option>
+						<option value="P3lasercut">Laser-cut (adds knotches+engravings)</option>
 					</optgroup>
 					<optgroup label="Substitution: Penrose P0 (from Robinson triangles)">
 						<option value="penrose0">Half-kite</option>
@@ -140,16 +142,64 @@
 				<span id="p_cropMethod" style="display:none">
 				Crop method :
 					<select id="cropMethod">
-						<option value="maxCoord"> Maximum coordinate </option>
-						<option value="sumCoord"> Sum of the coordinates </option>
-						<option value="euclideanNorm"> Euclidean norm </option>
+                        <option value="maxCoord"> L&#8734; (maximum coordinate) </option>
+                        <option value="sumCoord"> L1 (sum of coordinates) </option>
+                        <option value="euclideanNorm"> L2 (Euclidean norm) </option>
 					</select>
 				<br></span>
 
-				<!-- Penrose controls -->
+				<!-- substitution controls -->
 				<span id="p_iterations" style="display:none;">
 				Iterations :
 					<input type="number" style="width: 50px;" id="penroseIt" min="0" value="4"/>
+				<br></span>
+
+				<!-- laser cut controls -->
+
+				<span id="p_knotchA" style="display:none;">
+				Knotch type A :
+					<select id="knotchA">
+						<option value="trapezoid"> trapezoid </option>
+						<option value="claw"> claw </option>
+				  	    <option value="none"> none </option>
+					</select>
+				<br></span>
+
+				<span id="p_knotchB" style="display:none;">
+				Knotch type B :
+					<select id="knotchB">
+						<option value="trapezoid"> trapezoid </option>
+						<option value="claw"> claw </option>
+				  	    <option value="none"> none </option>
+					</select>
+				<br></span>
+
+				<span id="p_kwidth" style="display:none;">
+				Knotch width [0,1]:
+					<input type="number" step=0.01 style="width: 50px;" id="kwidth" min="0" max="1" value="0.2"/>
+				<br></span>
+
+				<span id="p_kpos" style="display:none;">
+				  Knotch position [0,1] :
+				  <input type="number" step=0.01 style="width: 50px;" id="kpos" min="0" max="1" value="0.5"/>
+				<br></span>
+
+				<span id="p_kposlist" style="display:none;">
+				Knotch position :
+				  <select id="kposlist">
+				  	<option value="along"> along engravings </option>
+				  	<option value="center"> center of sides </option>
+				  </select>
+				<br></span>
+
+				<span id="p_lineplace" style="display:none;">
+				Line position [0,1]:
+					<input type="number" step=0.01 style="width: 50px;" id="lineplace" min="0" max="1" value="0.22"/>
+				<br></span>
+
+				<span id="p_linespace" style="display:none;">
+				Line space [0,1]:
+					<input type="number" step=0.01 style="width: 50px;" id="linespace" min="0" max="1" value="0.04"/>
 				<br></span>
 
 			</div>
@@ -240,8 +290,9 @@
 					Import from JSON
 				</label>
 				<button id="createjson" style="margin-top:5px;" class="btn btn-default">Export to JSON</button>
-				<button id="createsvg" style="margin-top:5px;" class="btn btn-default">Export to SVG</button>
 				<button id="createtikz" style="margin-top:5px;" class="btn btn-default">Export to TIKZ</button>
+				<button id="createsvg" style="margin-top:5px;" class="btn btn-default">Export to SVG</button>
+				<button id="createsvglasercut" style="margin-top:5px;" class="btn btn-default">Export to SVG for laser cut</button>
 				<label for="filesPIC" class="btn btn-default" style="margin-top:5px;">
 					Square Tiling from image
 				</label>
@@ -377,6 +428,7 @@
     <script src="./js/Utils/Geometry.js"></script>
     <script src="./js/Utils/Matrix.js"></script>
     <script src="./js/Utils/Combinatorics.js"></script>
+    <script src="./js/Utils/Crop.js"></script>
 	<script src="./js/Utils/jszip.min.js"></script>
 	<script src="./js/Utils/FileSaver.min.js"></script>
 	<script src="./js/Utils/gpu-browser.min.js"></script>
@@ -408,6 +460,8 @@
 	<script src="./js/Features/Harmonics.js"></script>
 	<script src="./js/Features/Roundness.js"></script>
 	<script src="./js/Features/Batch_processings.js"></script>
+
+    <script src="./js/Utils/Knotches.js"></script>
 
 	<script src="./js/app.js"></script>
 

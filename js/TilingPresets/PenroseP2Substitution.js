@@ -503,3 +503,167 @@ Tiling.P2starbysubst = function({iterations}={}){
   return new Tiling(tiles);
 }
 
+//
+// [8] laser cut: add knotches and engraving, and crop to rectangle
+// 
+
+// decorations taken from:
+// https://en.wikipedia.org/wiki/Penrose_tiling#Kite_and_dart_tiling_(P2)
+Tiling.P2lasercut = function({iterations,width,height,knotchA,kwidth,kposlist}={}){
+  /*
+   * this first part of the code (tiles generation) is copied (bouh) form the sun
+   *
+   * BEGIN
+   */
+  var tiles = [];
+  // push base "sun" tiling
+  for(var i=0; i<5; i++){
+    // construct tiles
+    var mykite = kite.myclone();
+    mykite.id.push(i);
+    mykite.rotate(0,0,i*2*Math.PI/5);
+    // define neighbors with undefined on the boundary
+    mykite.neighbors.push(['kite',(i-1+5)%5]); // 0
+    mykite.neighbors.push(undefined); // 1
+    mykite.neighbors.push(undefined); // 2
+    mykite.neighbors.push(['kite',(i+1)%5]); // 3
+    tiles.push(mykite);
+  }
+  // call the substitution
+  tiles = substitute(
+    iterations,
+    tiles,
+    phi,
+    substitutionP2,
+    duplicatedP2,
+    duplicatedP2oriented,
+    neighborsP2,
+    neighbors2boundsP2,
+    decorateP2
+  );
+  /*
+   * END
+   */
+  // crop to rectangle 
+  console.log("laser cut: crop to rectangle width="+width+" height="+height);
+  tiles = cropTilingToRectangle(tiles,width,height);
+  // add knotches+engravings
+  /*
+   * NOTE ON HOW IT WORKS:
+   * knotches are at the center and any pair of tiles match them, their purpose is to maintain the tiles together
+   * engravingArcs is a list of [center-x, center-y, radius, start-angle-x, start-angle-y, end-angle-x, end-angle-y]
+   * (start and end bounds definiting the angle are given counterclockwise), they must match to enforce P3
+   * engravingArcs are processed when generating the "SVG for laser-cut"
+   */ 
+  console.log("laser cut: add knotches+engravings type ="+knotchA+" width="+kwidth+" kposlist="+kposlist);
+  tiles.forEach(tile => {
+    // points A,B,C,D
+    let Ax=tile.bounds[0];
+    let Ay=tile.bounds[1];
+    let Bx=tile.bounds[2];
+    let By=tile.bounds[3];
+    let Cx=tile.bounds[4];
+    let Cy=tile.bounds[5];
+    let Dx=tile.bounds[6];
+    let Dy=tile.bounds[7];
+    // 1. add engravings (CAUTION: before knotches!)
+    switch(tile.id[0]){
+      case 'kite':
+        // v1: DOUBLE (wikipedia green line)
+        // v1: engravingArcs.push([Ax,Ay,1+paramlinespac,Bx,By,Dx,Dy]);
+        // v1: engravingArcs.push([Ax,Ay,1-param_linespac,Bx,By,Dx,Dy]);
+        engravingArcs.push([Ax,Ay,1,Bx,By,Dx,Dy]);
+        // v1: SIMPLE (wikipedia red line)
+        engravingArcs.push([Cx,Cy,phi-1,Dx,Dy,Bx,By]);
+        break;
+      case 'dart':
+        // v1: DOUBLE (wikipedia green line)
+        // v1: engravingArcs.push([Ax,Ay,phi-1+param_linespac,Bx,By,Dx,Dy]);
+        // v1: engravingArcs.push([Ax,Ay,phi-1-param_linespac,Bx,By,Dx,Dy]);
+        engravingArcs.push([Ax,Ay,phi-1,Bx,By,Dx,Dy]);
+        // v1: SIMPLE (wikipedia red line)
+        engravingArcs.push([Cx,Cy,2-phi,Dx,Dy,Bx,By]);
+        break;
+      default:
+        console.log("oups: tile type expected 'kite' or 'dart', found "+tile.id[0]+".");
+        break;
+    }
+    // 2. add knotches to all tile segments
+    let newbounds = [];
+    switch(kposlist){
+      case 'along':
+        switch(tile.id[0]){
+          case 'kite':
+            switch(knotchA){
+              case "claw":
+                newbounds.push(...knotchClawF(Ax,Ay,Bx,By,1-1/phi,kwidth/phi));
+                newbounds.push(...knotchClawF(Bx,By,Cx,Cy,phi-1,kwidth));
+                newbounds.push(...knotchClawF(Cx,Cy,Dx,Dy,2-phi,kwidth));
+                newbounds.push(...knotchClawF(Dx,Dy,Ax,Ay,1/phi,kwidth/phi));
+                break;
+              case "trapezoid":
+                newbounds.push(...knotchTrapezoidF(Ax,Ay,Bx,By,1-1/phi,kwidth/phi));
+                newbounds.push(...knotchTrapezoidF(Bx,By,Cx,Cy,phi-1,kwidth));
+                newbounds.push(...knotchTrapezoidF(Cx,Cy,Dx,Dy,2-phi,kwidth));
+                newbounds.push(...knotchTrapezoidF(Dx,Dy,Ax,Ay,1/phi,kwidth/phi));
+                break;
+              default: // includes "none"
+                newbounds.push(Ax,Ay,Bx,By,Cx,Cy,Dx,Dy);
+                break;
+            }
+            break;
+          case 'dart':
+            switch(knotchA){
+              case "claw":
+                newbounds.push(...knotchClawF(Ax,Ay,Bx,By,1/phi,kwidth/phi));
+                newbounds.push(...knotchClawF(Bx,By,Cx,Cy,2-phi,kwidth));
+                newbounds.push(...knotchClawF(Cx,Cy,Dx,Dy,phi-1,kwidth));
+                newbounds.push(...knotchClawF(Dx,Dy,Ax,Ay,1-1/phi,kwidth/phi));
+                break;
+              case "trapezoid":
+                newbounds.push(...knotchTrapezoidF(Ax,Ay,Bx,By,1/phi,kwidth/phi));
+                newbounds.push(...knotchTrapezoidF(Bx,By,Cx,Cy,2-phi,kwidth));
+                newbounds.push(...knotchTrapezoidF(Cx,Cy,Dx,Dy,phi-1,kwidth));
+                newbounds.push(...knotchTrapezoidF(Dx,Dy,Ax,Ay,1-1/phi,kwidth/phi));
+                break;
+              default: // includes "none"
+                newbounds.push(Ax,Ay,Bx,By,Cx,Cy,Dx,Dy);
+                break;
+            }
+            break;
+          default:
+            console.log("oups: tile type expected 'kite' or 'dart', found "+tile.id[0]+".");
+            break;
+        }
+        break;
+      case 'center':
+        for(let i=0; i<tile.bounds.length; i=i+2){
+          let blen = tile.bounds.length;
+          let x=tile.bounds[i];
+          let y=tile.bounds[i+1];
+          let xx=tile.bounds[(i+2)%blen];
+          let yy=tile.bounds[(i+3)%blen];
+          // caution: there are two side lengths: 1 and phi
+          let sidelength = distance(x,y,xx,yy);
+          switch(knotchA){
+            case "claw":
+              newbounds.push(...knotchClawF(x,y,xx,yy,0.5,kwidth/sidelength));
+              break;
+            case "trapezoid":
+              newbounds.push(...knotchTrapezoidF(x,y,xx,yy,0.5,kwidth/sidelength));
+              break;
+            default: // includes "none"
+              newbounds.push(x,y);
+              break;
+          }
+        }
+        break;
+    }
+    // update tile.bounds
+    tile.bounds=newbounds;
+  });
+  console.log("laser-cut: engravings ready");
+  // construct tiling
+  return new Tiling(tiles);
+}
+

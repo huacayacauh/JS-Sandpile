@@ -336,7 +336,7 @@ function hideParams(){
 	func = "Tiling." + func +".toString()";
 	var func_str = eval(func);
 	
-	var params = ["height", "width", "iterations", "size", "order", "cropMethod"];
+	var params = ["height", "width", "iterations", "size", "order", "cropMethod", "kwidth", "knotchA", "knotchB", "lineplace", "linespace", "kpos", "kposlist"];
 	for(var i=0; i<params.length; i++){
 		if(func_str.includes(params[i])){
 			document.getElementById("p_" + params[i]).style="display:contents";
@@ -348,5 +348,5 @@ function hideParams(){
 }
 
 // Prevents wireFrameToggle from being automatcally set to true
-$('input[id="wireFrameToggle"]').removeAttr('checked');
+//$('input[id="wireFrameToggle"]').removeAttr('checked');
 
