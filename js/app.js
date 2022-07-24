@@ -497,13 +497,13 @@ function drawTiling(){
 	var knotchB = document.getElementById("knotchB").value;
 	var lineplace = document.getElementById("lineplace").valueAsNumber;
 	var linespace = document.getElementById("linespace").valueAsNumber;
-	var kpos = document.getElementById("kpos").valueAsNumber;
+	var kposi = document.getElementById("kposi").valueAsNumber;
 	var kposlist = document.getElementById("kposlist").value;
         // the most important...
 	preset = document.getElementById("TilingSelect").value;
 
         // prepare command and call the tiling generator
-	var command = "currentTiling = Tiling." + preset + "({height:cH, width:cW, iterations:nbIt, size:size, order:order, cropMethod:cropMethod, kwidth:kwidth, knotchA:knotchA, knotchB:knotchB, lineplace:lineplace, linespace:linespace, kpos:kpos, kposlist:kposlist})";
+	var command = "currentTiling = Tiling." + preset + "({height:cH, width:cW, iterations:nbIt, size:size, order:order, cropMethod:cropMethod, kwidth:kwidth, knotchA:knotchA, knotchB:knotchB, lineplace:lineplace, linespace:linespace, kposi:kposi, kposlist:kposlist})";
         console.log("BEGIN construct a new Tiling");
 	eval(command);
         console.log("END construct a new Tiling");

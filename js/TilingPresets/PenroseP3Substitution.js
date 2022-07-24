@@ -795,7 +795,7 @@ Tiling.P3sunbysubst = function({iterations}={}){
 
 // decorations taken from:
 // https://en.wikipedia.org/wiki/Penrose_tiling#Rhombus_tiling_(P3)
-Tiling.P3lasercut = function({iterations,width,height,kwidth,kpos,knotchA,knotchB,lineplace,linespace}={}){
+Tiling.P3lasercut = function({iterations,width,height,kwidth,kposi,knotchA,knotchB,lineplace,linespace}={}){
   /*
    * this first part of the code (tiles generation) is copied (bouh) form the sun
    *
@@ -844,7 +844,7 @@ Tiling.P3lasercut = function({iterations,width,height,kwidth,kpos,knotchA,knotch
   console.log("laser cut: crop to rectangle width="+width+" height="+height);
   tiles = cropTilingToRectangle(tiles,width,height);
   // add knotches+engravings
-  console.log("laser cut: add knotches+engravings kwidth="+kwidth+" kpos="+kpos+" knotchA="+knotchA+" knotchB="+knotchB+" lineplace="+lineplace+" linespace="+linespace);
+  console.log("laser cut: add knotches+engravings kwidth="+kwidth+" kposi="+kposi+" knotchA="+knotchA+" knotchB="+knotchB+" lineplace="+lineplace+" linespace="+linespace);
   tiles.forEach(tile => {
     // points A,B,C,D
     let Ax=tile.bounds[0];
@@ -879,49 +879,49 @@ Tiling.P3lasercut = function({iterations,width,height,kwidth,kpos,knotchA,knotch
     let newbounds = [];
     switch(tile.id[0]){
       case 'fat':
-        // side A--B is knotchA M at 1-kpos
+        // side A--B is knotchA M at 1-kposi
         switch(knotchA){
           case "claw":
-            newbounds.push(...knotchClawM(Ax,Ay,Bx,By,1-kpos,kwidth));
+            newbounds.push(...knotchClawM(Ax,Ay,Bx,By,1-kposi,kwidth));
             break;
           case "trapezoid":
-            newbounds.push(...knotchTrapezoidM(Ax,Ay,Bx,By,1-kpos,kwidth));
+            newbounds.push(...knotchTrapezoidM(Ax,Ay,Bx,By,1-kposi,kwidth));
             break;
           default: // includes "none"
             newbounds.push(Ax,Ay,Bx,By);
             break;
         }
-        // side B--C is knotchB M at 1-kpos
+        // side B--C is knotchB M at 1-kposi
         switch(knotchB){
           case "claw":
-            newbounds.push(...knotchClawM(Bx,By,Cx,Cy,1-kpos,kwidth));
+            newbounds.push(...knotchClawM(Bx,By,Cx,Cy,1-kposi,kwidth));
             break;
           case "trapezoid":
-            newbounds.push(...knotchTrapezoidM(Bx,By,Cx,Cy,1-kpos,kwidth));
+            newbounds.push(...knotchTrapezoidM(Bx,By,Cx,Cy,1-kposi,kwidth));
             break;
           default: // includes "none"
             newbounds.push(Bx,By,Cx,Cy);
             break;
         }
-        // side C--D is knotchB F at 1-kpos
+        // side C--D is knotchB F at 1-kposi
         switch(knotchB){
           case "claw":
-            newbounds.push(...knotchClawF(Cx,Cy,Dx,Dy,1-kpos,kwidth));
+            newbounds.push(...knotchClawF(Cx,Cy,Dx,Dy,1-kposi,kwidth));
             break;
           case "trapezoid":
-            newbounds.push(...knotchTrapezoidF(Cx,Cy,Dx,Dy,1-kpos,kwidth));
+            newbounds.push(...knotchTrapezoidF(Cx,Cy,Dx,Dy,1-kposi,kwidth));
             break;
           default: // includes "none"
             newbounds.push(Cx,Cy,Dx,Dy);
             break;
         }
-        // side D--A is knotchA F at 1-kpos
+        // side D--A is knotchA F at 1-kposi
         switch(knotchA){
           case "claw":
-            newbounds.push(...knotchClawF(Dx,Dy,Ax,Ay,1-kpos,kwidth));
+            newbounds.push(...knotchClawF(Dx,Dy,Ax,Ay,1-kposi,kwidth));
             break;
           case "trapezoid":
-            newbounds.push(...knotchTrapezoidF(Dx,Dy,Ax,Ay,1-kpos,kwidth));
+            newbounds.push(...knotchTrapezoidF(Dx,Dy,Ax,Ay,1-kposi,kwidth));
             break;
           default: // includes "none"
             newbounds.push(Dx,Dy,Ax,Ay);
@@ -929,49 +929,49 @@ Tiling.P3lasercut = function({iterations,width,height,kwidth,kpos,knotchA,knotch
         }
         break;
       case 'thin':
-        // side A--B is knotchA M at 1-kpos
+        // side A--B is knotchA M at 1-kposi
         switch(knotchA){
           case "claw":
-            newbounds.push(...knotchClawM(Ax,Ay,Bx,By,1-kpos,kwidth));
+            newbounds.push(...knotchClawM(Ax,Ay,Bx,By,1-kposi,kwidth));
             break;
           case "trapezoid":
-            newbounds.push(...knotchTrapezoidM(Ax,Ay,Bx,By,1-kpos,kwidth));
+            newbounds.push(...knotchTrapezoidM(Ax,Ay,Bx,By,1-kposi,kwidth));
             break;
           default: // includes "none"
             newbounds.push(Ax,Ay,Bx,By);
             break;
         }
-        // side B--C is knotchB M at kpos
+        // side B--C is knotchB M at kposi
         switch(knotchB){
           case "claw":
-            newbounds.push(...knotchClawM(Bx,By,Cx,Cy,kpos,kwidth));
+            newbounds.push(...knotchClawM(Bx,By,Cx,Cy,kposi,kwidth));
             break;
           case "trapezoid":
-            newbounds.push(...knotchTrapezoidM(Bx,By,Cx,Cy,kpos,kwidth));
+            newbounds.push(...knotchTrapezoidM(Bx,By,Cx,Cy,kposi,kwidth));
             break;
           default: // includes "none"
             newbounds.push(Bx,By,Cx,Cy);
             break;
         }
-        // side C--D is knotchB F at kpos
+        // side C--D is knotchB F at kposi
         switch(knotchB){
           case "claw":
-            newbounds.push(...knotchClawF(Cx,Cy,Dx,Dy,kpos,kwidth));
+            newbounds.push(...knotchClawF(Cx,Cy,Dx,Dy,kposi,kwidth));
             break;
           case "trapezoid":
-            newbounds.push(...knotchTrapezoidF(Cx,Cy,Dx,Dy,kpos,kwidth));
+            newbounds.push(...knotchTrapezoidF(Cx,Cy,Dx,Dy,kposi,kwidth));
             break;
           default: // includes "none"
             newbounds.push(Cx,Cy,Dx,Dy);
             break;
         }
-        // side D--A is knotchA F at 1-kpos
+        // side D--A is knotchA F at 1-kposi
         switch(knotchA){
           case "claw":
-            newbounds.push(...knotchClawF(Dx,Dy,Ax,Ay,1-kpos,kwidth));
+            newbounds.push(...knotchClawF(Dx,Dy,Ax,Ay,1-kposi,kwidth));
             break;
           case "trapezoid":
-            newbounds.push(...knotchTrapezoidF(Dx,Dy,Ax,Ay,1-kpos,kwidth));
+            newbounds.push(...knotchTrapezoidF(Dx,Dy,Ax,Ay,1-kposi,kwidth));
             break;
           default: // includes "none"
             newbounds.push(Dx,Dy,Ax,Ay);
