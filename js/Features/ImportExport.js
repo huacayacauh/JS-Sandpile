@@ -223,14 +223,16 @@ function tilingToSvgLaserCut(sandpile){
   /*
   /* start generate svg as String
    */
-  var svg = ['<?xml version="1.0" standalone="no"?> \n<svg width="' + ((x_max - x_min)*2).toFixed(3) + '" height="' + ((y_max-y_min)*2).toFixed(3) + '" version="1.1" xmlns="http://www.w3.org/2000/svg">\n'];
+  let factor = 10; // scaling factor
+
+  var svg = ['<?xml version="1.0" standalone="no"?> \n<svg width="' + ((x_max - x_min)*10).toFixed(3) + '" height="' + ((y_max-y_min)*10).toFixed(3) + '" version="1.1" xmlns="http://www.w3.org/2000/svg">\n'];
 
   // 1. tile segments
 
   // begin svg
   svg += '<g stroke="black" stroke-width=".1">\n';
   segments.forEach(seg => {
-    svg += '<line x1="'+((seg[0] - x_min)*2).toFixed(3)+'" y1="'+((seg[1] - y_min)*2).toFixed(3)+'" x2="'+((seg[2] - x_min)*2).toFixed(3)+'" y2="'+((seg[3] - y_min)*2).toFixed(3)+'"/>\n';
+    svg += '<line x1="'+((seg[0] - x_min)*10).toFixed(3)+'" y1="'+((seg[1] - y_min)*10).toFixed(3)+'" x2="'+((seg[2] - x_min)*10).toFixed(3)+'" y2="'+((seg[3] - y_min)*10).toFixed(3)+'"/>\n';
   });
   svg += "</g>\n";
 
@@ -239,7 +241,7 @@ function tilingToSvgLaserCut(sandpile){
   // lines
   svg += '<g stroke="blue" stroke-width=".1">\n';
   engravingLines.forEach(seg => {
-    svg += '<line x1="'+((seg[0] - x_min)*2).toFixed(3)+'" y1="'+((seg[1] - y_min)*2).toFixed(3)+'" x2="'+((seg[2] - x_min)*2).toFixed(3)+'" y2="'+((seg[3] - y_min)*2).toFixed(3)+'"/>\n';
+    svg += '<line x1="'+((seg[0] - x_min)*10).toFixed(3)+'" y1="'+((seg[1] - y_min)*10).toFixed(3)+'" x2="'+((seg[2] - x_min)*10).toFixed(3)+'" y2="'+((seg[3] - y_min)*10).toFixed(3)+'"/>\n';
   });
   svg += "</g>\n";
   // arcs
@@ -258,7 +260,7 @@ function tilingToSvgLaserCut(sandpile){
     let angle = Math.atan2(BBy-y,BBx-x) - Math.atan2(AAy-y,AAx-x);
     if(angle < 0){ angle += 2*Math.PI; };
     let largeArcFlag = angle <= Math.PI ? "0" : "1";
-    svg += '<path d="M '+((AAx - x_min)*2).toFixed(3)+' '+((AAy - y_min)*2).toFixed(3)+' A '+(2*r).toFixed(3)+' '+(2*r).toFixed(3)+' 0 '+largeArcFlag+' 1 '+((BBx - x_min)*2).toFixed(3)+' '+((BBy - y_min)*2).toFixed(3)+'"/>\n';
+    svg += '<path d="M '+((AAx - x_min)*10).toFixed(3)+' '+((AAy - y_min)*10).toFixed(3)+' A '+(10*r).toFixed(3)+' '+(10*r).toFixed(3)+' 0 '+largeArcFlag+' 1 '+((BBx - x_min)*10).toFixed(3)+' '+((BBy - y_min)*10).toFixed(3)+'"/>\n';
   });
   svg += "</g>\n";
 

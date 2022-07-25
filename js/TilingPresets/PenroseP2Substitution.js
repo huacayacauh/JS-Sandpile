@@ -551,9 +551,6 @@ Tiling.P2lasercut = function({iterations,width,height,knotchA,kwidth,kposlist}={
   /*
    * NOTE ON HOW IT WORKS:
    * knotches are at the center and any pair of tiles match them, their purpose is to maintain the tiles together
-   * engravingArcs is a list of [center-x, center-y, radius, start-angle-x, start-angle-y, end-angle-x, end-angle-y]
-   * (start and end bounds definiting the angle are given counterclockwise), they must match to enforce P3
-   * engravingArcs are processed when generating the "SVG for laser-cut"
    */ 
   console.log("laser cut: add knotches+engravings type ="+knotchA+" width="+kwidth+" kposlist="+kposlist);
   tiles.forEach(tile => {
