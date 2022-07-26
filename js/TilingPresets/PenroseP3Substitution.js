@@ -863,6 +863,21 @@ Tiling.P3lasercut = function({iterations,width,height,kwidth,kposi,knotchA,knotc
         engravingArcs.push([Cx,Cy,1-lineplace+linespace,Dx,Dy,Bx,By]);
         // SIMPLE (wikipedia blue line)
         engravingArcs.push([Ax,Ay,lineplace,Bx,By,Dx,Dy]);
+        // extra engraving lines
+        /*
+        engravingArcs.push([Cx,Cy,1-lineplace-linespace+0.01,Dx,Dy,Bx,By]);
+        engravingArcs.push([Cx,Cy,1-lineplace-linespace-0.01,Dx,Dy,Bx,By]);
+        engravingArcs.push([Cx,Cy,1-lineplace-linespace+0.02,Dx,Dy,Bx,By]);
+        engravingArcs.push([Cx,Cy,1-lineplace-linespace-0.02,Dx,Dy,Bx,By]);
+        engravingArcs.push([Cx,Cy,1-lineplace+linespace+0.01,Dx,Dy,Bx,By]);
+        engravingArcs.push([Cx,Cy,1-lineplace+linespace-0.01,Dx,Dy,Bx,By]);
+        engravingArcs.push([Cx,Cy,1-lineplace+linespace+0.02,Dx,Dy,Bx,By]);
+        engravingArcs.push([Cx,Cy,1-lineplace+linespace-0.02,Dx,Dy,Bx,By]);
+        engravingArcs.push([Ax,Ay,lineplace+0.01,Bx,By,Dx,Dy]);
+        engravingArcs.push([Ax,Ay,lineplace-0.01,Bx,By,Dx,Dy]);
+        engravingArcs.push([Ax,Ay,lineplace+0.02,Bx,By,Dx,Dy]);
+        engravingArcs.push([Ax,Ay,lineplace-0.02,Bx,By,Dx,Dy]);
+        */
         break;
       case 'thin':
         // DOUBLE (wikipedia red line)
@@ -870,6 +885,21 @@ Tiling.P3lasercut = function({iterations,width,height,kwidth,kposi,knotchA,knotc
         engravingArcs.push([Cx,Cy,lineplace+linespace,Dx,Dy,Bx,By]);
         // SIMPLE (wikipedia blue line)
         engravingArcs.push([Ax,Ay,lineplace,Bx,By,Dx,Dy]);
+        // extra engraving lines
+        /*
+        engravingArcs.push([Cx,Cy,lineplace-linespace+0.01,Dx,Dy,Bx,By]);
+        engravingArcs.push([Cx,Cy,lineplace-linespace-0.01,Dx,Dy,Bx,By]);
+        engravingArcs.push([Cx,Cy,lineplace-linespace+0.02,Dx,Dy,Bx,By]);
+        engravingArcs.push([Cx,Cy,lineplace-linespace-0.02,Dx,Dy,Bx,By]);
+        engravingArcs.push([Cx,Cy,lineplace+linespace+0.01,Dx,Dy,Bx,By]);
+        engravingArcs.push([Cx,Cy,lineplace+linespace-0.01,Dx,Dy,Bx,By]);
+        engravingArcs.push([Cx,Cy,lineplace+linespace+0.02,Dx,Dy,Bx,By]);
+        engravingArcs.push([Cx,Cy,lineplace+linespace-0.02,Dx,Dy,Bx,By]);
+        engravingArcs.push([Ax,Ay,lineplace+0.01,Bx,By,Dx,Dy]);
+        engravingArcs.push([Ax,Ay,lineplace-0.01,Bx,By,Dx,Dy]);
+        engravingArcs.push([Ax,Ay,lineplace+0.02,Bx,By,Dx,Dy]);
+        engravingArcs.push([Ax,Ay,lineplace-0.02,Bx,By,Dx,Dy]);
+        */
         break;
       default:
         console.log("oups: tile type expected 'fat' or 'thin', found "+tile.id[0]+".");
@@ -984,110 +1014,6 @@ Tiling.P3lasercut = function({iterations,width,height,kwidth,kposi,knotchA,knotc
     }
     // update tile.bounds
     tile.bounds=newbounds;
-
-
-
-
-
-/*
-    let x=0;
-    let y=0;
-    let xx=0;
-    let yy=0;
-    if(tile.id[0] == 'fat'){
-      // fat
-      let newbounds = [];
-      // point 0 identical
-      newbounds.push(tile.bounds[0]);
-      newbounds.push(tile.bounds[1]);
-      // point 1 identical
-      newbounds.push(tile.bounds[2]);
-      newbounds.push(tile.bounds[3]);
-      // replace the segment 1--2 with a knotch (includes point 2)
-      x=tile.bounds[2];
-      y=tile.bounds[3];
-      xx=tile.bounds[4];
-      yy=tile.bounds[5];
-      switch(knotchA){
-        case "claw":
-          newbounds.push(...knotchClawF(x,y,xx,yy,1/2,kwidth));
-          break;
-        case "trapezoid":
-          newbounds.push(...knotchTrapezoidF(x,y,xx,yy,1/2,kwidth));
-          break;
-        default: // includes "none"
-          newbounds.push(xx,yy);
-          break;
-      }
-      // replace the segment 2--3 with a knotch (includes point 3)
-      x=tile.bounds[4];
-      y=tile.bounds[5];
-      xx=tile.bounds[6];
-      yy=tile.bounds[7];
-      switch(knotchA){
-        case "claw":
-          newbounds.push(...knotchClawM(x,y,xx,yy,1/2,kwidth));
-          break;
-        case "trapezoid":
-          newbounds.push(...knotchTrapezoidM(x,y,xx,yy,1/2,kwidth));
-          break;
-        default: // includes "none"
-          newbounds.push(xx,yy);
-          break;
-      }
-      // update tile.bounds
-      tile.bounds=newbounds;
-    }
-    else{
-      // thin
-      let newbounds = [];
-      // point 0 identical
-      newbounds.push(tile.bounds[0]);
-      newbounds.push(tile.bounds[1]);
-      // point 1 identical
-      newbounds.push(tile.bounds[2]);
-      newbounds.push(tile.bounds[3]);
-      // replace the segment 1--2 with a knotch (includes point 2)
-      let x=tile.bounds[2];
-      let y=tile.bounds[3];
-      let xx=tile.bounds[4];
-      let yy=tile.bounds[5];
-      switch(knotchA){
-        case "claw":
-          newbounds.push(...knotchClawM(x,y,xx,yy,1/2,kwidth));
-          break;
-        case "trapezoid":
-          newbounds.push(...knotchTrapezoidM(x,y,xx,yy,1/2,kwidth));
-          break;
-        default: // includes "none"
-          newbounds.push(xx,yy);
-          break;
-      }
-      // replace the segment 2--3 with a knotch (includes point 3)
-      x=tile.bounds[4];
-      y=tile.bounds[5];
-      xx=tile.bounds[6];
-      yy=tile.bounds[7];
-      switch(knotchA){
-        case "claw":
-          newbounds.push(...knotchClawF(x,y,xx,yy,1/2,kwidth));
-          break;
-        case "trapezoid":
-          newbounds.push(...knotchTrapezoidF(x,y,xx,yy,1/2,kwidth));
-          break;
-        default: // includes "none"
-          newbounds.push(xx,yy);
-          break;
-      }
-      // update tile.bounds
-      tile.bounds=newbounds;
-    }
-
-*/
-
-
-
-
   });
   // construct tiling
   return new Tiling(tiles);
