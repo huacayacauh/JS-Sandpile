@@ -176,6 +176,16 @@ function steps(){
 	}
 }
 
+function stepPerco(){
+	if(currentTiling){
+		currentTiling.iteratePerco();
+                increment_number_of_steps();
+		currentTiling.colorTiles();
+		if(selectedTile)
+			tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentTiling.tiles[selectedTile].sand;
+	}
+}
+
 // ------------------------------------------------
 // 	[ 3.2 ] 	Apply multiple steps and color
 //		Tiling.js [ 2.2 ] [ 2.6 ]
