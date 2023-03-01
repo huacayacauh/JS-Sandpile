@@ -285,33 +285,6 @@ class Tiling{
 		this.colorTiles();
 	}
 	
-        // percolation setp theta=2
-	iteratePerco(){
-                console.log("test");
-                let theta=2;
-                // puts all contents to 3 or 0 and prepare next config
-		for(let i=0; i<this.tiles.length; i++){
-                        if(this.tiles[i].sand > 0){
-                                this.tiles[i].sand = 3;
-                        }
-			this.tiles[i].prevSand = this.tiles[i].sand;
-		}
-		// put 3 to tiles having >= theta=2 neighbors active
-		for(let i=0; i<this.tiles.length; i++){
-			var til = this.tiles[i];
-                        let neighborsactive = 0;
-                        for(let j=0; j<til.neighbors.length; j++){
-                                if(this.tiles[til.neighbors[j]].prevSand > 0){
-                                      neighborsactive++;
-                                }
-                                if(neighborsactive >= theta){
-                                        this.tiles[i].sand = 3;
-                                }
-                        }
-		}
-		return false; // meuh
-	}
-
 	// ------------------------------------------------
 	// 	[ 2.3 ] 	Basic operation functions
 	// ------------------------------------------------
