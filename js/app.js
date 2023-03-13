@@ -339,6 +339,14 @@ function complexOperationSet(){
 				currentTiling.clear();
 				currentTiling.addConfiguration(newTilingBurn);
 			break;
+
+			case "Bernouilli":
+				console.log("Bernouilli with arbitrary density");
+				var bernouilliDensity = document.getElementById("complexBernouilliDensity").valueAsNumber;
+				console.log(bernouilliDensity);
+				currentTiling.clear();
+				currentTiling.addBernouilli(bernouilliDensity);
+			break;
 		}
 		if(operationType.substring(0, 4) == "CNFG"){
 			currentTiling.clear();

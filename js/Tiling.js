@@ -339,8 +339,16 @@ class Tiling{
 		}
 	}
 
+	addBernouilli(proba){
+		for(var j = 0; j<this.tiles.length; j++){
+			var chosen = Math.random();
+			if(chosen <= proba) this.add(j,1);
+		}
+	}
+
 	removeRandom(amount){
 		for(var j = 0; j<amount; j++){
+			console.log("test");
 			var chosen = Math.floor(this.tiles.length * Math.random());
 			this.remove(chosen, 1);
 		}
