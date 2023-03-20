@@ -283,6 +283,77 @@ function tilingToSvgLaserCut(sandpile){
   return textFile; 
 }
 
+// 3d print : returns an openscad script, to generate stl
+function tilingToOpenscad(sandpile,SL,SW,H,HR){
+  // SL = 20 side length (mm)
+  // SW = 1 side width (mm)
+  // H = 1 height (mm)
+  // HR = 1 hole radius (mm)
+  // in openscad : preferences > advanced > turn off rendering at > increase that value...
+
+  /*
+  /* start generate scad as String
+   */
+
+  var scad = "H="+H+";\n";
+  scad += "SL="+SL+";\n";
+  scad += "SW="+SW+";\n";
+  scad += "HR="+HR+";\n";
+  scad += "difference(){\n";
+  scad += "union(){\n";
+
+  // DRAW lines and dots
+
+  sandpile.tiles.forEach(function(tile){
+    for(let i=0; i<tile.bounds.length; i=i+2){
+      let x1 = tile.bounds[i];
+      let y1 = tile.bounds[i+1];
+      let blen = tile.bounds.length;
+      let x2 = tile.bounds[(i+2)%blen];
+      let y2 = tile.bounds[(i+3)%blen];
+      let dist12 = distance(x1,y1,x2,y2);
+      // line
+      let angle = -Math.atan2(x2-x1,y2-y1); //Math.atan2(y2-y1,x2-x1) - Math.atan2(0,10);
+      scad += "translate(["+(x1).toFixed(3)+"*SL,"+(y1).toFixed(3)+"*SL,0]) rotate("+(angle*180/Math.PI).toFixed(5)+",[0,0,1]) translate([-SW/2,0,0]) cube([SW,"+(dist12).toFixed(3)+"*SL,H]);\n";
+      // dots
+      scad += "translate(["+(x1).toFixed(3)+"*SL,"+(y1).toFixed(3)+"*SL,0]) cylinder(h=H,r=HR+SW,$fn=100);\n";
+    }
+  });
+
+  scad += "}\n";
+
+  // DRAW holes within dots
+
+  sandpile.tiles.forEach(function(tile){
+    for(let i=0; i<tile.bounds.length; i=i+2){
+      let x1 = tile.bounds[i];
+      let y1 = tile.bounds[i+1];
+      let blen = tile.bounds.length;
+      let x2 = tile.bounds[(i+2)%blen];
+      let y2 = tile.bounds[(i+3)%blen];
+      scad += "translate(["+(x1).toFixed(3)+"*SL,"+(y1).toFixed(3)+"*SL,-1]) cylinder(h=H+2,r=HR,$fn=100);\n";
+    }
+  });
+
+  scad += "}\n";
+
+  /*
+   * create file
+   */
+  var data = new Blob([scad], {type: 'text/plain'});
+
+  // If we are replacing a previously generated file we need to
+  // manually revoke the object URL to avoid memory leaks.
+  if (textFile !== null) {
+    window.URL.revokeObjectURL(textFile);
+  }
+
+  textFile = window.URL.createObjectURL(data);
+
+  return textFile; 
+}
+
+
 //
 // [3] Export to tikz
 //
@@ -399,6 +470,20 @@ handleDownloadSVGlasercut = function(evt){
     link.click();
 }
 
+handleDownloadOpenscad = function(evt){
+    if(currentTiling === undefined) return;
+    var link = document.getElementById('downloadlink');
+    let SL = document.getElementById("SL").valueAsNumber;
+    let SW = document.getElementById("SW").valueAsNumber;
+    let H = document.getElementById("H").valueAsNumber;
+    let HR = document.getElementById("HR").valueAsNumber;
+    var textFile = tilingToOpenscad(currentTiling,SL,SW,H,HR);
+	
+    link.setAttribute('download', "JS-Sandpile-print3d.scad");
+    link.href = textFile;
+    link.click();
+}
+
 var createjson = document.getElementById('createjson')
 createjson.addEventListener('click', handleDownloadJSON, false);
 
@@ -410,6 +495,9 @@ createsvg.addEventListener('click', handleDownloadSVG, false);
 
 var createsvglasercut = document.getElementById('createsvglasercut');
 createsvglasercut.addEventListener('click', handleDownloadSVGlasercut, false);
+
+var createopenscad = document.getElementById('createopenscad');
+createopenscad.addEventListener('click', handleDownloadOpenscad, false);
 
 var textFile = null;
 

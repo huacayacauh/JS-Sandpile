@@ -293,6 +293,23 @@
 				<button id="createtikz" style="margin-top:5px;" class="btn btn-default">Export to TIKZ</button>
 				<button id="createsvg" style="margin-top:5px;" class="btn btn-default">Export to SVG</button>
 				<button id="createsvglasercut" style="margin-top:5px;" class="btn btn-default">Export to SVG for laser cut</button>
+			    <div style="margin-top:10px;margin-left:auto;margin-right:0;">
+				Side length :
+				<input type="number" id="SL" min="0" value="20" step="0.1" style="width: 60px;" />
+                </div>
+			    <div style="margin-left:auto;margin-right:0;">
+				Side width :
+				<input type="number" id="SW" min="0" value="1" step="0.1" style="width: 60px;" />
+                </div>
+			    <div style="margin-left:auto;margin-right:0;">
+				Height :
+				<input type="number" id="H" min="0" value="1" step="0.1" style="width: 60px;" />
+                </div>
+			    <div style="margin-left:auto;margin-right:0;">
+				Hole radius :
+				<input type="number" id="HR" min="0" value="1" step="0.1" style="width: 60px;" />
+                </div>
+				<button id="createopenscad" style="margin-top:5px;" class="btn btn-default">Export to openscad for 3d print</button>
 				<label for="filesPIC" class="btn btn-default" style="margin-top:5px;">
 					Square Tiling from image
 				</label>
