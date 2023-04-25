@@ -52,7 +52,9 @@
 		<div id="main controls" class="controlGroup">
 			<p class="groupTitle">Tiling selection</p>
 				<select id="TilingSelect" onchange="hideParams()">
+					</optgroup>
 					<optgroup label="Regular">
+						<option value="elongatedTriangular">Elongated Triangular Tiling</option>
 						<option value="sqTiling">Square Tiling</option>
 						<option value="hexTiling">Hexagonal Tiling</option>
 						<option value="triTiling">Triangular Tiling</option>
@@ -91,7 +93,6 @@
 						<option value="A5bysubst">Ammann-Beenker</option>
 						<option value="BB1bysubst">Birds and Bees 1</option>
 						<option value="TriangleIncenter">Triangle Incenter</option>
-						<option value="wanderer">Wanderer Substitution</option>
 					</optgroup>
 					<optgroup label="Symmetry Free">
 						<option value="sqD2">D2 Square</option>
@@ -294,23 +295,6 @@
 				<button id="createtikz" style="margin-top:5px;" class="btn btn-default">Export to TIKZ</button>
 				<button id="createsvg" style="margin-top:5px;" class="btn btn-default">Export to SVG</button>
 				<button id="createsvglasercut" style="margin-top:5px;" class="btn btn-default">Export to SVG for laser cut</button>
-			    <div style="margin-top:10px;margin-left:auto;margin-right:0;">
-				Side length :
-				<input type="number" id="SL" min="0" value="20" step="0.1" style="width: 60px;" />
-                </div>
-			    <div style="margin-left:auto;margin-right:0;">
-				Side width :
-				<input type="number" id="SW" min="0" value="2" step="0.1" style="width: 60px;" />
-                </div>
-			    <div style="margin-left:auto;margin-right:0;">
-				Height :
-				<input type="number" id="H" min="0" value="3" step="0.1" style="width: 60px;" />
-                </div>
-			    <div style="margin-left:auto;margin-right:0;">
-				Hole radius :
-				<input type="number" id="HR" min="0" value="1.2" step="0.1" style="width: 60px;" />
-                </div>
-				<button id="createopenscad" style="margin-top:5px;" class="btn btn-default">Export to openscad for 3d print</button>
 				<label for="filesPIC" class="btn btn-default" style="margin-top:5px;">
 					Square Tiling from image
 				</label>
@@ -472,7 +456,9 @@
 
     <script src="./js/TilingPresets/CutAndProjectViaMultigrid.js"></script>
 
-	<script src="./js/TilingPresets/WandererSubstitution.js"></script>
+
+	<script src="./js/TilingPresets/ElongatedTriangular.js"></script>
+
 
 	<script src="./js/Features/ChangeDisplay.js"></script>
 	<script src="./js/Features/ImportExport.js"></script>
@@ -485,4 +471,5 @@
 
 	<script src="./js/app.js"></script>
 
+	
 </body> <!-- ############################################################ End. -->
