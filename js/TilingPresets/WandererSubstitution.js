@@ -3,9 +3,9 @@
 Tile.prototype.redToWhite = function(){
     this.id[0]='white';
   }
-  Tile.prototype.whiteToRed = function(){
+Tile.prototype.whiteToRed = function(){
     this.id[0]='red';
-  }
+}
   
   
   // White Square
@@ -37,8 +37,6 @@ Tile.prototype.redToWhite = function(){
               newWhite1.id.push("newWhite1");
               newWhite1.rotate((tile.bounds[4]+tile.bounds[0])/2,(tile.bounds[5]+tile.bounds[1])/2,Math.PI/2);
               newWhite1.shift(tile.bounds[4],tile.bounds[5]);
-  
-  
               newtiles.push(newWhite1);
   
   
@@ -75,7 +73,6 @@ Tile.prototype.redToWhite = function(){
   
               //new white square 1
               var newWhite1 = tile.myclone();
-              var test = tile.bounds;
               newWhite1.redToWhite();
               newWhite1.id.push("newWhite1");
               newWhite1.rotate((tile.bounds[4]+tile.bounds[0])/2,(tile.bounds[5]+tile.bounds[1])/2,Math.PI/2);
