@@ -30,15 +30,15 @@ function jsonToTiling(json){
 		console.log("cleared");
 	}
 	
+        // copied from app.js after tiling creation...
 	selectedTile = null;
+	currentTiling.cmap = cmap;
 	app.controls.zoomCamera();
 	app.controls.object.updateProjectionMatrix();
-
 	app.scene.add(currentTiling.mesh);
 	currentTiling.colorTiles();
-
+	enableWireFrame(document.getElementById("wireFrameToggle"));
 	playWithDelay();
-
 	var render = function () {
 		requestAnimationFrame( render );
 		app.controls.update();
