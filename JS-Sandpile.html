@@ -102,8 +102,7 @@
 						<option value="pythagorean">Pythagorean</option>
 						<option value="truncSq">Truncated Square</option>
 						<option value="cairoPenta">Cairo Pentagonal</option>
-						<option value="mooreSubset135">Moore Subset 135</option>
-						<option value="mooreSubset39">Moore Subset 39</option>
+						<option value="mooreSubset">Moore Subset</option>
 					</optgroup>
 
 				</select>
@@ -204,6 +203,11 @@
 					<input type="number" step=0.01 style="width: 50px;" id="linespace" min="0" max="1" value="0.04"/>
 				<br></span>
 
+				<!-- control for the Moore subneighborhoods -->
+				<span id="p_subneighborhood" style="display:none;">
+				Sub-neighborhood :
+					<input type="number" id="subneighborhood" min="1" max="255" value="39" style="width=50px;" />
+				<br></span>
 			</div>
 		</div> <!-- Main controls  -->
 
