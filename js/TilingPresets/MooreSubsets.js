@@ -1,3 +1,30 @@
+/*
+Let n,ne,e,se,s,sw,w,nw denote the eight cardinal coordinates of the Moore
+neighborhood, starting with north and clowkwise. Now we can denote a subset
+of Moore neighborhood as an 8-bits string, where the i-th bit encodes whether
+the i-th coordinate in the list n,e,s,w,nw,ne,se,sw, is part of the neighborhood
+(bit 1), or not (bit 0). We can interpret 8-bits strings as numbers
+(converted to decimal) with the least significant bit to the right.
+
+The parameter *subneighborhood* is the decimal representation of the Moore
+subneighborhood we want to use.
+
+Examples:
+
+subneighborhood 87 (binary: 01010111):
+  _______
+  |□|□|■|
+  |■|□|■|
+  |■|□|■|
+  ‾‾‾‾‾‾‾
+subneighborhood 199 (binary: 11000111):
+  _______
+  |□|■|■|
+  |□|□|■|
+  |■|□|■|
+  ‾‾‾‾‾‾‾
+"■" means the cell belongs to the neighborhood.
+*/
 Tiling.mooreSubset = function({width, height, subneighborhood}={}){
   // subset of moore neighborhood on the grid
   var tils = [];
