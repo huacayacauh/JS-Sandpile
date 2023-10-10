@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<head>
+	<meta charset="UTF-8">
+	<title>JS-Percolation</title>
+	<link rel="icon" href="favicon.ico" />
+
+	<!-- ####################################################### CSS IMPORTS -->
+	<style>
+		@import "./css/bootstrap.min.css";
+		@import "./css/scrollbar.css";
+		@import "./css/modal.css";
+		@import "./css/elements.css";
+	</style>
+</head>
+<body>
+	<!-- ################################################################ UPPER BAR -->
+	<header>
+		<span style="margin-left:10px; margin-right:80px; font-size:35px; font-weight:bold;">JS-Percolation</span>
+		Zoom (%) :
+			<input type="number" id="zoomLevel" style="margin-right:20px" oninput="set_zoom(this)" value="100" max="9999" step="10"/>
+		Delay (ms) :
+			<input type="number" id="delay" style="margin-right:20px" value="100" oninput="changeDelay(this);" min="0" max="10000"/>
+		Refresh rate :
+			<input type="number" id="IPF" style="margin-right:80px" value="1" oninput="changeIPS(this);" min="1" max="999"/>
+		<button id="playButton" onclick="playPause(this)" class="btn btn-default" style="margin-right:20px; font-weight:bold;">Play</button>
+		<button onclick="step()" style="margin-right:20px" class="btn btn-default">Step</button>
+        <span id="number_of_steps"></span>
+		<button onclick="reset_number_of_steps()" style="margin-right:20px" class="btn btn-default">Reset counter</button>
+		<!-- <button onclick="stepPerco()" style="margin-right:20px" class="btn btn-default">Perco &theta;=2</button> -->
+
+		<!-- <button id="stabilizeButton"  onclick="stabTiling()" class="btn btn-primary">Stabilize</button> -->
+
+		<!-- Upper right alignment -->
+		<span style="position:absolute; top:10px; right:50px"> Auto-pause : </span>
+			<label class="switch" style="position:absolute; top:12px; right:10px">
+			  <input type="checkbox" id="pauseToggle" checked = "true">
+			  <span class="slider round"></span>
+			</label>
+
+		<!-- Upper right alignment -->
+		<span style="position:absolute; top:30px; right:50px"> Draw-tiles : </span>
+			<label class="switch" style="position:absolute; top:32px; right:10px">
+			  <input type="checkbox" id="wireFrameToggle" oninput="enableWireFrame(this);" checked = "true">
+			  <span class="slider round"></span>
+			</label>
+
+	</header>
+
+	<!-- ################################################################ CONTROL (LEFT) BAR -->
+	<nav>
+
+	  <!-- ############################################################ Main Controls -->
+	  <div id="automaton controls" class="controlGroup">
+	    <p class="groupTitle">Automaton selection</p>
+	    <select id="AutomatonSelect">
+	      <optgroup label="Threshold">
+		<option value="Growth">Growth (threshold 1)</option>
+		<option value="Bootstrap">Bootsrap (threshold 2)</option>
+		<option value="Threshold3">Blocking (threshold 3)</option>
+	      </optgroup>
+	      <optgroup label="Directionnal">
+		<option value="Directionnal_half_plane">Directionnal half plane</option>
+		<option value="Directionnal_positive">Directionnal positive</option>
+	      </optgroup>
+	    </select>
+	    <br>
+	    	<button onclick="set_automaton()" style="margin-top:10px; margin-left:25px; font-weight:bold;" class="btn btn-default">Set Automaton</button>
+	  </div>
+
+	  
+	      
+	  
+		<div id="main controls" class="controlGroup">
+			<p class="groupTitle">Tiling selection</p>
+				<select id="TilingSelect" onchange="hideParams()">
+			                <optgroup label="Cut and Project (via Mutligrid)">
+						<option value="PenroseCutandproject">Penrose P3 (rhomb)</option>
+						<option value="AmmannBeenkerCutandproject">Ammann-Beenker</option>
+						<option value="TwelveFoldCutandproject">12-fold</option>
+						<option value="nfold_simple">n-fold</option>
+						<option value="GoldenOctogonalCutandproject">Golden octogonal (random shift)</option>
+						<option value="RauzyCutandproject">Rauzy (random shift)</option>
+					</optgroup>
+					<optgroup label="Regular">
+						<option value="sqTiling">Square Tiling</option>
+						<!-- <option value="hexTiling">Hexagonal Tiling</option> -->
+						<!-- <option value="triTiling">Triangular Tiling</option> -->
+					</optgroup>
+					
+					<!-- <optgroup label="Substitution: Penrose P2 (kite-dart)"> -->
+					<!-- 	<option value="P2sunbysubst">Sun</option> -->
+					<!-- 	<option value="P2starbysubst">Star</option> -->
+					<!-- 	<option value="P2lasercut">Laser-cut (adds knotches+engravings)</option> -->
+					<!-- </optgroup> -->
+					<!-- <optgroup label="Substitution: Penrose P3 (rhomb)"> -->
+					<!-- 	<option value="P3sunbysubst">Sun</option> -->
+					<!-- 	<option value="P3star1bysubst">Star1</option> -->
+					<!-- 	<option value="P3star2bysubst">Star2</option> -->
+					<!-- 	<option value="P3lasercut">Laser-cut (adds knotches+engravings)</option> -->
+					<!-- </optgroup> -->
+					<!-- <optgroup label="Substitution: Penrose P0 (from Robinson triangles)"> -->
+					<!-- 	<option value="penrose0">Half-kite</option> -->
+					<!-- 	<option value="HKKDPenrose">Half-kite P2 (kite-dart)</option> -->
+					<!-- 	<option value="HDKDPenrose">Half-dart P2 (kite-dart)</option> -->
+					<!-- 	<option value="SunKDPenrose">Sun P2 (kite-dart)</option> -->
+					<!-- 	<option value="StarKDPenrose">Star P2 (kite-dart)</option> -->
+					<!-- 	<option value="HKRPenrose">Half-kite P3 (rhomb)</option> -->
+					<!-- 	<option value="HDRPenrose">Half-dart P3 (rhomb)</option> -->
+					<!-- 	<option value="SunRPenrose">Sun P3 (rhomb)</option> -->
+					<!-- 	<option value="StarRPenrose">Star P3 (rhomb)</option> -->
+					<!-- </optgroup> -->
+					<!-- <optgroup label="Substitution: Others"> -->
+					<!-- 	<option value="A5bysubst">Ammann-Beenker</option> -->
+					<!-- 	<option value="BB1bysubst">Birds and Bees 1</option> -->
+					<!-- 	<option value="TriangleIncenter">Triangle Incenter</option> -->
+					<!-- </optgroup> -->
+					<!-- <optgroup label="Symmetry Free"> -->
+					<!-- 	<option value="sqD2">D2 Square</option> -->
+					<!-- 	<option value="sqD4">D4 Square</option> -->
+					<!-- </optgroup> -->
+					<!-- <optgroup label="Misc."> -->
+					<!-- 	<option value="sqTilingMoore">Square Moore</option> -->
+					<!-- 	<option value="sqTilingCircle">Square Tiling croped to circle</option> -->
+					<!-- 	<option value="pythagorean">Pythagorean</option> -->
+					<!-- 	<option value="truncSq">Truncated Square</option> -->
+					<!-- 	<option value="cairoPenta">Cairo Pentagonal</option> -->
+					<!-- </optgroup> -->
+
+				</select>
+
+				<!--<form id="postCustom" enctype="multipart/form-data" action="/upload/image" method="post">
+					<input type="file" id="inputCustom" accept=".png,.jpg,.jpeg,.bmp" style="display:none;" />
+				</form>-->
+			<button onclick="drawTiling()" style="margin-left:25px; font-weight:bold;" class="btn btn-default">Make Tiling</button>
+			<br>
+
+
+			<!-- Tiling-specific controls -->
+			<p class="groupTitle" id="paramTitle">Parameters</p>
+			<!-- Square controls -->
+			<div id="paramHide">
+				<span id="p_width" style="display:none;">
+				Width :
+					<input type="number" id="cW" min="0" value="100" style="width: 50px;" />
+				</span>
+
+				<span id="p_height" style="display:none;">
+				&nbsp; &nbsp; Height :
+					<input type="number" id="cH" min="0" value="100" style="width: 50px;" />
+				<br></span>
+
+				<span id="p_size">
+				Size :
+					<input type="number" id="size" min="0" value="20" style="width: 50px;" />
+				<br></span>
+
+				<!-- control for the n-fold cut-and-project tilings -->
+				<span id="p_order" style="display:none;">
+				Order :
+					<input type="number" id="order" min="3" value="5" style="width=50px;" />
+				<br></span>
+
+				<!-- control for the selection of crop method for cut-and-project tilings -->
+				<span id="p_cropMethod" style="display:none">
+				Crop method :
+					<select id="cropMethod">
+                        <option value="maxCoord"> L&#8734; (maximum coordinate) </option>
+                        <option value="sumCoord"> L1 (sum of coordinates) </option>
+                        <option value="euclideanNorm"> L2 (Euclidean norm) </option>
+					</select>
+				<br></span>
+
+				<!-- substitution controls -->
+				<span id="p_iterations" style="display:none;">
+				Iterations :
+					<input type="number" style="width: 50px;" id="penroseIt" min="0" value="4"/>
+				<br></span>
+
+				<!-- laser cut controls -->
+
+				<span id="p_knotchA" style="display:none;">
+				Knotch type A :
+					<select id="knotchA">
+						<option value="trapezoid"> trapezoid </option>
+						<option value="claw"> claw </option>
+				  	    <option value="none"> none </option>
+					</select>
+				<br></span>
+
+				<span id="p_knotchB" style="display:none;">
+				Knotch type B :
+					<select id="knotchB">
+						<option value="trapezoid"> trapezoid </option>
+						<option value="claw"> claw </option>
+				  	    <option value="none"> none </option>
+					</select>
+				<br></span>
+
+				<span id="p_kwidth" style="display:none;">
+				Knotch width [0,1]:
+					<input type="number" step=0.01 style="width: 50px;" id="kwidth" min="0" max="1" value="0.2"/>
+				<br></span>
+
+				<span id="p_kposi" style="display:none;">
+				  Knotch position [0,1] :
+				  <input type="number" step=0.01 style="width: 50px;" id="kposi" min="0" max="1" value="0.5"/>
+				<br></span>
+
+				<span id="p_kposlist" style="display:none;">
+				Knotch position :
+				  <select id="kposlist">
+				  	<option value="along"> along engravings </option>
+				  	<option value="center"> center of sides </option>
+				  </select>
+				<br></span>
+
+				<span id="p_lineplace" style="display:none;">
+				Line position [0,1]:
+					<input type="number" step=0.01 style="width: 50px;" id="lineplace" min="0" max="1" value="0.22"/>
+				<br></span>
+
+				<span id="p_linespace" style="display:none;">
+				Line space [0,1]:
+					<input type="number" step=0.01 style="width: 50px;" id="linespace" min="0" max="1" value="0.04"/>
+				<br></span>
+
+			</div>
+		</div> <!-- Main controls  -->
+
+		<!-- ############################################################ Mouse Controls -->
+		<div id="mouse controls" class="controlGroup">
+			<p class="groupTitle">Mouse controls</p>
+			<select id="mouseOperation">
+			  <option value="addOne">Add</option>
+			  <option value="rmOne">Remove</option>
+			  <option value="setOne">Set</option>
+			  <option value="select">Select</option>
+			</select>
+			<div id="maskMouseRepeat" style="display:inline;">
+			&nbsp;&nbsp;times&nbsp;&nbsp;
+			<input type="number" id="mouseOperationRepeat" value="1" min="0" max="999999"style="width: 70px;" />
+			</div>
+			<br><br>
+			<div style="display:flex;">
+			  Mouse radius :
+			  <input type="range" min="1" max="8" value="1" step="1" id="brushRange" style="width:150px;margin-left:10px;" list="steplist">
+			  <datalist id="steplist">
+				<option>1</option>
+				<option>2</option>
+				<option>3</option>
+				<option>4</option>
+				<option>5</option>
+				<option>6</option>
+				<option>7</option>
+				<option>8</option>
+			</datalist>
+			</div>
+		</div> <!-- Mouse controls -->
+
+		<!-- ############################################################ Operations / Secondary Controls -->
+		<div id="secondary controls" class="controlGroup">
+			<p class="groupTitle">Configuration operations</p>
+			<select id="complexOperationValue">
+			  <!-- <option value="MaxS">Max stable</option> -->
+			  <!-- <option value="OneE">One Everywhere</option> -->
+			  <!-- <option value="Dual">Dual</option> -->
+			  <!-- <option value="Iden">Identity</option> -->
+			  <!-- <option value="Inve">Inverse</option> -->
+			  <!-- <option value="Rand">Random</option> -->
+			  <!-- <option value="Burn">Burning</option> -->
+			  <option value="Bernouilli">Bernouilli</option>
+			</select>
+			<div id="complexTimesMask" style="display:inline;">
+				&nbsp;&nbsp;times&nbsp;&nbsp;
+				<input type="number" id="complexOperationRepeat" min="0" value="1" max="999999" style="width: 70px;" />
+			</div>
+			<br>
+			<div id="complexBernouilli" style="display:inline;">
+				&nbsp;&nbsp;density&nbsp;&nbsp;
+				<input type="number" step="0.01" id="complexBernouilliDensity" min="0" value="0.05" max="1" style="width: 70px;" />
+			</div>
+			<br>
+			<div style="margin-left:auto; margin-right:auto; display:table; margin-top:10px;" class="btn-group">
+				<button id="complexOperationAdd" onclick="complexOperationAdd()" class="btn btn-default">Add</button>
+
+				<!-- <button id="complexOperationSub" onclick="complexOperationSub()" class="btn btn-default">Substract</button> -->
+
+				<button id="complexOperationSet" onclick="complexOperationSet()" class="btn btn-default">Set</button>
+			</div>
+			<button onclick="clearTiling()" class="btn btn-default" style="margin-top:10px;display: table;width: -webkit-fill-available;">Clear</button>
+			<button id="saveConfig" onclick="saveConfiguration()" style="margin-top:10px;display: table;width: -webkit-fill-available;;" class="btn btn-default">Save Configuration</button>
+
+			<!-- Random Seeding -->
+			<div id="seedMask" style="margin-top:10px;">
+				Random seed :
+				<input id="randSeed" value="1" oninput="changeSeed(this);" style="width: 60px;" />
+			</div>
+		</div> <!-- Operations controls -->
+
+		<!-- ############################################################ Stabilization -->
+		<div class="controlGroup">
+			<p class="groupTitle">Automaton process</p>
+		    <button onclick="steps()" class="btn btn-default">Step</button>
+			&nbsp;&nbsp;times&nbsp;&nbsp;
+			<input type="number" id="stepsRepeat" value="1" min="1" max="999999"style="width: 70px;" />
+            <br>
+			<div style="margin-left:auto; margin-right:auto; margin-top:10px; display:grid">
+		        <button onclick="stabTiling()" class="btn btn-default">Stabilize</button>
+            </div>
+        </div>
+
+		<!-- ############################################################ Import/Export -->
+		<div class="controlGroup">
+			<!-- File importing -->
+			<p class="groupTitle">Import/Export</p>
+			<div style="margin-left:auto; margin-right:auto; display:grid">
+				<label for="files" class="btn btn-default">
+					Import from JSON
+				</label>
+				<button id="createjson" style="margin-top:5px;" class="btn btn-default">Export to JSON</button>
+				<button id="createtikz" style="margin-top:5px;" class="btn btn-default">Export to TIKZ</button>
+				<button id="createsvg" style="margin-top:5px;" class="btn btn-default">Export to SVG</button>
+				<button id="createsvglasercut" style="margin-top:5px;" class="btn btn-default">Export to SVG for laser cut</button>
+				<label for="filesPIC" class="btn btn-default" style="margin-top:5px;">
+					Square Tiling from image
+				</label>
+			</div>
+
+			<!-- File button not displayed, and a JS command clicks on them. -->
+			<input type="file" id="files" name="files[]" accept=".JSON" multiple style="display:none;" />
+			<input type="file" id="filesPIC" name="files2[]" accept=".png,.jpg,.jpeg,.bmp" multiple style="display:none;" />
+			<output id="list" style="display:none;"></output>
+
+			<a download="sandpile.json" id="downloadlink" style="display: none">Download</a>
+        </div>
+
+		<!-- ############################################################ Misc Controls -->
+		<div class="controlGroup">
+			<p class="groupTitle">Misc controls</p>
+			<button id="colorButton"  style="margin-left:auto;margin-right:auto;display:block;" class="btn btn-default">Change colors</button>
+        </div>
+
+		<!-- ############################################################ Informations -->
+		<div  class="controlGroup" style="height:400px; position:relative;">
+			<p class="groupTitle">Informations</p>
+
+			<span id="tileInfo">Selected tile info</span>
+
+			<br>
+			<button id="statsButton" style="position:absolute; top:32px; right:10px;" onclick="show_stats()" class="btn btn-default"> Get stats </button>
+			<br>
+			<p id="statsInfo"></p>
+
+			<button id="createStats" style="position:absolute; bottom:10px; left:10px;" class="btn btn-default">Stabilization stats file</button>
+        </div>
+
+	<!-- 	<\!-- ############################################################ Roundness -\-> -->
+	<!-- 	<div class="controlGroup" style="height:360px;"> -->
+	<!-- 		<p class="groupTitle">Roundness</p> -->
+        <!--     <\!-- Animate -\-> -->
+	<!-- 		Animate : -->
+	<!-- 		<label class="switch" style="margin-top:5px"> -->
+	<!-- 		  <input type="checkbox" id="roundAnimate" checked = "true"> -->
+	<!-- 		  <span class="slider round"></span> -->
+	<!-- 		</label> -->
+        <!--     <\!-- Roundness buttons-\-> -->
+	<!-- 		<div style="margin-left:auto; margin-right:auto; display:grid"> -->
+        <!--       <\!-- Roundness file -\-> -->
+        <!--       <button id="createRoundness" style="margin-top:5px;" class="btn btn-default">Compute roundness file</button> -->
+        <!--       <\!-- Roundness fast -\-> -->
+        <!--       <button id="createRoundnessFast" style="margin-top:5px;" class="btn btn-default">Fast (circle shrink only)</button> -->
+        <!--       <\!-- Export frontier to tikz -\-> -->
+        <!--       <button id="export_frontierTikz" onclick="export_frontierTikz()" style="margin-top:5px;" class="btn btn-default">Export frontier to TIKZ</button> -->
+        <!--     </div> -->
+        <!--     <\!-- Show radii and current roundness -\-> -->
+        <!--     <div style="margin-top:10px;"> -->
+        <!--       <\!-- Radii -\-> -->
+        <!--       Show Xscribed radii : -->
+	<!-- 		  <label class="switch" style=""> -->
+	<!-- 		    <input type="checkbox" id="radiiShow" oninput="radii(this);"> -->
+	<!-- 		    <span class="slider round"></span> -->
+	<!-- 		  </label> -->
+        <!--       <br> -->
+        <!--       <\!-- Roundness now -\-> -->
+        <!--       Show current roundness : -->
+	<!-- 		  <label class="switch" style=""> -->
+	<!-- 		    <input type="checkbox" id="roundShow" oninput="roundness(this);"> -->
+	<!-- 		    <span class="slider round"></span> -->
+	<!-- 		  </label> -->
+        <!--       <br> -->
+        <!--       <p id="radiiInfo" style="margin-top:5px;"><br><br></p> -->
+        <!--       <p id="roundInfo" style="margin-top:5px;"><br><br></p> -->
+        <!--     </div> -->
+        <!-- </div> -->
+
+	<!-- 	<\!-- ############################################################ Harmonics -\-> -->
+	<!-- 	<div class="controlGroup"> -->
+	<!-- 		<p class="groupTitle">Harmonics</p> -->
+        <!--     <\!-- Harmonics -\-> -->
+	<!-- 		<select id="harmonicValue" style="width:100px"> -->
+	<!-- 		  <option value="1A">1A</option> -->
+	<!-- 		  <option value="1B">1B</option> -->
+	<!-- 		  <option value="2A">2A</option> -->
+	<!-- 		  <option value="2B">2B</option> -->
+	<!-- 		  <option value="3A">3A</option> -->
+	<!-- 		  <option value="3B">3B</option> -->
+	<!-- 		  <option value="4A">4A</option> -->
+	<!-- 		  <option value="4B">4B</option> -->
+	<!-- 		</select> -->
+	<!-- 		<button onclick='currentTiling.apply_harmonic()' style="margin-left:10px;" class="btn btn-default ">Apply Harmonic</button> -->
+        <!--     <br /> -->
+        <!-- </div> -->
+
+	<!-- 	<\!-- ############################################################ Batch procesings -\-> -->
+	<!-- 	<div class="controlGroup"> -->
+	<!-- 		<p class="groupTitle">Batch processings</p> -->
+	<!-- 		<div style="margin-left:auto; margin-right:auto; display:grid"> -->
+        <!--       <button id="batch_identities" onclick="batch_identities()" style="margin-top:5px;font-family: monospace;" class="btn btn-default">batch_identities()</button> -->
+        <!--       <button id="batch_roundness" onclick="batch_roundness()" style="margin-top:5px;font-family: monospace;" class="btn btn-default">batch_roundness()</button> -->
+        <!--       <button id="batch_frontiers" onclick="batch_frontiers()" style="margin-top:5px;font-family: monospace;" class="btn btn-default">batch_frontiers()</button> -->
+        <!--       <button id="batch_identities_diff" onclick="batch_identities_diff()" style="margin-top:5px;font-family: monospace;" class="btn btn-default">batch_identities_diff()</button> -->
+        <!--     </div> -->
+        <!-- </div> -->
+
+		<!-- ############################################################ Credits -->
+		<div class="credits">
+          <img src="./css/cc-heart.png" style="height:16px">
+          <a href="https://creativecommons.org/licenses/by/4.0/">CC-BY</a><br />
+          Valentin Darrigo<br />
+          Jeremy Fersula<br />
+          Kevin Perrot<br />
+          See the <a href="https://github.com/huacayacauh/JS-Sandpile/wiki">wiki</a>
+          and <a href="https://github.com/huacayacauh/JS-Sandpile/">code</a> on github
+		</div>
+
+	</nav> <!-- ######################################################### End of Control bar -->
+
+
+	<!-- ################################################################ Color picking window -->
+	<div id="colors" class="modal">
+	  <div class="modal-content">
+		<span class="close">&times;</span>
+	  </div>
+	</div>
+
+	<!-- ################################################################ Canvas -->
+	<div class="canvasDiv" id="canvasHolder">
+	</div>
+
+	<!-- ################################################################ JS Imports -->
+	<script src="./js/Utils/jquery.min.js"></script>
+	<script src="./js/Utils/three.min.js"></script>
+	<script src="./js/Utils/OrthographicTrackballControls.js"></script>
+	<script src="./js/Utils/bootstrap.min.js"></script>
+	<script src="./js/Utils/earcut.js"></script>
+    <script src="./js/Utils/Geometry.js"></script>
+    <script src="./js/Utils/Matrix.js"></script>
+    <script src="./js/Utils/Combinatorics.js"></script>
+    <script src="./js/Utils/Crop.js"></script>
+	<script src="./js/Utils/jszip.min.js"></script>
+	<script src="./js/Utils/FileSaver.min.js"></script>
+	<script src="./js/Utils/gpu-browser.min.js"></script>
+
+	<script src="./js/Tiling.js"></script>
+
+	<script src="./js/TilingPresets/HexTiling.js"></script>
+	<script src="./js/TilingPresets/TriTiling.js"></script>
+	<script src="./js/TilingPresets/PenroseTiling.js"></script>
+	<script src="./js/TilingPresets/CustomSquareTiling.js"></script>
+	<script src="./js/TilingPresets/SquareTiling.js"></script>
+	<script src="./js/TilingPresets/Pythagorean.js"></script>
+	<script src="./js/TilingPresets/TruncSquare.js"></script>
+	<script src="./js/TilingPresets/CairoPentagonal.js"></script>
+	<script src="./js/TilingPresets/PenroseP0.js"></script>
+
+    <script src="./js/TilingPresets/SubstitutionAPI.js"></script>
+    <script src="./js/TilingPresets/PenroseP2Substitution.js"></script>
+    <script src="./js/TilingPresets/PenroseP3Substitution.js"></script>
+    <script src="./js/TilingPresets/AmmannBeenkerA5Substitution.js"></script>
+    <script src="./js/TilingPresets/BirdsBeesSubstitution.js"></script>
+    <script src="./js/TilingPresets/TriangleSubstitution.js"></script>
+
+    <script src="./js/TilingPresets/CutAndProjectViaMultigrid.js"></script>
+
+	<script src="./js/Features/ChangeDisplay.js"></script>
+	<script src="./js/Features/ImportExport.js"></script>
+	<script src="./js/Features/Stats.js"></script>
+	<script src="./js/Features/Harmonics.js"></script>
+	<script src="./js/Features/Roundness.js"></script>
+	<script src="./js/Features/Batch_processings.js"></script>
+
+    <script src="./js/Utils/Knotches.js"></script>
+
+	<script src="./js/app.js"></script>
+
+</body> <!-- ############################################################ End. -->
