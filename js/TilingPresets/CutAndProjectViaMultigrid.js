@@ -265,7 +265,7 @@ Tiling.PenroseCutandproject = function({size}={}){
   for(let t of combinations(Array.from(Array(5).keys()),2)){
     neighbors2bounds.set(id2key(t),default_neighbors2bounds(4));
   }
-  let fn=findNeighbors(tiles,tilesdict,neighbors2bounds);
+  let fn=findLabelledNeighbors(tiles,tilesdict,neighbors2bounds,penrose_draw);
   console.log("  found "+fn);
   // decorate tiles
   console.log("* decorate tiles");
@@ -277,7 +277,7 @@ Tiling.PenroseCutandproject = function({size}={}){
   });
   // done
   console.log("done");
-  return new Tiling(tiles);
+  return new Tiling(tiles, false, false, penrose_draw);
 }
 
 // [5.2] Ammann-Beenker
@@ -309,7 +309,7 @@ Tiling.AmmannBeenkerCutandproject = function({size}={}){
   for(let t of combinations(Array.from(Array(4).keys()),2)){
     neighbors2bounds.set(id2key(t),default_neighbors2bounds(4));
   }
-  let fn=findNeighbors(tiles,tilesdict,neighbors2bounds);
+  let fn=findLabelledNeighbors(tiles,tilesdict,neighbors2bounds, ab_draw);
   console.log("  found "+fn);
   // decorate tiles
   console.log("* decorate tiles");
@@ -321,7 +321,7 @@ Tiling.AmmannBeenkerCutandproject = function({size}={}){
   });
   // done
   console.log("done");
-  return new Tiling(tiles);
+  return new Tiling(tiles, false, false, ab_draw);
 }
 
 // [5.3] 12-fold
@@ -353,7 +353,7 @@ Tiling.TwelveFoldCutandproject = function({size}={}){
   for(let t of combinations(Array.from(Array(6).keys()),2)){
     neighbors2bounds.set(id2key(t),default_neighbors2bounds(4));
   }
-  let fn=findNeighbors(tiles,tilesdict,neighbors2bounds);
+  let fn=findLabelledNeighbors(tiles,tilesdict,neighbors2bounds, tf_draw);
   console.log("  found "+fn);
   // decorate tiles
   console.log("* decorate tiles");
@@ -369,7 +369,7 @@ Tiling.TwelveFoldCutandproject = function({size}={}){
   });
   // done
   console.log("done");
-  return new Tiling(tiles);
+  return new Tiling(tiles, false, false, tf_draw);
 }
 
 // [5.4] n-fold simple : computes a tiling with global n-fold rotational symmetry
@@ -418,7 +418,7 @@ Tiling.nfold_simple = function({size, order, cropMethod}={}){
   for(let t of combinations(Array.from(Array(dim).keys()),2)){
     neighbors2bounds.set(id2key(t),default_neighbors2bounds(4));
   }
-  let fn=findNeighbors(tiles,tilesdict,neighbors2bounds);
+  let fn=findLabelledNeighbors(tiles,tilesdict,neighbors2bounds, nfold_draw);
   console.log("  found "+fn);
   // decorate tiles
   console.log("* decorate tiles");
@@ -451,7 +451,7 @@ Tiling.nfold_simple = function({size, order, cropMethod}={}){
     }
   });
   console.log("done");
-  return new Tiling(tiles);
+  return new Tiling(tiles, false, false, nfold_draw);
 }
 
 
@@ -487,7 +487,7 @@ Tiling.GoldenOctogonalCutandproject = function({size}={}){
   for(let t of combinations(Array.from(Array(4).keys()),2)){
     neighbors2bounds.set(id2key(t),default_neighbors2bounds(4));
   }
-  let fn=findNeighbors(tiles,tilesdict,neighbors2bounds);
+  let fn=findLabelledNeighbors(tiles,tilesdict,neighbors2bounds, go_draw);
   console.log("  found "+fn);
   // decorate tiles
   console.log("* decorate tiles");
@@ -503,7 +503,7 @@ Tiling.GoldenOctogonalCutandproject = function({size}={}){
   });
   // done
   console.log("done");
-  return new Tiling(tiles);
+  return new Tiling(tiles, false, false, go_draw);
 }
 
 // [5.6] Rauzy
@@ -546,7 +546,7 @@ Tiling.RauzyCutandproject = function({size}={}){
   for(let t of combinations(Array.from(Array(3).keys()),2)){
     neighbors2bounds.set(id2key(t),default_neighbors2bounds(4));
   }
-  let fn=findNeighbors(tiles,tilesdict,neighbors2bounds);
+  let fn=findLabelledNeighbors(tiles,tilesdict,neighbors2bounds, rauzy_draw);
   console.log("  found "+fn);
   // decorate tiles
   console.log("* decorate tiles");
@@ -562,6 +562,6 @@ Tiling.RauzyCutandproject = function({size}={}){
   });
   // done
   console.log("done");
-  return new Tiling(tiles);
+  return new Tiling(tiles, false, false, rauzy_draw);
 }
 
