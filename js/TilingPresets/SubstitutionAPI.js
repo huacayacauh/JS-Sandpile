@@ -382,6 +382,18 @@ function TileSegment(id,nindex){
   this.id=id;
   this.nindex=nindex;
 }
+// datastructure associated to some tile's segment with label
+// * tile id
+// * neighbors' index
+function TileLabelledSegment(id,nindex,label){
+  this.id=id;
+  this.nindex=nindex;
+  this.label=label;
+}
+
+
+
+
 
 //
 // [6.2] neighbors' index to bounds' indices correspondence, for each tile type,
@@ -484,6 +496,113 @@ function findNeighbors(tiles,tilesdict,n2b){
   return fn; // side effect
 }
 
+// findLabel : given a vector [x,y] and an array of vectors [[x_1,y_1], [x_2,y_2], …] returns the index+1 of [x_i,y_i] such that x_i,y_i = x,y or -x,-y , false otherwise
+// warning, the label is between 1 and n to differentiate between i and -i for orientation
+function findLabel(segment, edge_directions){
+	for(let i=0; i<edge_directions.length;i++){
+		// check if x_i,y_i = x,y or x_i,y_i = -x,-y up to p_error
+		if ((Math.abs(segment[0]-edge_directions[i][0])<p_error
+		     && Math.abs(segment[1]-edge_directions[i][1])<p_error)
+		    ||
+		    (Math.abs(segment[0]+edge_directions[i][0])<p_error
+		     && Math.abs(segment[1]+edge_directions[i][1])<p_error)){
+			return i+1;
+		}
+	}
+	return false;
+}
+
+
+// findNeighbors with added labels 
+function findLabelledNeighbors(tiles,tilesdict,n2b,edge_directions){
+  // construct
+  // * segments = list of segments (Array of 4 coordinates + tile idkey + neighbor index)
+  //   for undefined neighbors
+  // * segmentsMap = segmentkey -> tile id, neighbors' index
+  var segments = [];
+  var segmentsMap = new Map();
+  tiles.forEach(function(tile){
+    for(let i=0; i<tile.neighbors.length; i++){
+      if(tile.neighbors[i] == undefined){
+        // found an undefined neighbor
+        // caution: segment points need to be ordered (up to p_error)
+        //          so that [x,y,x',y']=[x',y',x,y].
+        //          smallest x first, and if x ~equal then smallest y first
+        //          
+        let segment = [];
+        let x1 = tile.bounds[n2b.get(tile.id[0])[i][0]];
+        let y1 = tile.bounds[n2b.get(tile.id[0])[i][1]];
+        let x2 = tile.bounds[n2b.get(tile.id[0])[i][2]];
+        let y2 = tile.bounds[n2b.get(tile.id[0])[i][3]];
+	let label = findLabel([x2-x1, y2-y1], edge_directions);      
+        if( x2-x1>=p_error || (Math.abs(x2-x1)<p_error && y2-y1>=p_error) ){
+          // normal order
+          segment.push(x1);
+          segment.push(y1);
+          segment.push(x2);
+          segment.push(y2);
+        }
+        else{
+          // reverse order
+          segment.push(x2);
+          segment.push(y2);
+          segment.push(x1);
+          segment.push(y1);
+        }
+        // something unique for segment2key...
+        segment.push(id2key(tile.id));
+        segment.push(i);
+	// and adding the label at the end
+	segment.push(label);
+        // add to datastructures
+        segments.push(segment);
+        segmentsMap.set(segment2key(segment),new TileLabelledSegment(tile.id,i,label));
+      }
+    }
+  });
+  // sort the list of segments lexicographicaly
+  // takes into account rounding errors (up to p_error)
+  segments.sort(function(s1,s2){
+    for(let i=0; i<s1.length-3; i++){ // -3 to exclude idkey, index and label
+      if(Math.abs(s1[i]-s2[i])>=p_error){return s1[i]-s2[i];}
+    }
+    return 0;
+  });
+  // check if consecutive elements are identical => new neighbors!
+  // (hypothesis: no three consecutive elements are identical)
+  var fn = 0;
+  for(let i=0; i<segments.length-1; i++){
+    // check if points are identical (up to p_error)
+    if(  distance(segments[i][0],segments[i][1],segments[i+1][0],segments[i+1][1])<p_error
+      && distance(segments[i][2],segments[i][3],segments[i+1][2],segments[i+1][3])<p_error){
+      // found two identical segments => set neighbors
+      fn++;
+      let ts1=segmentsMap.get(segment2key(segments[i]));
+      let ts2=segmentsMap.get(segment2key(segments[i+1]));
+      tilesdict.get(id2key(ts1.id)).neighbors[ts1.nindex] = ts2.id;
+      tilesdict.get(id2key(ts2.id)).neighbors[ts2.nindex] = ts1.id;
+      let c1 = tilesdict.get(id2key(ts1.id)).center;
+      let c2 = tilesdict.get(id2key(ts2.id)).center;
+      let c1c2 = [c2[0]-c1[0], c2[1]-c1[1]];
+      let edgedir = edge_directions[ts1.label-1]; // as the labels are (i+1) to differentiate + and -, we have to remove 1
+      let orthogonal_direction = [-edgedir[1], edgedir[0]];
+      let scalar_product = c1c2[0]*orthogonal_direction[0] + c1c2[1]*orthogonal_direction[1];
+      if(scalar_product>0){
+	tilesdict.get(id2key(ts1.id)).labelled_neighbors[ts1.nindex] = [ts1.label, ts2.id];
+	tilesdict.get(id2key(ts2.id)).labelled_neighbors[ts2.nindex] = [-ts1.label, ts1.id];
+      }
+      else{
+	tilesdict.get(id2key(ts1.id)).labelled_neighbors[ts1.nindex] = [-ts1.label, ts2.id];
+	tilesdict.get(id2key(ts2.id)).labelled_neighbors[ts2.nindex] = [ts1.label, ts1.id];
+      } 
+      // i+1 already set
+      i++;
+    }
+  }
+  // done
+  return fn; // side effect
+}
+
 // 
 // [6.4] set undefined neighbors for lazy user, by side effet
 //
@@ -492,8 +611,10 @@ function resetAllNeighbors(tiles){
     // guess the length of neighbors from the length of bounds
     let n=tile.bounds.length/2;
     tile.neighbors=[];
+    tile.labelled_neighbors=[];
     for(let i=0; i<n; i++){
       tile.neighbors.push(undefined);
+      tile.labelled_neighbors.push([undefined,undefined]);
     }
   }
   return; // side effet
