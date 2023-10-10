@@ -81,6 +81,8 @@ var play = false;
 
 var currentTiling;
 
+var automaton;
+
 var app = new App();
 
 var it_per_frame = 1;
@@ -176,37 +178,94 @@ function steps(){
 	}
 }
 
-function stepPerco(){
-	if(currentTiling){
-		currentTiling.iteratePerco();
-                increment_number_of_steps();
-		currentTiling.colorTiles();
-		if(selectedTile)
-			tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentTiling.tiles[selectedTile].sand;
-	}
-}
+// function stepPerco(){
+// 	if(currentTiling){
+// 		currentTiling.iteratePerco();
+//                 increment_number_of_steps();
+// 		currentTiling.colorTiles();
+// 		if(selectedTile)
+// 			tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentTiling.tiles[selectedTile].sand;
+// 	}
+// }
+
+// function stepPercoThreshold(theta = 2){
+// 	if(currentTiling){
+// 		currentTiling.iteratePercoThreshold(theta);
+//                 increment_number_of_steps();
+// 		currentTiling.colorTiles();
+// 		if(selectedTile)
+// 			tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentTiling.tiles[selectedTile].sand;
+// 	}
+// }
 
 // ------------------------------------------------
 // 	[ 3.2 ] 	Apply multiple steps and color
 //		Tiling.js [ 2.2 ] [ 2.6 ]
 // ------------------------------------------------
-function iterateTiling(){
-	var is_stable = false;
-	for(var i = 0; i<it_per_frame; i++){
-		is_stable = currentTiling.iterate();
-                if(!is_stable){
-                        increment_number_of_steps()
-                }
-	}
+// function iterateTiling(){
+// 	var is_stable = false;
+// 	for(var i = 0; i<it_per_frame; i++){
+// 		is_stable = currentTiling.iterate();
+//                 if(!is_stable){
+//                         increment_number_of_steps()
+//                 }
+// 	}
 	
-	if(document.getElementById("pauseToggle").checked && is_stable)
-		playPause(document.getElementById("playButton"));
-	currentTiling.colorTiles();
-	if(selectedTile)
-		tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentTiling.tiles[selectedTile].sand;
+// 	if(document.getElementById("pauseToggle").checked && is_stable)
+// 		playPause(document.getElementById("playButton"));
+// 	currentTiling.colorTiles();
+// 	if(selectedTile)
+// 		tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentTiling.tiles[selectedTile].sand;
+// }
 
+function iterateAutomaton(){
+    var is_stable = false;
+    for(var i = 0; i<it_per_frame; i++){
+	is_stable = currentTiling.iterate(automaton);
+	if(!is_stable){
+	    increment_number_of_steps()
+	}
+    }
+    if(document.getElementById("pauseToggle").checked && is_stable){
+	playPause(document.getElementById("playButton"));
+    }
+    currentTiling.colorTiles();
+    if(selectedTile)
+	tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentTiling.tiles[selectedTile].sand;
 }
+    
+	
 
+// // 
+// function iteratePercolation(){
+// 	var is_stable = false;
+// 	for(var i = 0; i<it_per_frame; i++){
+// 		is_stable = currentTiling.iteratePerco();
+// 		if(!is_stable){
+// 			increment_number_of_steps()
+// 		}
+// 	}
+// 	if(document.getElementById("pauseToggle").checked && is_stable)
+// 		playPause(document.getElementById("playButton"));
+// 	currentTiling.colorTiles();
+// 	if(selectedTile)
+// 		tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentTiling.tiles[selectedTile].sand;
+// }
+
+// function iteratePercolationThreshold(theta = 2){
+// 	var is_stable = false;
+// 	for(var i = 0; i<it_per_frame; i++){
+// 		is_stable = currentTiling.iteratePercoThreshold(theta);
+// 		if(!is_stable){
+// 			increment_number_of_steps()
+// 		}
+// 	}
+// 	if(document.getElementById("pauseToggle").checked && is_stable)
+// 		playPause(document.getElementById("playButton"));
+// 	currentTiling.colorTiles();
+// 	if(selectedTile)
+// 		tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentTiling.tiles[selectedTile].sand;
+// }
 
 // ------------------------------------------------
 // 	[ 3.3 ] 	Stabilize the current Tiling
@@ -419,17 +478,51 @@ function complexOperationSub(){
 
 // ------------------------------------------------
 // 	[ 4.1 ] 	Main play function
-// ------------------------------------------------
-async function playWithDelay() {
-	if(currentTiling){
-	       while(true){
-		       if(play){
-		               iterateTiling ();
-		       }
-		       await sleep(delay);
-	       }
+// -----------------------------------------------
+
+// async function playWithDelay() {
+// 	if(currentTiling){
+// 	       while(true){
+// 		       if(play){
+// 		               iterateTiling ();
+// 		       }
+// 		       await sleep(delay);
+// 	       }
+// 	}
+// }
+
+async function playAutomatonWithDelay() {
+    if(currentTiling){
+	while(true){
+	    if(play){
+		iterateAutomaton();
+	    }
+	    await sleep(delay);
 	}
+    }
 }
+
+// async function playPercoWithDelay() {
+// 	if(currentTiling){
+// 	       while(true){
+// 		       if(play){
+// 		               iteratePercolation();
+// 		       }
+// 		       await sleep(delay);
+// 	       }
+// 	}
+// }
+
+// async function playPercoThresholdWithDelay( theta = 2) {
+// 	if(currentTiling){
+// 	       while(true){
+// 		       if(play){
+// 		               iteratePercolationThreshold(theta);
+// 		       }
+// 		       await sleep(delay);
+// 	       }
+// 	}
+// }
 
 // ------------------------------------------------
 // 	[ 4.2 ] 	Either play, or pause
@@ -481,6 +574,16 @@ function enableWireFrame(elem){
 		}
 	}
 		
+}
+
+
+//
+//  Percolation specific : setting the automaton
+//
+
+function set_automaton() {
+    automaton = document.getElementById("AutomatonSelect").value;
+    console.log("Automaton set to : "+automaton);
 }
 
 // ------------------------------------------------
@@ -544,8 +647,18 @@ function drawTiling(){
         // draw tiles (?)
 	enableWireFrame(document.getElementById("wireFrameToggle"));
 
-        // ?
-	playWithDelay();
+        // enabling the percolation automaton
+        playAutomatonWithDelay();
+        
+	// if (automaton == "sandpile") {
+	// 	playWithDelay();
+	// }
+	// else if (automaton == "bootstrap"){
+	// 	playPercoWithDelay();
+	// }
+	// else if (automaton == "threshold"){
+	// 	playPercoThresholdWithDelay(threshold_theta);
+	// }
 
         // render THREE.js scene
 	var render = function () {
@@ -555,6 +668,9 @@ function drawTiling(){
 	};
 	render();
 }
+
+
+
 
 function redraw(){
 	while(app.scene.children.length > 0){
