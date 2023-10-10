@@ -17,9 +17,10 @@
 //
 // ################################################
 class Tile{
-	constructor(id, neighbors, bounds, limit){
+	constructor(id, neighbors, bounds, limit, labelled_neighbors){
 		this.id = id; // unique identifier
 		this.neighbors = neighbors; // ids of adjacent tiles
+		this.labelled_neighbors = labelled_neighbors; // ids of adjacent tiles with the label and orientation of their shared edge
 
 		this.limit = limit; // topples when sand >= limit
 		this.sand = 0; // sand content
@@ -27,10 +28,18 @@ class Tile{
 			this.sand = -1;
 		this.prevSand = 0; // "trick" variable to iterate the sand
 
-		this.bounds = bounds; // vertices of the polygon to be drawn
-		this.points = [];
+		this.bounds = bounds; // vertices of the polygon to be drawn, should follow the boundary in the positive (counterclockwise) orientation
+		// this.bounds = [x_1, y_1, x_2, y_2, x_3, y_3, x_4, y_4]
+		this.center = [0,0]; // barycenter of the polygon 
+		for(let i=0; i<this.bounds.length; i=i+2){ // computing the barycenter of the vertices
+			this.center[0] += this.bounds[i];
+			this.center[1] += this.bounds[i+1];
+		}
+		this.center[0] /= this.bounds.length/2;
+		this.center[1] /= this.bounds.length/2;
 		
-		this.svg_color = "000000";
+		this.points = [];
+		this.svg_color = "000000"; // default color
 	}
         
         // [1.1] homemade Tile cloning method
@@ -45,6 +54,10 @@ class Tile{
                         this.neighbors[i]=undefined;
                 }
         }
+
+	resetLabelledNeighbors(){
+		this.labelled_neighbors = new Array(this.neighbors.length).fill([undefined,undefined])
+	}
         
         // [1.2] geometric transformations of a tile (scale, shift, rotate)
 
@@ -109,9 +122,12 @@ class Tiling{
 	//	the limits of the Tiles (called the WireFrame).
 	//
 	// ------------------------------------------------
-	constructor(tiles, hide=false, recenter=false){
+	constructor(tiles, hide=false, recenter=false, edge_directions = []){
 		
-		this.tiles = tiles;
+		this.tiles = tiles; // array of tiles
+
+		this.labels = edge_directions.length; // number of edge labels
+		this.edge_directions = edge_directions; // an Array of vectors [[x,y], [x', y']] being the edge directions of the tiling
 		
 		this.hide = hide;
 		
@@ -151,17 +167,27 @@ class Tiling{
 			this.cmap = [new THREE.Color(0xffffff),
 						 new THREE.Color(0xff0000)]; // if you see these colors, something went wrong
 			
-			// From the idloc dictionnary, translates neighbors of each Tile from ID to
+			// From the idloc dictionnary, translates neighbors and labelled neighbors of each Tile from ID to
 			// Indexes in the list of Tiles.
 			for(var i = 0; i<this.tiles.length; i++){
 				this.tiles[i].id = i;
 				var new_neighbors = [];
+				var new_labelled_neighbors = [];
 				for(var j=0; j<this.tiles[i].neighbors.length; j++){
 					var neighbor = idloc[this.tiles[i].neighbors[j]];
 					if(neighbor!=null)
 						new_neighbors.push(neighbor);
 				}
 				this.tiles[i].neighbors = new_neighbors;
+				for(var j=0; j<this.tiles[i].labelled_neighbors.length; j++){
+					var neighbor = idloc[this.tiles[i].labelled_neighbors[j][1]];
+					var label = this.tiles[i].labelled_neighbors[j][0];
+					if(neighbor!=null)
+						new_labelled_neighbors.push([label,neighbor]);
+				}
+				this.tiles[i].labelled_neighbors = new_labelled_neighbors;
+					
+				
 			}
 			
 			// WireFrame -----------------------------------------------------
@@ -250,24 +276,166 @@ class Tiling{
 		}
 	}
 
-	// ------------------------------------------------
-	// 	[ 2.2 ] 	Apply sandpile steps
+        // // // sandpile version
+	// // ------------------------------------------------
+	// // 	[ 2.2 ] 	Apply sandpile steps
+	// // ------------------------------------------------
+	// iterate(){
+	// 	// Topple any tile that has more than the limit of sand
+	// 	var is_stable = true;
+	// 	for(var i=0; i<this.tiles.length; i++){
+	// 		this.tiles[i].prevSand = this.tiles[i].sand;
+	// 	}
+	// 	for(var i=0; i<this.tiles.length; i++){
+	// 		var til = this.tiles[i];
+	// 		if(til.prevSand >= til.limit){
+	// 			til.sand -= til.limit;
+	// 			for(var j = 0; j< til.neighbors.length; j++){
+	// 				this.tiles[til.neighbors[j]].sand += 1;
+	// 			}
+	// 			is_stable = false;
+	// 		}
+	// 	}
+	// 	return is_stable;
+	// }
+
+    	// ------------------------------------------------
+	// 	[ 2.2 ] 	Apply automaton steps
 	// ------------------------------------------------
 	iterate(){
-		// Topple any tile that has more than the limit of sand
+		// contaminate tiles
 		var is_stable = true;
 		for(var i=0; i<this.tiles.length; i++){
+			// for legacy and initial compatibility with JS-Sandpile we put all positive to 3
+			// TODO change to binary 0 or 1, not 0 or 3
+			if(this.tiles[i].sand > 0){
+                                this.tiles[i].sand = 3;
+                        }	
 			this.tiles[i].prevSand = this.tiles[i].sand;
 		}
+		let unknown_automaton = false;
+		
 		for(var i=0; i<this.tiles.length; i++){
 			var til = this.tiles[i];
-			if(til.prevSand >= til.limit){
-				til.sand -= til.limit;
-				for(var j = 0; j< til.neighbors.length; j++){
-					this.tiles[til.neighbors[j]].sand += 1;
+			let neighborsactive;
+			let threshold;
+			let neighborindex;
+			let neighborlabel;
+			switch(automaton) {
+			case "Growth":
+				if (til.prevSand > 0){
+					break;
 				}
-				is_stable = false;
+				neighborsactive = 0;
+				threshold = 1;
+				for(let j=0; j<til.neighbors.length; j++){
+					if(this.tiles[til.neighbors[j]].prevSand > 0){
+						neighborsactive++;
+					}
+				}
+				if(neighborsactive >= threshold){
+					this.tiles[i].sand = 3;
+					is_stable = false;
+				}
+				break;
+				
+			case "Bootstrap":
+				if (til.prevSand > 0){
+					break;
+				}
+				neighborsactive = 0;
+				threshold = 2;
+				for(let j=0; j<til.neighbors.length; j++){
+					if(this.tiles[til.neighbors[j]].prevSand > 0){
+						neighborsactive++;
+					}
+				}
+				if(neighborsactive >= threshold){
+					this.tiles[i].sand = 3;
+					is_stable = false;
+				}
+				break;
+				
+			case "Threshold3":
+				if (til.prevSand > 0){
+					break;
+				}
+				neighborsactive = 0;
+				threshold = 3;
+				for(let j=0; j<til.neighbors.length; j++){
+					if(this.tiles[til.neighbors[j]].prevSand > 0){
+						neighborsactive++;
+					}
+				}
+				if(neighborsactive >= threshold){
+					this.tiles[i].sand = 3;
+					is_stable = false;
+				}
+			  break;
+			  
+			case "Directionnal_positive": // growth if it has 2 neighbors in positive directions
+				if (til.prevSand > 0){
+					break;
+				}
+				neighborsactive = 0;
+				threshold = 2;
+				for (let j=0; j<til.labelled_neighbors.length; j++){
+					neighborlabel = til.labelled_neighbors[j][0]
+					neighborindex = til.labelled_neighbors[j][1]
+					if( (neighborlabel > 0) && ( this.tiles[neighborindex].prevSand>0)){
+						neighborsactive++;
+					}
+				}
+				if( neighborsactive >= threshold){
+					this.tiles[i].sand = 3;
+					is_stable = false;
+				}
+				break;
+				
+
+			case "Directionnal_half_plane":
+				// if $n$ is odd :  half-plane directions : [1, 2, … (n+1)/2, -((n+1)/2+1), … -n]
+				// if $n$ is even : == positive directions
+				// assume a n-fold multigrid
+				if (til.prevSand > 0){
+					break;
+				}
+				neighborsactive = 0;
+				threshold = 2;
+				for (let j=0; j<til.labelled_neighbors.length; j++){
+					neighborlabel = til.labelled_neighbors[j][0]
+					neighborindex = til.labelled_neighbors[j][1]
+					if( is_half_plane_direction(neighborlabel, this.labels)
+					    && (this.tiles[neighborindex].prevSand>0)){
+						neighborsactive++;
+					}
+				}
+				if(neighborsactive >= threshold){
+					this.tiles[i].sand =3;
+					is_stable = false;
+				}
+				break;
+				 
+				
+				
+				
+			case "Sandpile": // kept for backwards compatibility reasons	
+				if(til.prevSand >= til.limit){
+					til.sand -= til.limit;
+					for(var j = 0; j< til.neighbors.length; j++){
+						this.tiles[til.neighbors[j]].sand += 1;
+					}
+					is_stable = false;
+				}
+				break;
+
+			default:
+				unknown_automaton = true;
 			}
+		}
+		if(unknown_automaton){
+			console.log("Unknown automaton : " + automaton);
+			console.log("Maybe this automaton has not yet been implemented");
 		}
 		return is_stable;
 	}
@@ -284,33 +452,64 @@ class Tiling{
 		console.log("  done after "+n+" steps in "+(performance.now()-t0)+" (ms)");
 		this.colorTiles();
 	}
-	
-        // percolation setp theta=2
-	iteratePerco(){
-                console.log("test");
-                let theta=2;
-                // puts all contents to 3 or 0 and prepare next config
-		for(let i=0; i<this.tiles.length; i++){
-                        if(this.tiles[i].sand > 0){
-                                this.tiles[i].sand = 3;
-                        }
-			this.tiles[i].prevSand = this.tiles[i].sand;
-		}
-		// put 3 to tiles having >= theta=2 neighbors active
-		for(let i=0; i<this.tiles.length; i++){
-			var til = this.tiles[i];
-                        let neighborsactive = 0;
-                        for(let j=0; j<til.neighbors.length; j++){
-                                if(this.tiles[til.neighbors[j]].prevSand > 0){
-                                      neighborsactive++;
-                                }
-                                if(neighborsactive >= theta){
-                                        this.tiles[i].sand = 3;
-                                }
-                        }
-		}
-		return false; // meuh
-	}
+
+	// // // first percolation version
+	// // ------------------------------------------------
+	// // 	[ 2.2 ] 	Apply percolation steps
+	// // ------------------------------------------------
+        // // percolation setp theta=2
+	// iteratePerco(){
+        //         // console.log("test");
+        //         let theta=2;
+        //         // puts all contents to 3 or 0 and prepare next config
+	// 	for(let i=0; i<this.tiles.length; i++){
+        //                 if(this.tiles[i].sand > 0){
+        //                         this.tiles[i].sand = 3;
+        //                 }
+	// 		this.tiles[i].prevSand = this.tiles[i].sand;
+	// 	}
+	// 	// put 3 to tiles having >= theta=2 neighbors active
+	// 	for(let i=0; i<this.tiles.length; i++){
+	// 		var til = this.tiles[i];
+        //                 let neighborsactive = 0;
+        //                 for(let j=0; j<til.neighbors.length; j++){
+        //                         if(this.tiles[til.neighbors[j]].prevSand > 0){
+        //                               neighborsactive++;
+        //                         }
+        //                         if(neighborsactive >= theta){
+        //                                 this.tiles[i].sand = 3;
+        //                         }
+        //                 }
+	// 	}
+	// 	return false; // meuh
+	// }
+
+	// // threshold percolation automata 
+	// iteratePercoThreshold(theta = 2){ 
+	// 	// console.log("test");
+	// 	// puts all contents to 3 or 0 and prepare next config
+	// 	for(let i=0; i<this.tiles.length; i++){
+	// 		if(this.tiles[i].sand > 0){
+	// 			this.tiles[i].sand = 3;
+	// 		}
+	// 		this.tiles[i].prevSand = this.tiles[i].sand;
+	// 	}
+	// 	// put 3 to tiles having >= theta=2 neighbors active
+	// 	for(let i=0; i<this.tiles.length; i++){
+	// 		var til = this.tiles[i];
+	// 		let neighborsactive = 0;
+	// 		for(let j=0; j<til.neighbors.length; j++){
+	// 			if(this.tiles[til.neighbors[j]].prevSand > 0){
+	// 				neighborsactive++;
+	// 			}
+	// 			if(neighborsactive >= theta){
+	// 				this.tiles[i].sand = 3;
+	// 			}
+	// 		}
+	// 	}
+	// 	return false; // meuh
+	// }
+
 
 	// ------------------------------------------------
 	// 	[ 2.3 ] 	Basic operation functions
@@ -342,13 +541,12 @@ class Tiling{
 	addBernouilli(proba){
 		for(var j = 0; j<this.tiles.length; j++){
 			var chosen = Math.random();
-			if(chosen <= proba) this.add(j,1);
+			if(chosen <= proba) this.add(j,3);
 		}
 	}
 
 	removeRandom(amount){
 		for(var j = 0; j<amount; j++){
-			console.log("test");
 			var chosen = Math.floor(this.tiles.length * Math.random());
 			this.remove(chosen, 1);
 		}
@@ -561,3 +759,19 @@ class Tiling{
         }
 }
 
+
+
+function is_half_plane_direction(label, dimension){
+	let index = Math.abs(label);
+	if (dimension % 2){
+		if( 2*index <= dimension + 1) {
+			return (label > 0)
+		}
+		else {
+			return (label < 0)
+		}
+	}
+	else {
+		return (label>0)
+	}
+}
