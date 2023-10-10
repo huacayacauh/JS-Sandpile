@@ -22,7 +22,7 @@ THREE.OrthographicTrackballControls = function ( object, domElement ) {
 	this.radius = 0;
 
 	this.rotateSpeed = 1.0;
-	this.zoomSpeed = 1.2;
+	this.zoomSpeed = 4;
 
 	this.noRotate = false;
 	this.noZoom = false;
