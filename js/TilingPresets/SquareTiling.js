@@ -68,6 +68,12 @@ Tile.squareTile = function(x, y, width, height){
 	neighbors.push([x+1, y]);
 	neighbors.push([x, y-1]);
 	neighbors.push([x, y+1]);
+
+	var labelled_neighbors = [];
+	labelled_neighbors.push([1,[x+1,y]]);
+	labelled_neighbors.push([-1,[x-1,y]]);
+	labelled_neighbors.push([2,[x,y+1]]);
+	labelled_neighbors.push([-2,[x,y-1]]);
 	
 	var bounds = [];
 	bounds.push(x - width/2, y - height/2);
@@ -75,7 +81,7 @@ Tile.squareTile = function(x, y, width, height){
 	bounds.push(x+1 - width/2, y+1 - height/2);
 	bounds.push(x - width/2, y+1 - height/2);
 				
-	return new Tile(id, neighbors, bounds, 4);
+	return new Tile(id, neighbors, bounds, 4, labelled_neighbors);
 }
 
 
