@@ -790,6 +790,119 @@ Tiling.P3sunbysubst = function({iterations}={}){
 }
 
 //
+// [7.4] construct "P3 (rhomb) Sun by subst" tiling by substitution
+// Penrose P3 with Fat-Thin neighborhood:
+// * fat tiles are adjacent to thin tiles only,
+// * thin tiles are adjacent to fat tiles only.
+// it is a symmetric neighborhood
+// 
+Tiling.P3sunbysubstNeighFatThin = function({iterations}={}){
+  var tiles = [];
+  // push base "sun" tiling
+  for(var i=0; i<5; i++){
+    // construct tiles
+    var myfat = fat.myclone();
+    myfat.id.push('basefat'+i); // unique!
+    myfat.rotate(0,0,i*2*Math.PI/5);
+    var mythin = thin.myclone();
+    mythin.id.push('basethin'+i); // unique!
+    mythin.rotate(0,0,Math.PI);
+    mythin.shift(0,2*Math.cos(2*Math.PI/5)+1);
+    mythin.rotate(0,0,(i*2+1)*Math.PI/5);
+    // define neighbors with undefined on the boundary
+    myfat.neighbors.push(['fat','basefat'+(i-1+5)%5]); // 0
+    myfat.neighbors.push(['thin','basethin'+(i-1+5)%5]); // 1
+    myfat.neighbors.push(['thin','basethin'+i]); // 2
+    myfat.neighbors.push(['fat','basefat'+(i+1)%5]); // 3
+    mythin.neighbors.push(undefined); // 0
+    mythin.neighbors.push(['fat','basefat'+(i+1)%5]); // 1
+    mythin.neighbors.push(['fat','basefat'+i]); // 2
+    mythin.neighbors.push(undefined); // 3
+    tiles.push(myfat);
+    tiles.push(mythin);
+  }
+  // call the substitution
+  tiles = substitute(
+    iterations,
+    tiles,
+    phi,
+    substitutionP3,
+    duplicatedP3,
+    duplicatedP3oriented,
+    neighborsP3,
+    neighbors2boundsP3,
+    decorateP3
+  );
+  // remove some neighbors to get fat-thin neighborhood
+  console.log("remove some neighbors (fat-thin)");
+  tiles.forEach(tile => {
+    let newneighbors = tile.neighbors.filter(nid => {
+      if(nid === undefined) return false; // filter undefined (why not)
+      return nid[0] != tile.id[0];
+    });
+    tile.neighbors = newneighbors;
+  });
+  // construct tiling
+  return new Tiling(tiles);
+}
+
+//
+// [7.4] construct "P3 (rhomb) Sun by subst" tiling by substitution
+// Penrose P3 with Fat-Fat Thin-Thin neighborhood:
+// * fat tiles are adjacent to fat tiles only,
+// * thin tiles are adjacent to thin tiles only.
+// it is a symmetric neighborhood
+// 
+Tiling.P3sunbysubstNeighFatFatThinThin = function({iterations}={}){
+  var tiles = [];
+  // push base "sun" tiling
+  for(var i=0; i<5; i++){
+    // construct tiles
+    var myfat = fat.myclone();
+    myfat.id.push('basefat'+i); // unique!
+    myfat.rotate(0,0,i*2*Math.PI/5);
+    var mythin = thin.myclone();
+    mythin.id.push('basethin'+i); // unique!
+    mythin.rotate(0,0,Math.PI);
+    mythin.shift(0,2*Math.cos(2*Math.PI/5)+1);
+    mythin.rotate(0,0,(i*2+1)*Math.PI/5);
+    // define neighbors with undefined on the boundary
+    myfat.neighbors.push(['fat','basefat'+(i-1+5)%5]); // 0
+    myfat.neighbors.push(['thin','basethin'+(i-1+5)%5]); // 1
+    myfat.neighbors.push(['thin','basethin'+i]); // 2
+    myfat.neighbors.push(['fat','basefat'+(i+1)%5]); // 3
+    mythin.neighbors.push(undefined); // 0
+    mythin.neighbors.push(['fat','basefat'+(i+1)%5]); // 1
+    mythin.neighbors.push(['fat','basefat'+i]); // 2
+    mythin.neighbors.push(undefined); // 3
+    tiles.push(myfat);
+    tiles.push(mythin);
+  }
+  // call the substitution
+  tiles = substitute(
+    iterations,
+    tiles,
+    phi,
+    substitutionP3,
+    duplicatedP3,
+    duplicatedP3oriented,
+    neighborsP3,
+    neighbors2boundsP3,
+    decorateP3
+  );
+  // remove some neighbors to get fat-thin neighborhood
+  console.log("remove some neighbors (fat-thin)");
+  tiles.forEach(tile => {
+    let newneighbors = tile.neighbors.filter(nid => {
+      if(nid === undefined) return false; // filter undefined (why not)
+      return nid[0] == tile.id[0];
+    });
+    tile.neighbors = newneighbors;
+  });
+  // construct tiling
+  return new Tiling(tiles);
+}
+//
 // [8] laser cut: add knotches and crop to rectangle
 // 
 
