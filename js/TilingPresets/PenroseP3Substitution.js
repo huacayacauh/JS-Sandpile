@@ -837,17 +837,18 @@ Tiling.P3sunbysubstNeighFatThin = function({iterations}={}){
   console.log("remove some neighbors (fat-thin)");
   tiles.forEach(tile => {
     let newneighbors = tile.neighbors.filter(nid => {
-      if(nid === undefined) return false; // filter undefined (why not)
+      if(nid === undefined) return false; // filter undefined (to compute limit below)
       return nid[0] != tile.id[0];
     });
     tile.neighbors = newneighbors;
+    //tile.limit = newneighbors.length; // seting the "correct" limit is not obvious on the boundary tiles of the last iteration of the substitution, and may create loops (and the corona looks nicer with greyscale of 4)
   });
   // construct tiling
   return new Tiling(tiles);
 }
 
 //
-// [7.4] construct "P3 (rhomb) Sun by subst" tiling by substitution
+// [7.5] construct "P3 (rhomb) Sun by subst" tiling by substitution
 // Penrose P3 with Fat-Fat Thin-Thin neighborhood:
 // * fat tiles are adjacent to fat tiles only,
 // * thin tiles are adjacent to thin tiles only.
@@ -894,10 +895,11 @@ Tiling.P3sunbysubstNeighFatFatThinThin = function({iterations}={}){
   console.log("remove some neighbors (fat-thin)");
   tiles.forEach(tile => {
     let newneighbors = tile.neighbors.filter(nid => {
-      if(nid === undefined) return false; // filter undefined (why not)
+      if(nid === undefined) return false; // filter undefined (to compute limit below)
       return nid[0] == tile.id[0];
     });
     tile.neighbors = newneighbors;
+    //tile.limit = newneighbors.length; // seting the "correct" limit is not obvious on the boundary tiles of the last iteration of the substitution, and may create loops (and the corona looks nicer with greyscale of 4)
   });
   // construct tiling
   return new Tiling(tiles);
