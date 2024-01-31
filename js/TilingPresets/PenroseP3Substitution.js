@@ -904,6 +904,7 @@ Tiling.P3sunbysubstNeighFatFatThinThin = function({iterations}={}){
   // construct tiling
   return new Tiling(tiles);
 }
+
 //
 // [8] laser cut: add knotches and crop to rectangle
 // 
