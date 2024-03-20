@@ -443,13 +443,15 @@ class Tiling{
 				for (let j=0; j<til.labelled_neighbors.length; j++){
 					neighborlabel = til.labelled_neighbors[j][0]
 					neighborindex = til.labelled_neighbors[j][1]
+					neighborsand = this.tiles[til.neighbors[j]].prevSand;
 					if( is_half_plane_direction(neighborlabel, this.labels)
-					    && (this.tiles[neighborindex].prevSand>0)){
+					    && (neighborsand>0)){
 						neighborsactive++;
+						minneighborsand = Math.min( minneighborsand, neighborsand);
 					}
 				}
 				if(neighborsactive >= threshold){
-					this.tiles[i].sand =3;
+					this.tiles[i].sand = Math.max(1, minneighborsand -1);
 					is_stable = false;
 				}
 				break;
@@ -464,12 +466,14 @@ class Tiling{
 				for (let j=0; j<til.labelled_neighbors.length; j++){
 					neighborlabel = til.labelled_neighbors[j][0]
 					neighborindex = til.labelled_neighbors[j][1]
-					if( (neighborlabel > 0) && ( this.tiles[neighborindex].prevSand>0)){
+					neighborsand = this.tiles[til.neighbors[j]].prevSand;
+					if( (neighborlabel > 0) && ( neighborsand>0)){
+						minneighborsand = Math.min( minneighborsand, neighborsand);
 						neighborsactive++;
 					}
 				}
 				if( neighborsactive >= threshold){
-					this.tiles[i].sand = 3;
+					this.tiles[i].sand = Math.max(1, minneighborsand -1);
 					is_stable = false;
 				}
 				break;
