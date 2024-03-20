@@ -430,10 +430,53 @@ class Tiling{
 				}
 				break;
 				 
+					
+			case "Growth_directionnal_half_plane": // 1 neighbor is enough
+				// if $n$ is odd :  half-plane directions : [1, 2, … (n+1)/2, -((n+1)/2+1), … -n]
+				// if $n$ is even : == positive directions
+				// assume a n-fold multigrid
+				if (til.prevSand > 0){
+					break;
+				}
+				neighborsactive = 0;
+				threshold = 1;
+				for (let j=0; j<til.labelled_neighbors.length; j++){
+					neighborlabel = til.labelled_neighbors[j][0]
+					neighborindex = til.labelled_neighbors[j][1]
+					if( is_half_plane_direction(neighborlabel, this.labels)
+					    && (this.tiles[neighborindex].prevSand>0)){
+						neighborsactive++;
+					}
+				}
+				if(neighborsactive >= threshold){
+					this.tiles[i].sand =3;
+					is_stable = false;
+				}
+				break;
 				
-				
-				
-			case "Sandpile": // kept for backwards compatibility reasons	
+
+			case "Growth_directionnal_positive": // 1 neighbor in positive direction is enough
+				if (til.prevSand > 0){
+					break;
+				}
+				neighborsactive = 0;
+				threshold = 1;
+				for (let j=0; j<til.labelled_neighbors.length; j++){
+					neighborlabel = til.labelled_neighbors[j][0]
+					neighborindex = til.labelled_neighbors[j][1]
+					if( (neighborlabel > 0) && ( this.tiles[neighborindex].prevSand>0)){
+						neighborsactive++;
+					}
+				}
+				if( neighborsactive >= threshold){
+					this.tiles[i].sand = 3;
+					is_stable = false;
+				}
+				break;
+
+
+			case "Sandpile": // kept for backwards compatibility reasons
+                                         // no button in GUI: it is broken because of tile.sand=3
 				if(til.prevSand >= til.limit){
 					til.sand -= til.limit;
 					for(var j = 0; j< til.neighbors.length; j++){
