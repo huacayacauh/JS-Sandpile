@@ -169,7 +169,7 @@ decorateP2.set('iso',1);
 // 
 Tiling.equithirdsSubstitution = function({iterations}={}){
     var tiles = [];
-    var myequi = iso.myclone();
+    var myequi = equi.myclone();
     myequi.id.push(0);
     tiles.push(myequi);
 
