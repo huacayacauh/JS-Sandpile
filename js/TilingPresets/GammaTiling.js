@@ -1,10 +1,9 @@
 Tiling.gammaTiling = function({width, height}={}){
-	// Creates a Tiling corresponding to a square Tiling of dimensions width, height
 	
 	var tils = [];
 
-	for(var j = 0; j < width; j++){ // -->
-		for(var i = 0; i < height; i++){ // |^
+	for(var j = 0; j < width; j++){
+		for(var i = 0; i < height; i++){ 
 				tils.push(upGamma(3*j, 2*i, width, height));
 				tils.push(downGamma(3*j+1, 2*i, width, height));
 	
