@@ -119,9 +119,9 @@ function draw2(directions,tiles_info){
       bounds.push(coord[0]);
       bounds.push(coord[1]);
     }
-    var limit = 11;
+    var limit = 100;
     /* for sandpile we use the limit = number of neighbours,
-       for percolation we use limit = 11 to have a greyscale of 10 (1-10) grey levels for space-time color diagram
+       for percolation we use limit = 100 to have a greyscale of 100 (1-100) grey levels for space-time color diagram
     */
     tiles.push(new Tile([id2key(tile[0]),tile[1]],[],bounds,limit));
   }

@@ -340,6 +340,12 @@ function complexOperationAdd(){
 				for(var i = 0; i< operationTimes; i++)
 				        currentTiling.addConfiguration(currentTiling.get_burning());
 			break;
+			case "Bernoulli":
+				console.log("Bernoulli with arbitrary density");
+				var bernouilliDensity = document.getElementById("complexBernoulliDensity").valueAsNumber;
+				console.log(bernouilliDensity);
+				currentTiling.addBernoulli(bernouilliDensity);
+			break;
 		}
 		if(operationType.substring(0, 4) == "CNFG"){
 			for(var i = 0; i<operationTimes; i++)
@@ -399,12 +405,12 @@ function complexOperationSet(){
 				currentTiling.addConfiguration(newTilingBurn);
 			break;
 
-			case "Bernouilli":
-				console.log("Bernouilli with arbitrary density");
-				var bernouilliDensity = document.getElementById("complexBernouilliDensity").valueAsNumber;
+			case "Bernoulli":
+				console.log("Bernoulli with arbitrary density");
+				var bernouilliDensity = document.getElementById("complexBernoulliDensity").valueAsNumber;
 				console.log(bernouilliDensity);
 				currentTiling.clear();
-				currentTiling.addBernouilli(bernouilliDensity);
+				currentTiling.addBernoulli(bernouilliDensity);
 			break;
 		}
 		if(operationType.substring(0, 4) == "CNFG"){
@@ -456,6 +462,12 @@ function complexOperationSub(){
 
 			case "Burn":
 				currentTiling.removeConfiguration(currentTiling.get_burning());
+			break;
+			case "Bernoulli":
+				console.log("Bernoulli with arbitrary density");
+				var bernouilliDensity = document.getElementById("complexBernoulliDensity").valueAsNumber;
+				console.log(bernouilliDensity);
+				currentTiling.removeBernoulli(bernouilliDensity);
 			break;
 		}
 		if(operationType.substring(0, 4) == "CNFG"){

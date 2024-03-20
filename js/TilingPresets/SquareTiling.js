@@ -81,9 +81,9 @@ Tile.squareTile = function(x, y, width, height){
 	bounds.push(x+1 - width/2, y+1 - height/2);
 	bounds.push(x - width/2, y+1 - height/2);
 
-	var limit = 11;
+	var limit = 100;
 	/* for sandpile we use the limit = number of neighbours,
-	   for percolation we use limit = 11 to have a greyscale of 10 (1 to 10) grey levels for space-time color diagram */
+	   for percolation we use limit = 100 to have a greyscale of 100 (1 to 100) grey levels for space-time color diagram */
 				
 	return new Tile(id, neighbors, bounds, limit, labelled_neighbors);
 }
