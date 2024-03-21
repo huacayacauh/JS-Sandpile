@@ -343,6 +343,11 @@ Tiling.doubleHalfhexVarbysubst = function({iterations}={}){
   var mySmall0 = small.myclone();
   mySmall0.id.push(0);
   tiles.push(mySmall0);
+  var mySmall1 = small.myclone();
+  mySmall1.id.push(1);
+  mySmall1.rotate(mySmall1.bounds[0], mySmall1.bounds[1], Math.PI);
+  mySmall1.shift(mySmall1.bounds[0] - mySmall1.bounds[6], mySmall1.bounds[1] - mySmall1.bounds[7]);
+  tiles.push(mySmall1);
 
   // call the substitution
   tiles = substitute(
