@@ -1,6 +1,6 @@
 // Double Halfhex Variation
 // substitution, variation from this one described at
-// https://tilings.math.uni-bielefeld.de/substitution/equithirds/
+// https://tilings.math.uni-bielefeld.de/substitution/double-halfhex/
 //
 // New rules for the moment :
 // Small Halfhex (red) divided in 4 bug (yellow) halfhex
