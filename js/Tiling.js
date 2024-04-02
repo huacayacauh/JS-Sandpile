@@ -310,8 +310,8 @@ class Tiling{
 			// for legacy and initial compatibility with JS-Sandpile we put all positive to 3
 			// TODO change to binary 0 or 1, not 0 or 3
 			// DONE change to greyscale 0 = dead, 1-10 = live (for space-time diagram purposes)
-			if(this.tiles[i].sand > 100){
-                                this.tiles[i].sand = 100;
+			if(this.tiles[i].sand > maxSand){
+                                this.tiles[i].sand = maxSand;
                         }	
 			this.tiles[i].prevSand = this.tiles[i].sand;
 		}
@@ -325,173 +325,176 @@ class Tiling{
 			let neighborlabel;
 			let minneighborsand = 100;
 			let neighborsand;
-			switch(automaton) {
-			case "Growth":
-				if (til.prevSand > 0){
-					break;
-				}
-				neighborsactive = 0;
-				threshold = 1;
-				for(let j=0; j<til.neighbors.length; j++){
-					neighborsand = this.tiles[til.neighbors[j]].prevSand;
-					if(neighborsand > 0){
-						neighborsactive++;
-						minneighborsand = Math.min( minneighborsand, neighborsand);
+			if (til.sand<=0){
+				switch(automaton) {
+				case "Growth":
+					if (til.prevSand > 0){
+						break;
 					}
-				}
-				if(neighborsactive >= threshold){
-					this.tiles[i].sand = Math.max(1, minneighborsand -1);
-					is_stable = false;
-				}
-				break;
-				
-			case "Bootstrap":
-				if (til.prevSand > 0){
-					break;
-				}
-				neighborsactive = 0;
-				threshold = 2;
-				for(let j=0; j<til.neighbors.length; j++){
-					neighborsand = this.tiles[til.neighbors[j]].prevSand;
-					if(neighborsand > 0){
-						neighborsactive++;
-						minneighborsand = Math.min( minneighborsand, neighborsand);
+					neighborsactive = 0;
+					threshold = 1;
+					for(let j=0; j<til.neighbors.length; j++){
+						neighborsand = this.tiles[til.neighbors[j]].prevSand;
+						if(neighborsand > 0){
+							neighborsactive++;
+							minneighborsand = Math.min( minneighborsand, neighborsand);
+						}
 					}
-				}
-				if(neighborsactive >= threshold){
-					this.tiles[i].sand = Math.max(1, minneighborsand -1);
-					is_stable = false;
-				}
-				break;
-				
-			case "Threshold3":
-				if (til.prevSand > 0){
-					break;
-				}
-				neighborsactive = 0;
-				threshold = 3;
-				for(let j=0; j<til.neighbors.length; j++){
-					neighborsand = this.tiles[til.neighbors[j]].prevSand;
-					if(neighborsand > 0){
-						neighborsactive++;
-						minneighborsand = Math.min( minneighborsand, neighborsand);
+					if(neighborsactive >= threshold){
+						this.tiles[i].sand = Math.max(1, minneighborsand -1);
+						is_stable = false;
 					}
-				}
-				if(neighborsactive >= threshold){
-					this.tiles[i].sand = Math.max(1, minneighborsand -1);
-					is_stable = false;
-				}
-			  break;
-			  
-			case "Directionnal_positive": // growth if it has 2 neighbors in positive directions
-				if (til.prevSand > 0){
 					break;
-				}
-				neighborsactive = 0;
-				threshold = 2;
-				for (let j=0; j<til.labelled_neighbors.length; j++){
-					neighborlabel = til.labelled_neighbors[j][0]
-					neighborindex = til.labelled_neighbors[j][1]
-					neighborsand = this.tiles[til.neighbors[j]].prevSand;
-					if( (neighborlabel > 0) && ( neighborsand>0)){
-						neighborsactive++;
-						minneighborsand = Math.min( minneighborsand, neighborsand);
-					}
-				}
-				if( neighborsactive >= threshold){
-					this.tiles[i].sand = Math.max(1, minneighborsand -1);
-					is_stable = false;
-				}
-				break;
-				
-
-			case "Directionnal_half_plane":
-				// if $n$ is odd :  half-plane directions : [1, 2, … (n+1)/2, -((n+1)/2+1), … -n]
-				// if $n$ is even : == positive directions
-				// assume a n-fold multigrid
-				if (til.prevSand > 0){
-					break;
-				}
-				neighborsactive = 0;
-				threshold = 2;
-				for (let j=0; j<til.labelled_neighbors.length; j++){
-					neighborlabel = til.labelled_neighbors[j][0]
-					neighborindex = til.labelled_neighbors[j][1]
-					neighborsand = this.tiles[til.neighbors[j]].prevSand;
-					if( is_half_plane_direction(neighborlabel, this.labels)
-					    && (neighborsand>0)){
-						neighborsactive++;
-						minneighborsand = Math.min( minneighborsand, neighborsand);
-					}
-				}
-				if(neighborsactive >= threshold){
-					this.tiles[i].sand = Math.max(1, minneighborsand -1);
-					is_stable = false;
-				}
-				break;
-				 
 					
-			case "Growth_directionnal_half_plane": // 1 neighbor is enough
-				// if $n$ is odd :  half-plane directions : [1, 2, … (n+1)/2, -((n+1)/2+1), … -n]
-				// if $n$ is even : == positive directions
-				// assume a n-fold multigrid
-				if (til.prevSand > 0){
+				case "Bootstrap":
+					if (til.prevSand > 0){
+						break;
+					}
+					neighborsactive = 0;
+					threshold = 2;
+					for(let j=0; j<til.neighbors.length; j++){
+						neighborsand = this.tiles[til.neighbors[j]].prevSand;
+						if(neighborsand > 0){
+							neighborsactive++;
+							minneighborsand = Math.min( minneighborsand, neighborsand);
+						}
+					}
+					if(neighborsactive >= threshold){
+						this.tiles[i].sand = Math.max(1, minneighborsand -1);
+						is_stable = false;
+					}
 					break;
-				}
-				neighborsactive = 0;
-				threshold = 1;
-				for (let j=0; j<til.labelled_neighbors.length; j++){
-					neighborlabel = til.labelled_neighbors[j][0]
-					neighborindex = til.labelled_neighbors[j][1]
-					neighborsand = this.tiles[til.neighbors[j]].prevSand;
-					if( is_half_plane_direction(neighborlabel, this.labels)
-					    && (neighborsand>0)){
-						neighborsactive++;
-						minneighborsand = Math.min( minneighborsand, neighborsand);
+					
+				case "Threshold3":
+					if (til.prevSand > 0){
+						break;
 					}
-				}
-				if(neighborsactive >= threshold){
-					this.tiles[i].sand = Math.max(1, minneighborsand -1);
-					is_stable = false;
-				}
-				break;
-				
-
-			case "Growth_directionnal_positive": // 1 neighbor in positive direction is enough
-				if (til.prevSand > 0){
+					neighborsactive = 0;
+					threshold = 3;
+					for(let j=0; j<til.neighbors.length; j++){
+						neighborsand = this.tiles[til.neighbors[j]].prevSand;
+						if(neighborsand > 0){
+							neighborsactive++;
+							minneighborsand = Math.min( minneighborsand, neighborsand);
+						}
+					}
+					if(neighborsactive >= threshold){
+						this.tiles[i].sand = Math.max(1, minneighborsand -1);
+						is_stable = false;
+					}
 					break;
-				}
-				neighborsactive = 0;
-				threshold = 1;
-				for (let j=0; j<til.labelled_neighbors.length; j++){
-					neighborlabel = til.labelled_neighbors[j][0]
-					neighborindex = til.labelled_neighbors[j][1]
-					neighborsand = this.tiles[til.neighbors[j]].prevSand;
-					if( (neighborlabel > 0) && ( neighborsand>0)){
-						minneighborsand = Math.min( minneighborsand, neighborsand);
-						neighborsactive++;
+					
+				case "Directionnal_positive": // growth if it has 2 neighbors in positive directions
+					if (til.prevSand > 0){
+						break;
 					}
-				}
-				if( neighborsactive >= threshold){
-					this.tiles[i].sand = Math.max(1, minneighborsand -1);
-					is_stable = false;
-				}
-				break;
-
-
-			case "Sandpile": // kept for backwards compatibility reasons
-                                         // no button in GUI: it is broken because of tile.sand=3
-				if(til.prevSand >= til.limit){
-					til.sand -= til.limit;
-					for(var j = 0; j< til.neighbors.length; j++){
-						this.tiles[til.neighbors[j]].sand += 1;
+					neighborsactive = 0;
+					threshold = 2;
+					for (let j=0; j<til.labelled_neighbors.length; j++){
+						neighborlabel = til.labelled_neighbors[j][0]
+						neighborindex = til.labelled_neighbors[j][1]
+						neighborsand = this.tiles[til.neighbors[j]].prevSand;
+						if( (neighborlabel > 0) && ( neighborsand>0)){
+							neighborsactive++;
+							minneighborsand = Math.min( minneighborsand, neighborsand);
+						}
 					}
-					is_stable = false;
-				}
-				break;
+					if( neighborsactive >= threshold){
+						this.tiles[i].sand = Math.max(1, minneighborsand -1);
+						is_stable = false;
+					}
+					break;
+					
+					
+				case "Directionnal_half_plane":
+					// if $n$ is odd :  half-plane directions : [1, 2, … (n+1)/2, -((n+1)/2+1), … -n]
+					// if $n$ is even : == positive directions
+					// assume a n-fold multigrid
+					if (til.prevSand > 0){
+						break;
+					}
+					neighborsactive = 0;
+					threshold = 2;
+					for (let j=0; j<til.labelled_neighbors.length; j++){
+						neighborlabel = til.labelled_neighbors[j][0]
+						neighborindex = til.labelled_neighbors[j][1]
+						neighborsand = this.tiles[til.neighbors[j]].prevSand;
+						if( is_half_plane_direction(neighborlabel, this.labels)
+						    && (neighborsand>0)){
+							neighborsactive++;
+							minneighborsand = Math.min( minneighborsand, neighborsand);
+						}
+					}
+					if(neighborsactive >= threshold){
+						this.tiles[i].sand = Math.max(1, minneighborsand -1);
+						is_stable = false;
+					}
+					break;
+					
+					
+				case "Growth_directionnal_half_plane": // 1 neighbor is enough
+					// if $n$ is odd :  half-plane directions : [1, 2, … (n+1)/2, -((n+1)/2+1), … -n]
+					// if $n$ is even : == positive directions
+					// assume a n-fold multigrid
+					if (til.prevSand > 0){
+						break;
+					}
+					neighborsactive = 0;
+					threshold = 1;
+					for (let j=0; j<til.labelled_neighbors.length; j++){
+						neighborlabel = til.labelled_neighbors[j][0]
+						neighborindex = til.labelled_neighbors[j][1]
+						neighborsand = this.tiles[til.neighbors[j]].prevSand;
+						if( is_half_plane_direction(neighborlabel, this.labels)
+						    && (neighborsand>0)){
+							neighborsactive++;
+							minneighborsand = Math.min( minneighborsand, neighborsand);
+						}
+					}
+					if(neighborsactive >= threshold){
+						this.tiles[i].sand = Math.max(1, minneighborsand -1);
+						is_stable = false;
+					}
+					break;
+					
+					
+				case "Growth_directionnal_positive": // 1 neighbor in positive direction is enough
+					if (til.prevSand > 0){
+						break;
+					}
+					neighborsactive = 0;
+					threshold = 1;
+					for (let j=0; j<til.labelled_neighbors.length; j++){
+						neighborlabel = til.labelled_neighbors[j][0]
+						neighborindex = til.labelled_neighbors[j][1]
+						neighborsand = this.tiles[til.neighbors[j]].prevSand;
+						if( (neighborlabel > 0) && ( neighborsand>0)){
+							minneighborsand = Math.min( minneighborsand, neighborsand);
+							neighborsactive++;
+						}
+					}
+					if( neighborsactive >= threshold){
+						this.tiles[i].sand = Math.max(1, minneighborsand -1);
+						is_stable = false;
+					}
+					break;
+					
+					
+				case "Sandpile": // kept for backwards compatibility reasons
+                                        // no button in GUI: it is broken because of tile.sand=3
+					if(til.prevSand >= til.limit){
+						til.sand -= til.limit;
+						for(var j = 0; j< til.neighbors.length; j++){
+							this.tiles[til.neighbors[j]].sand += 1;
+						}
+						is_stable = false;
+					}
+					break;
 
-			default:
-				unknown_automaton = true;
+				default:
+					unknown_automaton = true;
+				}
+				this.tiles[i].sand = Math.min(this.tiles[i].sand, maxSand)
 			}
 		}
 		if(unknown_automaton){
@@ -501,112 +504,112 @@ class Tiling{
 		return is_stable;
 	}
 
-	iterateGrowth(){
-		// contaminate tiles that have at least one live neighbor
-		console.log("Iterating the Growth cellular automaton");
-		var is_stable = true;
-		for(var i=0; i<this.tiles.length; i++){
-			// for legacy and initial compatibility with JS-Sandpile we put all positive to 3
-			// TODO change to binary 0 or 1, not 0 or 3
-			if(this.tiles[i].sand > 0){
-                                this.tiles[i].sand = 3;
-                        }	
-			this.tiles[i].prevSand = this.tiles[i].sand;
-		}
-		let threshold = 1;
-		for(var i=0; i<this.tiles.length; i++){
-			var til = this.tiles[i];
-			let neighborsactive;
-			if (til.prevSand > 0){
-				continue;
-			}
-			neighborsactive = 0;
-			for(let j=0; j<til.neighbors.length; j++){
-				if(this.tiles[til.neighbors[j]].prevSand > 0){
-					neighborsactive++;
-				}
-			}
-			if(neighborsactive >= threshold){
-				this.tiles[i].sand = 3;
-				is_stable = false;
-			}
-		}
-		return is_stable;
-	}
+	// iterateGrowth(){
+	// 	// contaminate tiles that have at least one live neighbor
+	// 	console.log("Iterating the Growth cellular automaton");
+	// 	var is_stable = true;
+	// 	for(var i=0; i<this.tiles.length; i++){
+	// 		// for legacy and initial compatibility with JS-Sandpile we put all positive to 3
+	// 		// TODO change to binary 0 or 1, not 0 or 3
+	// 		if(this.tiles[i].sand > 0){
+        //                         this.tiles[i].sand = 3;
+        //                 }	
+	// 		this.tiles[i].prevSand = this.tiles[i].sand;
+	// 	}
+	// 	let threshold = 1;
+	// 	for(var i=0; i<this.tiles.length; i++){
+	// 		var til = this.tiles[i];
+	// 		let neighborsactive;
+	// 		if (til.prevSand > 0){
+	// 			continue;
+	// 		}
+	// 		neighborsactive = 0;
+	// 		for(let j=0; j<til.neighbors.length; j++){
+	// 			if(this.tiles[til.neighbors[j]].prevSand > 0){
+	// 				neighborsactive++;
+	// 			}
+	// 		}
+	// 		if(neighborsactive >= threshold){
+	// 			this.tiles[i].sand = 3;
+	// 			is_stable = false;
+	// 		}
+	// 	}
+	// 	return is_stable;
+	// }
 
-	iterateBoostrap(){
-		// contaminate tiles that have at least two live neighbor
-		console.log("Iterating the Bootstrap cellular automaton");
-		var is_stable = true;
-		for(var i=0; i<this.tiles.length; i++){
-			// for legacy and initial compatibility with JS-Sandpile we put all positive to 3
-			// TODO change to binary 0 or 1, not 0 or 3
-			if(this.tiles[i].sand > 0){
-                                this.tiles[i].sand = 3;
-                        }	
-			this.tiles[i].prevSand = this.tiles[i].sand;
-		}
-		let threshold = 2;
-		for(var i=0; i<this.tiles.length; i++){
-			var til = this.tiles[i];
-			let neighborsactive;
-			if (til.prevSand > 0){
-				continue;
-			}
-			neighborsactive = 0;
-			for(let j=0; j<til.neighbors.length; j++){
-				if(this.tiles[til.neighbors[j]].prevSand > 0){
-					neighborsactive++;
-				}
-			}
-			if(neighborsactive >= threshold){
-				this.tiles[i].sand = 3;
-				is_stable = false;
-			}
-		}
-		return is_stable;
-	}
+	// iterateBoostrap(){
+	// 	// contaminate tiles that have at least two live neighbor
+	// 	console.log("Iterating the Bootstrap cellular automaton");
+	// 	var is_stable = true;
+	// 	for(var i=0; i<this.tiles.length; i++){
+	// 		// for legacy and initial compatibility with JS-Sandpile we put all positive to 3
+	// 		// TODO change to binary 0 or 1, not 0 or 3
+	// 		if(this.tiles[i].sand > 0){
+        //                         this.tiles[i].sand = 3;
+        //                 }	
+	// 		this.tiles[i].prevSand = this.tiles[i].sand;
+	// 	}
+	// 	let threshold = 2;
+	// 	for(var i=0; i<this.tiles.length; i++){
+	// 		var til = this.tiles[i];
+	// 		let neighborsactive;
+	// 		if (til.prevSand > 0){
+	// 			continue;
+	// 		}
+	// 		neighborsactive = 0;
+	// 		for(let j=0; j<til.neighbors.length; j++){
+	// 			if(this.tiles[til.neighbors[j]].prevSand > 0){
+	// 				neighborsactive++;
+	// 			}
+	// 		}
+	// 		if(neighborsactive >= threshold){
+	// 			this.tiles[i].sand = 3;
+	// 			is_stable = false;
+	// 		}
+	// 	}
+	// 	return is_stable;
+	// }
 
-	iterateThresholdThree(){
-		// contaminate tiles that have at least three live neighbor
-		console.log("Iterating the Threshold three cellular automaton");
-		var is_stable = true;
-		for(var i=0; i<this.tiles.length; i++){
-			// for legacy and initial compatibility with JS-Sandpile we put all positive to 3
-			// TODO change to binary 0 or 1, not 0 or 3
-			if(this.tiles[i].sand > 0){
-                                this.tiles[i].sand = 3;
-                        }	
-			this.tiles[i].prevSand = this.tiles[i].sand;
-		}
-		let threshold = 3;
-		for(var i=0; i<this.tiles.length; i++){
-			var til = this.tiles[i];
-			let neighborsactive;
-			if (til.prevSand > 0){
-				continue;
-			}
-			neighborsactive = 0;
-			for(let j=0; j<til.neighbors.length; j++){
-				if(this.tiles[til.neighbors[j]].prevSand > 0){
-					neighborsactive++;
-				}
-			}
-			if(neighborsactive >= threshold){
-				this.tiles[i].sand = 3;
-				is_stable = false;
-			}
-		}
-		return is_stable;
-	}
+	// iterateThresholdThree(){
+	// 	// contaminate tiles that have at least three live neighbor
+	// 	console.log("Iterating the Threshold three cellular automaton");
+	// 	var is_stable = true;
+	// 	for(var i=0; i<this.tiles.length; i++){
+	// 		// for legacy and initial compatibility with JS-Sandpile we put all positive to 3
+	// 		// TODO change to binary 0 or 1, not 0 or 3
+	// 		if(this.tiles[i].sand > 0){
+        //                         this.tiles[i].sand = 3;
+        //                 }	
+	// 		this.tiles[i].prevSand = this.tiles[i].sand;
+	// 	}
+	// 	let threshold = 3;
+	// 	for(var i=0; i<this.tiles.length; i++){
+	// 		var til = this.tiles[i];
+	// 		let neighborsactive;
+	// 		if (til.prevSand > 0){
+	// 			continue;
+	// 		}
+	// 		neighborsactive = 0;
+	// 		for(let j=0; j<til.neighbors.length; j++){
+	// 			if(this.tiles[til.neighbors[j]].prevSand > 0){
+	// 				neighborsactive++;
+	// 			}
+	// 		}
+	// 		if(neighborsactive >= threshold){
+	// 			this.tiles[i].sand = 3;
+	// 			is_stable = false;
+	// 		}
+	// 	}
+	// 	return is_stable;
+	// }
 
-	iteratePercoDirectionnalHalfPlane(){
-		// TODO
-	}
+	// iteratePercoDirectionnalHalfPlane(){
+	// 	// TODO
+	// }
 
-	iteratePercoDirectionnalPositive(){
-		// TODO
-	}
+	// iteratePercoDirectionnalPositive(){
+	// 	// TODO
+	// }
 	
 		
 				
@@ -713,7 +716,7 @@ class Tiling{
 	addBernoulli(proba){
 		for(var j = 0; j<this.tiles.length; j++){
 			var chosen = Math.random();
-			if(chosen <= proba) this.add(j,100);
+			if(chosen <= proba) this.add(j,maxSand);
 		}
 	}
 
@@ -771,6 +774,12 @@ class Tiling{
 		}
 		this.colorTiles();
 	}
+
+	binarize(){
+		for(var id in this.tiles){
+			if(this.tiles[id].sand>0) this.tiles[id].sand = maxSand;
+		}
+	}
 	
 	// ------------------------------------------------
 	// 	[ 2.5 ] 	Complex operations
@@ -820,33 +829,40 @@ class Tiling{
 	colorTile(id, color){
 		// Colors only one tile according to this.cmap
 		var tile = this.tiles[id];
-		var colorNum = tile.sand;
-		if(colorNum >= this.cmap.length){
-			colorNum = this.cmap.length-1;
-		}
+		// var colorNum = tile.sand;
+		// if(colorNum >= this.cmap.length){
+		// 	colorNum = this.cmap.length-1;
+		// } // QUESTION what is this for?
 		
 		if(!color){
-			if(colorNum >= 0){
-				color = this.cmap[colorNum];
-			} else{
-				// default
-				if (tile.sand == 0){
-					color = new THREE.Color(1.0,1.0,1.0)
-				}
-				else if(tile.sand < tile.limit){
-					var greyScale = 0.2 + 0.4 * (1.0 - tile.sand / tile.limit);
-					color = new THREE.Color( greyScale, greyScale, greyScale );
-				}
-				else if (tile.sand == tile.limit){
-					color = new THREE.Color(0,0,0)
-				}
-				else {
-					// ready to topple - flashy colors
-					var flashy = ["#ff1a1a", "#ff751a", "#ffbb33", "#ffff4d", "#99ff66", "#44ff11", "#22ffaa", "#00ffff", "#0077ff",  "#0000ff"];
-					var flashyIndex = Math.min(tile.sand-tile.limit, flashy.length-1);
-					color = new THREE.Color(flashy[flashyIndex]);
-				}
+			// default
+			if (tile.sand == 0){
+				color = blankColor; // color for uncontaminated tiles 
 			}
+			else if(tile.sand >= maxSand){
+				color = contaminatedColor;
+			}
+			else{
+				//var colorScale =timeFading*tile.sand/timeRange*100; // the level of fading
+				//color = new THREE.Color(colorScale*timeColor.r, colorScale*timeColor.g, colorScale*timeColor.b); //
+				// TODO fix coloring for space time diagram 
+				var colorScale = ((100-timeFading)*(timeRange-tile.sand)/(timeRange*100));
+				color = new THREE.Color((1+((timeRange-tile.sand)*timeColorRange[0]/timeRange))*timeColor.r,
+							(1+((timeRange-tile.sand)*timeColorRange[1]/timeRange))*timeColor.g,
+							(1+((timeRange-tile.sand)*timeColorRange[2]/timeRange))*timeColor.b); //colorScale*timeColor.g, colorScale*timeColor.b);// purple
+			}
+			// else if (tile.sand >= maxSand-1){
+			// 	color = contaminatedColor // color for initially contaminated tiles
+				
+			// }
+			// // over-the-max colors are disabled for percolation
+			// else {
+			// 	// ready to topple - flashy colors
+			// 	var flashy = ["#ff1a1a", "#ff751a", "#ffbb33", "#ffff4d", "#99ff66", "#44ff11", "#22ffaa", "#00ffff", "#0077ff",  "#0000ff"];
+			// 	var flashyIndex = Math.min(tile.sand-tile.limit, flashy.length-1);
+			// 	color = new THREE.Color(flashy[flashyIndex]);
+			// }
+			
 		}
 		for(var k in tile.points){
 			var point = tile.points[k];

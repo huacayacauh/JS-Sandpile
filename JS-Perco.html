@@ -52,7 +52,7 @@
 	  <!-- ############################################################ Main Controls -->
 	  <div id="automaton controls" class="controlGroup">
 	    <p class="groupTitle">Automaton selection</p>
-	    <select id="AutomatonSelect">
+	    <select id="AutomatonSelect" onchange="set_automaton()">
 	      <optgroup label="Threshold">
 		<option value="Growth">Growth (threshold 1)</option>
 		<option value="Bootstrap">Bootsrap (threshold 2)</option>
@@ -68,7 +68,7 @@
 	      </optgroup>
 	    </select>
 	    <br>
-	    	<button onclick="set_automaton()" style="margin-top:10px; margin-left:25px; font-weight:bold;" class="btn btn-default">Set Automaton</button>
+	    <!--	<button onclick="set_automaton()" style="margin-top:10px; margin-left:25px; font-weight:bold;" class="btn btn-default">Set Automaton</button>  -->
 	  </div>
 
 	  
@@ -135,7 +135,7 @@
 				<!--<form id="postCustom" enctype="multipart/form-data" action="/upload/image" method="post">
 					<input type="file" id="inputCustom" accept=".png,.jpg,.jpeg,.bmp" style="display:none;" />
 				</form>-->
-			<button onclick="drawTiling()" style="margin-left:25px; font-weight:bold;" class="btn btn-default">Make Tiling</button>
+			<button onclick="drawTiling(); set_automaton()" style="margin-left:25px; font-weight:bold;" class="btn btn-default">Make Tiling</button>
 			<br>
 
 
@@ -338,10 +338,40 @@
 			<a download="sandpile.json" id="downloadlink" style="display: none">Download</a>
         </div>
 
-		<!-- ############################################################ Misc Controls -->
+		<!-- ############################################################ Color Controls -->
 		<div class="controlGroup">
-			<p class="groupTitle">Misc controls</p>
-			<button id="colorButton"  style="margin-left:auto;margin-right:auto;display:block;" class="btn btn-default">Change colors</button>
+		  <p class="groupTitle">Color controls</p>
+		  <select id="colorScheme" onchange="colorControls()">
+		    <option value="Binary"> Binary </option>
+		    <option value="SpaceTime"> Space-Time diagram </option>
+		  </select>
+		  <br>
+		  <div id="blankColorChooser" style="display:inline;">
+		    Blank color
+		    <input id="blankColor" type="color" value="#ffffff" style="display: inline; margin-right: 20px;">
+		  </div>
+		  <br>
+		  <div id="contaminatedColorChooser" style="display:inline;">
+		    Contaminated color
+		    <input id="contaminatedColor" type="color" value="#2f2f2f" style="display: inline; margin-right: 20px;">
+		  </div>
+		  <br>
+		  <div id="timeColorChooser" style="display:none;">
+		    Time diagram color
+		    <input id="timeColor" type="color" value="#2f2f2f" style="display: inline; margin-right: 20px;">
+		    <br>
+		    Time diagram fading
+		    <input id="timeFading" type="range" min="0" max="100" value="50">
+		    <br>
+		    Number of time steps
+		    <input id="timeRange" type="number" value="10" style="margin-left:5px;">
+		    <br>
+		    <button id="resettingSand" style="margin-left:auto; margin-right:auto; display:block;" class="btn btn-default" onclick="resetToMaxSand()"> Reset to maxSand </button>
+		  </div>
+		  <br>
+		  <button id="changingColors" style="margin-left:auto; margin-right:auto; display:block;" class="btn btn-default" onclick="colorControls()"> Update colors </button>
+		   
+			<!-- <button id="colorButton"  style="margin-left:auto;margin-right:auto;display:block;" class="btn btn-default">Change colors</button> -->
         </div>
 
 		<!-- ############################################################ Informations -->

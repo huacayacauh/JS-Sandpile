@@ -81,7 +81,15 @@ var play = false;
 
 var currentTiling;
 
-var automaton;
+var automaton = "Growth";
+
+var maxSand = 1; // max number of sand grains on a tile, if binary colouring maxSand = 1, otherwise maxSand = timeRange + 1
+var blankColor = new THREE.Color("#ffffff"); // colour of uncontaminated tiles, default = white
+var contaminatedColor = new THREE.Color("#2f2f2f"); // colour of (initially) contaminated tiles, default = darkest grey
+var timeColor;
+var timeFading;
+var timeColorRange;
+var timeRange;
 
 var app = new App();
 
@@ -596,6 +604,42 @@ function enableWireFrame(elem){
 function set_automaton() {
     automaton = document.getElementById("AutomatonSelect").value;
     console.log("Automaton set to : "+automaton);
+}
+
+//
+// Percolation specific : setting the colors based on the Color control menu
+//
+
+function colorControls(){
+	var colorScheme = document.getElementById("colorScheme").value;
+	blankColor = new THREE.Color(document.getElementById("blankColor").value);
+	contaminatedColor = new THREE.Color(document.getElementById("contaminatedColor").value);
+	if (colorScheme=="SpaceTime"){
+		document.getElementById("timeColorChooser").style="display:contents";		
+		timeColor = new THREE.Color(document.getElementById("timeColor").value);
+		timeFading = Number(document.getElementById("timeFading").value);
+		timeRange = Number(document.getElementById("timeRange").value);
+		timeColorRange = [ (1-timeColor.r)*timeFading/(100*timeColor.r),
+				   (1-timeColor.g)*timeFading/(100*timeColor.g),
+				   (1-timeColor.b)*timeFading/(100*timeColor.b)];
+		maxSand = 1 + timeRange;			
+	}
+	else if (colorScheme=="Binary"){
+		document.getElementById("timeColorChooser").style="display:none";
+		maxSand = 1;
+		timeRange = 0;
+		currentTiling.binarize();
+	}
+	currentTiling.colorTiles(); 
+}
+//
+// Resetting tiles with >0 sand to maxSand 
+//
+
+function resetToMaxSand(){
+	timeRange = Number(document.getElementById("timeRange").value);
+	maxSand = 1+ timeRange;
+	currentTiling.binarize();
 }
 
 // ------------------------------------------------
