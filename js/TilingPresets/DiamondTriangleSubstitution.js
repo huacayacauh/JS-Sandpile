@@ -275,7 +275,7 @@ decorate.set('PARALLELOGRAMME', 1);
 //
 // [7.1] construct "Diamond triangle by subst" tiling by substitution
 // 
-Tiling.DiamondTriangleBySubst = function({iterations} = {}){
+Tiling.DiamondTriangle = function({iterations} = {}){
 	var tiles = [];
 	
 	let tile_1 = PARALLELOGRAMME();
