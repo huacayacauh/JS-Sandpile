@@ -480,6 +480,7 @@ Tile.prototype.ten2six = function(){
   }
   // removes points 7, 8, 9 and 10
   this.bounds.splice(-8);
+  this.limit = 6;
 }
 
 Tile.prototype.six2sixWithHalfPi = function(){
