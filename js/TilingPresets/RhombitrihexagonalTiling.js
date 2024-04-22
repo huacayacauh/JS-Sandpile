@@ -1,6 +1,8 @@
+// sqrt(3) / 2
+const halfsqrt3 = Math.sqrt(3) / 2;
+
 function HEXAGON(x, y){
     var id = [x, y, 'hexagon']
-    let halfsqrt3 = Math.sqrt(3)/2;
 	var bounds = [];
 	bounds.push(x, y+1);
     bounds.push(x-halfsqrt3, y+1/2);
@@ -21,9 +23,9 @@ function HEXAGON(x, y){
 
     return new Tile(id, neighbors, bounds, 6);
 }
+
 function SIDE_SQUARE(x, y){
     var id = [x, y, 'sidesquare']
-    let halfsqrt3 = Math.sqrt(3)/2;
     var bounds = [];
     bounds.push(x-1/2, y+1/2);
     bounds.push(x-1/2, y-1/2);
@@ -38,9 +40,9 @@ function SIDE_SQUARE(x, y){
 
     return new Tile(id, neighbors, bounds, 4);
 }
+
 function LEFT_SQUARE(x, y){
     var id = [x, y, 'left'];
-    let halfsqrt3 = Math.sqrt(3)/2;
     var bounds = [];
     bounds.push(x, y);
     bounds.push(x-halfsqrt3, y-1/2);
@@ -55,9 +57,9 @@ function LEFT_SQUARE(x, y){
 
     return new Tile(id, neighbors, bounds, 4);
 }
+
 function RIGHT_SQUARE(x, y){
     var id = [x, y, 'right'];
-    let halfsqrt3 = Math.sqrt(3)/2;
     var bounds = [];
     bounds.push(x, y);
     bounds.push(x+halfsqrt3, y-1/2);
@@ -75,7 +77,6 @@ function RIGHT_SQUARE(x, y){
 
 function UP_TRIANGLE(x, y){
     var id = [x, y, 'up_triangle'];
-    let halfsqrt3 = Math.sqrt(3)/2;
     var bounds = [];
     bounds.push(x, y);
     bounds.push(x+1, y);
@@ -88,9 +89,9 @@ function UP_TRIANGLE(x, y){
 
     return new Tile(id, neighbors, bounds, 3);
 }
+
 function DOWN_TRIANGLE(x, y){
     var id = [x, y, 'down_triangle'];
-    let halfsqrt3 = Math.sqrt(3)/2;
     var bounds = [];
     bounds.push(x, y);
     bounds.push(x+1, y);
@@ -104,13 +105,8 @@ function DOWN_TRIANGLE(x, y){
     return new Tile(id, neighbors, bounds, 3);
 }
 
-function someNeighbors(x, y, tiles){
-
-}
-
 Tiling.rhombTriHex = function({size} = {}){
 	var tiles = [];
-    let halfsqrt3 = Math.sqrt(3)/2;
 
     // Default shapes
     tiles.push(HEXAGON(0,0));
