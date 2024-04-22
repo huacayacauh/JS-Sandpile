@@ -482,22 +482,8 @@ function default_neighbors2bounds(n){
   }
   // done
   return fn; // side effect
-}
-
-// 
-// [6.4] set undefined neighbors for lazy user, by side effet
-//
-function resetAllNeighbors(tiles){
-  for(let tile of tiles){
-    // guess the length of neighbors from the length of bounds
-    let n=tile.bounds.length/2;
-    tile.neighbors=[];
-    for(let i=0; i<n; i++){
-      tile.neighbors.push(undefined);
-    }
-  }
-  return; // side effet
 }*/
+
 function findNeighbors(tiles, tilesdict, n2b){
   // construct
   // * segments = list of segments (Array of 4 coordinates + tile idkey + neighbor index)
@@ -627,6 +613,21 @@ function findNeighbors(tiles, tilesdict, n2b){
   }
   // done
   return fn; // side effect
+}
+
+// 
+// [6.4] set undefined neighbors for lazy user, by side effet
+//
+function resetAllNeighbors(tiles){
+  for(let tile of tiles){
+    // guess the length of neighbors from the length of bounds
+    let n=tile.bounds.length/2;
+    tile.neighbors=[];
+    for(let i=0; i<n; i++){
+      tile.neighbors.push(undefined);
+    }
+  }
+  return; // side effet
 }
 
 // 
