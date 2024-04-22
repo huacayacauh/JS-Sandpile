@@ -412,7 +412,7 @@ function default_neighbors2bounds(n){
 // output:
 // * number of matching segments founds
 //
-function findNeighbors(tiles,tilesdict,n2b){
+/*function findNeighbors(tiles,tilesdict,n2b){
   // construct
   // * segments = list of segments (Array of 4 coordinates + tile idkey + neighbor index)
   //   for undefined neighbors
@@ -497,6 +497,136 @@ function resetAllNeighbors(tiles){
     }
   }
   return; // side effet
+}*/
+function findNeighbors(tiles, tilesdict, n2b){
+  // construct
+  // * segments = list of segments (Array of 4 coordinates + tile idkey + neighbor index)
+  //   for undefined neighbors
+  // * segmentsMap = segmentkey -> tile id, neighbors' index
+  var segments = [];
+  var segmentsMap = new Map();
+  tiles.forEach(function(tile){
+    for(let i=0; i<tile.neighbors.length; i++){
+      if(tile.neighbors[i] == undefined){
+        // found an undefined neighbor
+        // caution: segment points need to be ordered (up to p_error)
+        //          so that [x,y,x',y']=[x',y',x,y].
+        //          smallest x first, and if x ~equal then smallest y first
+        //          
+        let segment = [];
+        let x1 = tile.bounds[n2b.get(tile.id[0])[i][0]];
+        let y1 = tile.bounds[n2b.get(tile.id[0])[i][1]];
+        let x2 = tile.bounds[n2b.get(tile.id[0])[i][2]];
+        let y2 = tile.bounds[n2b.get(tile.id[0])[i][3]];
+        if( x2-x1>=p_error || (Math.abs(x2-x1)<p_error && y2-y1>=p_error) ){
+          // normal order
+          segment.push(x1);
+          segment.push(y1);
+          segment.push(x2);
+          segment.push(y2);
+        }
+        else{
+          // reverse order
+          segment.push(x2);
+          segment.push(y2);
+          segment.push(x1);
+          segment.push(y1);
+        }
+        // something unique for segment2key...
+        segment.push(id2key(tile.id));
+        segment.push(i);
+        // add to datastructures
+        segments.push(segment);
+        segmentsMap.set(segment2key(segment),new TileSegment(tile.id,i));
+      }
+    }
+  });
+
+  // Map of every segments slopes
+  // {
+  //    slope1 => [[sgmt1, sgmt2], [segmt3], ...],
+  //    slope2 => [[sgmt4], [sgmt5], ...],
+  //    ...
+  // }
+  // Each value V contains every segments with the same slope, shared in arrays A (like equivalence classes).
+  // Each A array contains, at least, one segment A[0] and every A[j] (j between 1 to A.length - 1) is a neighbor of
+  // A[0] 
+
+  var slopesMap = new Map();
+  if (segments.length >= 1){
+    let slope = segmentSlope(segments[0]);
+    slopesMap.set(slope, [[segments[0]]]);
+  }
+
+  // Search for a key similar to the slope given
+  // Returns key (real number or POSITIVE_INFINITY) or NEGATIVE_INFINITY otherwise
+  function similarSlope(slope){
+    for (let key of slopesMap.keys()){
+      if (Math.abs(key - slope) < p_error || 
+      (key == Number.POSITIVE_INFINITY && slope == Number.POSITIVE_INFINITY))
+        return key;
+    }
+    return Number.NEGATIVE_INFINITY;
+  }
+
+
+  // For each new segment S, check if it's slope already exists.
+  // If so, search for segments which could be neighbors (comparizon with the first segment of each subarray)
+  // and add a new subarray with S at the end
+  // If not, add a new slope key and an array with a subarray containing S
+  for (let i=1; i < segments.length; i++){
+    let slope = segmentSlope(segments[i]);
+    let similarKey = similarSlope(slope);
+    if (similarKey != Number.NEGATIVE_INFINITY){
+      for (let j = 0 ; j < slopesMap.get(similarKey).length ; j++){
+        let segmentToTest = segments[i];
+        let segmentStored = slopesMap.get(similarKey)[j][0];
+        if (segmentOnAnother(segmentToTest[0], segmentToTest[1], segmentToTest[2], segmentToTest[3],
+          segmentStored[0], segmentStored[1], segmentStored[2], segmentStored[3], similarKey))
+            slopesMap.get(similarKey)[j].push(segmentToTest);
+      }
+      slopesMap.get(similarKey).push([segments[i]]);
+    }
+    else
+      slopesMap.set(slope, [[segments[i]]]);   
+  }
+
+
+  // Inside each subarray A, create the neighbor link between A[0] and A[j] (j between 1 and A.length - 1) if
+  // A.length > 1, if this link does not exist already.
+  // For the moment, as the tile's number of neighbors is given at the beginning, and
+  // supposing that this number can change, we add an element to the neighbors array (the capacity
+  // is increased) if a bounder of a tile is shared with 2 or more other bounders.
+  var fn = 0;
+  for (let key of slopesMap.keys()){
+    for (let i = 0 ; i < slopesMap.get(key).length; i++){
+      if (slopesMap.get(key)[i].length > 1){
+        for (let j = 1 ; j < slopesMap.get(key)[i].length ; j++){
+          let ts1 = segmentsMap.get(segment2key(slopesMap.get(key)[i][0]));
+          let ts2 = segmentsMap.get(segment2key(slopesMap.get(key)[i][j]));
+          if(!tilesdict.get(id2key(ts1.id)).neighbors.includes(ts2.id)){
+            let neighb1 = tilesdict.get(id2key(ts1.id)).neighbors;
+            let neighb2 = tilesdict.get(id2key(ts2.id)).neighbors;
+            if(typeof neighb1 == 'undefined'){
+              neighb1[ts1.nindex] = ts2.id;
+            }
+            else{
+              neighb1.push(ts2.id);
+            }
+            if(typeof neighb2 == 'undefined'){
+              neighb2[ts2.nindex] = ts1.id;
+            }
+            else{
+              neighb2.push(ts1.id);
+            }
+            fn++;
+          }
+        }
+      }
+    }
+  }
+  // done
+  return fn; // side effect
 }
 
 // 
