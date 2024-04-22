@@ -55,11 +55,6 @@ function smallSquare1(x, y, width, height){
 	
 	var neighbors = [];
 	
-	/*if(x > 0) neighbors.push([x-1, y]);
-	if(x < xMax-1) neighbors.push([x+1, y]);
-	if(y > 0) neighbors.push([x, y-1]);
-	if(y < yMax-1) neighbors.push([x, y+1]);*/
-	
 	neighbors.push([x-1, y-2]);
 	neighbors.push([x+1, y-1]);
 	neighbors.push([x, y+1]);
@@ -182,7 +177,7 @@ function bigSquare3(x, y, width, height){
 	var id = [x, y];
 	
 	var neighbors = [];
-	neighbors.push([x-2, y-1]);
+	neighbors.push([x-1, y-2]);
 	neighbors.push([x+2, y-1]);
 	neighbors.push([x+1, y+2]);
 	neighbors.push([x, y+2]);
