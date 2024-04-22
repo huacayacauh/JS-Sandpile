@@ -199,7 +199,7 @@ function subsitution(tile){
       //
       
 			//5 PARALLELOGRAMMES
-			var new_tiles = [];
+			var tiles = [];
 
 			var new_parallelogram_1 = tile.myclone();
 			var new_parallelogram_2 = tile.myclone();
@@ -235,16 +235,16 @@ function subsitution(tile){
 			new_parallelogram_4.id.push('P4');
 			new_parallelogram_5.id.push('P5');
 
-			new_tiles.push(new_TRIANGLE_1);
-			new_tiles.push(new_TRIANGLE_2);
+			tiles.push(new_TRIANGLE_1);
+			tiles.push(new_TRIANGLE_2);
 
-			new_tiles.push(new_parallelogram_1);
-			new_tiles.push(new_parallelogram_2);
-			new_tiles.push(new_parallelogram_3);
-			new_tiles.push(new_parallelogram_4);
-			new_tiles.push(new_parallelogram_5);
+			tiles.push(new_parallelogram_1);
+			tiles.push(new_parallelogram_2);
+			tiles.push(new_parallelogram_3);
+			tiles.push(new_parallelogram_4);
+			tiles.push(new_parallelogram_5);
 			
-			return new_tiles;
+			return tiles;
 			break;
 
 			
@@ -279,7 +279,7 @@ Tiling.DiamondTriangle = function({iterations} = {}){
 	var tiles = [];
 	
 	let tile_1 = PARALLELOGRAMME();
-	new_tiles.push(tile_1);
+	tiles.push(tile_1);
 
 	var new_parallelogram_1 = tile_1.myclone();
     var new_parallelogram_2 = tile_1.myclone();
@@ -325,9 +325,9 @@ Tiling.DiamondTriangle = function({iterations} = {}){
     tiles.push(new_parallelogram_5);
 			
   // call the substitution
-	new_tiles = substitute(
+	tiles = substitute(
     iterations, 
-    new_tiles, 
+    tiles, 
     1, 
     subsitution, 
     [], 
@@ -337,5 +337,5 @@ Tiling.DiamondTriangle = function({iterations} = {}){
     decorate
   );
 
-	return new Tiling(new_tiles);
+	return new Tiling(tiles);
 }
