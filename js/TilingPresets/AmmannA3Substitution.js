@@ -225,7 +225,6 @@ Tile.prototype.six2eight = function(){
     //point 8
     this.bounds.push(x0, this.bounds[13]);
   }
-  console.log(this);
   switch(this.id[0]){
     case 'six0':
       this.id[0]='eight0';
