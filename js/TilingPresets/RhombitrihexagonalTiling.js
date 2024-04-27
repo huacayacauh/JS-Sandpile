@@ -16,8 +16,8 @@ function HEXAGON(x, y){
     neighbors.push([x+halfsqrt3+1/2, y, 'sidesquare']);
     neighbors.push([x, y+1, 'left']);
     neighbors.push([x, y+1, 'right']);
-    neighbors.push([1/2 + halfsqrt3, -1/2 - halfsqrt3, 'left']);
-    neighbors.push([-halfsqrt3 - 1/2, -1/2 - halfsqrt3, 'right']);
+    neighbors.push([x + 1/2 + halfsqrt3, y - 1/2 - halfsqrt3, 'left']);
+    neighbors.push([x - halfsqrt3 - 1/2, y - 1/2 - halfsqrt3, 'right']);
     
     neighbors.push([x, y-1, 'right']);
 
