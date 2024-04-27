@@ -1,6 +1,4 @@
 Tiling.rectanglesTiling = function({width, height}={}){
-	// Creates a Tiling corresponding to a square Tiling of dimensions width, height
-	
 	var tils = [];
 
 	for(var j = 0; j < width; j++){ // -->
@@ -25,16 +23,9 @@ Tiling.rectanglesTiling = function({width, height}={}){
 
 
 function upLeftRectangle(x, y, width, height){
-	// Creates the Tile in position x, y of a square Tiling
-
 	var id = [x, y];
 	
 	var neighbors = [];
-	
-	/*if(x > 0) neighbors.push([x-1, y]);
-	if(x < xMax-1) neighbors.push([x+1, y]);
-	if(y > 0) neighbors.push([x, y-1]);
-	if(y < yMax-1) neighbors.push([x, y+1]);*/
 	
 	neighbors.push([x+1, y]);
 	neighbors.push([x, y+2]);
@@ -52,8 +43,6 @@ function upLeftRectangle(x, y, width, height){
 }
 
 function upRightRectangle(x, y, width, height){
-	// Creates the Tile in position x, y of a square Tiling
-
 	var id = [x, y];
 	
 	var neighbors = [];
@@ -74,8 +63,6 @@ function upRightRectangle(x, y, width, height){
 }
 
 function horizonUpRectangle(x, y, width, height){
-	// Creates the Tile in position x, y of a square Tiling
-
 	var id = [x, y];
 	
 	var neighbors = [];
@@ -96,8 +83,6 @@ function horizonUpRectangle(x, y, width, height){
 }
 
 function horizonDownRectangle(x, y, width, height){
-	// Creates the Tile in position x, y of a square Tiling
-
 	var id = [x, y];
 	
 	var neighbors = [];
