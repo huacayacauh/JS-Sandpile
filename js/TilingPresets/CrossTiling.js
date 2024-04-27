@@ -26,11 +26,6 @@ function cross(x, y){
 	
 	var neighbors = [];
 	
-	/*if(x > 0) neighbors.push([x-1, y]);
-	if(x < xMax-1) neighbors.push([x+1, y]);
-	if(y > 0) neighbors.push([x, y-1]);
-	if(y < yMax-1) neighbors.push([x, y+1]);*/
-	
 	neighbors.push([x+2, y+1]);
 	neighbors.push([x+1, y-2]);
 	neighbors.push([x-2, y-1]);
