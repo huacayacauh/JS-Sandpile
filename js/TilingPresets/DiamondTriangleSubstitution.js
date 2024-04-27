@@ -74,7 +74,7 @@ Tile.prototype.para2triangle = function(){
 // [2] define substitution diamond triangle
 //
 
-function subsitution(tile){
+function substitutionDiamondTri(tile){
 	switch (tile.id[0]){
 		case 'TRIANGLE':
 			//
@@ -259,9 +259,9 @@ function subsitution(tile){
 //
 // [6] use default neighbors2bounds
 //
-var neighbors2boundsBB = new Map();
-neighbors2boundsBB.set('TRIANGLE',default_neighbors2bounds(3));
-neighbors2boundsBB.set('PARALLELOGRAMME',default_neighbors2bounds(4));
+var neighbors2boundsDiamondTri = new Map();
+neighbors2boundsDiamondTri.set('TRIANGLE',default_neighbors2bounds(3));
+neighbors2boundsDiamondTri.set('PARALLELOGRAMME',default_neighbors2bounds(4));
 
 //
 // [7] construct base tilings and call substitute
@@ -329,11 +329,11 @@ Tiling.DiamondTriangle = function({iterations} = {}){
     iterations, 
     tiles, 
     1, 
-    subsitution, 
+    substitutionDiamondTri, 
     [], 
     [], 
     "I am lazy",
-    neighbors2boundsBB, 
+    neighbors2boundsDiamondTri, 
     decorate
   );
 
