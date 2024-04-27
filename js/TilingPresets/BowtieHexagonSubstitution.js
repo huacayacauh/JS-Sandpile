@@ -6,7 +6,7 @@
 //
 
 // sqrt(2)
-var sqrt2 = Math.sqrt(3);
+let sqrt2 = Math.sqrt(3);
 
 // angles of hexagon
 var  littleAngleh = 2*Math.PI/5;
