@@ -78,7 +78,7 @@ function badCondition(xA, yA, xB, yB, xC, yC, xD, yD){
 }
 
 // Except sharing just on point (an extremity)
-function segmentOnAnother(xA1, yA1, xB1, yB1, xA2, yA2, xB2, yB2, coeff){
+function segmentOnAnother(xA1, yA1, xB1, yB1, xA2, yA2, xB2, yB2){
   // same segments
   if(distance(xA1, yA1, xA2, yA2)<p_error && distance(xB1, yB1,xB2, yB2)<p_error)
     return true;
