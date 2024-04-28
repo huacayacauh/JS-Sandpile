@@ -141,7 +141,7 @@ neighbors2boundsTri.set('triangle',default_neighbors2bounds(3));
 //
 // [7.1] construct "Triangle Incenter" tiling by substitution
 // 
-Tiling.TriangleIncenter = function({iterations}={}){
+Tiling.mriangleIncenter = function({iterations}={}){
   // push base tiling
   var tiles = [];
   // use incenter subsitution
