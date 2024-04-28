@@ -6,7 +6,7 @@
 //
 
 // sqrt(2)
-let sqrt2 = Math.sqrt(3);
+let sqrt2 = Math.sqrt(2);
 
 // angles of hexagon
 var  littleAngleh = 2*Math.PI/5;
@@ -100,7 +100,7 @@ Tile.prototype.bowtie2hexa = function(){
     this.bounds[8] = h01[0];
     this.bounds[9] = h01[1]; /epéééééééééééééééééééééééééééééééééééééééé */
 
-    var1011h = scalePoint(his.bounds[8],this.bounds[9],this.bounds[0],this.bounds[1])
+    var1011h = scalePoint(this.bounds[8],this.bounds[9],this.bounds[0],this.bounds[1])
 
   } 
 
