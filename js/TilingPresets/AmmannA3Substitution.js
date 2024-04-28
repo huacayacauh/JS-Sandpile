@@ -728,7 +728,7 @@ decorateA3.set('ten270',2);
 //
 // [7.1] construct "Ammann A3 by subst" tiling by substitution
 // 
-Tiling.A3bysubst = function({iterations}={}){
+Tiling.A3bysubst = function({iterations,neighbor}={}){
   var tiles = [];
   var mySix0 = six0.myclone();
   var mySix90 = six90.myclone();
@@ -756,7 +756,8 @@ Tiling.A3bysubst = function({iterations}={}){
     [], // no duplicated tiles
     "I am lazy", // myneighbors
     neighbors2boundsA3,
-    decorateA3
+    decorateA3,
+    neighbor
   );
   // construct tiling
   return new Tiling(tiles);
