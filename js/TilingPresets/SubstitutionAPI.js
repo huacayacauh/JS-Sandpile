@@ -591,8 +591,6 @@ function findNeighborsModified(tiles, tilesdict, n2b, typeOfSand){
   // 1 : limit = number of empty bounds (undefined) + number of neighbors (x not in {-1, undefined}).
   // 2 : limit = number of empty bounds (undefined) + number of connections.
   for (let tile of tilesdict.values()){
-    console.log(tile);
-    console.log(tile.neighbors);
     tile.limit = typeOfSand == 1 ? tile.neighbors.filter(x => x !== -1).length : tile.neighbors.length;
   }
   // done
