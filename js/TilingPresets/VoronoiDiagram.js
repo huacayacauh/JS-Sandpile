@@ -1712,7 +1712,7 @@ Tiling.voronoiDiagram = function({width,height,size}={}){
 	sites.forEach((element) => tils.push(sqTile(element.x, element.y)));
     console.log(tils);
     
-    //return new Tiling(tils);
+    return new Tiling(tils);
 
 
 
