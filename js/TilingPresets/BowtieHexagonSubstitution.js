@@ -5,7 +5,7 @@
 // [0] toolbox
 //
 
-// sqrt(2)
+// sqrt(3)
 let varBowtieHexa= Math.sqrt(3);
 
 // angles of hexagon
@@ -26,7 +26,7 @@ var distBetweenDownPointandMiddle = Math.sin(0.3*Math.PI)*varBowtieHexa;
 
 
 //
-// [1] define tile types A5
+// [1] define tile types Bowtie Hexagon
 //
 
 // hexagon  (FINALLY WORKS)
@@ -307,8 +307,8 @@ function substitutionBowtieHexa(tile){
         break;
 
       default:
-        // all tiles should be square or rhombus
-        console.log("caution: undefined tile type for substitutionA5, id="+tile.id);
+        // all tiles should be bowtie or hexagon
+        console.log("caution: undefined tile type for substitutionBowtieHexa, id="+tile.id);
     }
   }
 
