@@ -413,83 +413,83 @@ function default_neighbors2bounds(n){
 // * number of matching segments founds
 //
 
-  function buildSegments(segmentsMap, tiles, n2b){
-    // construct
-    // * segments = list of segments (Array of 4 coordinates + tile idkey + neighbor index)
-    //   for undefined neighbors
-    // * segmentsMap = segmentkey -> tile id, neighbors' index
-    var segments = [];
-    tiles.forEach(function(tile){
-      for(let i=0; i<tile.neighbors.length; i++){
-        if(tile.neighbors[i] == undefined){
-          // found an undefined neighbor
-          // caution: segment points need to be ordered (up to p_error)
-          //          so that [x,y,x',y']=[x',y',x,y].
-          //          smallest x first, and if x ~equal then smallest y first
-          //          
-          let segment = [];
-          let x1 = tile.bounds[n2b.get(tile.id[0])[i][0]];
-          let y1 = tile.bounds[n2b.get(tile.id[0])[i][1]];
-          let x2 = tile.bounds[n2b.get(tile.id[0])[i][2]];
-          let y2 = tile.bounds[n2b.get(tile.id[0])[i][3]];
-          if( x2-x1>=p_error || (Math.abs(x2-x1)<p_error && y2-y1>=p_error) ){
-            // normal order
-            segment.push(x1);
-            segment.push(y1);
-            segment.push(x2);
-            segment.push(y2);
-          }
-          else{
-            // reverse order
-            segment.push(x2);
-            segment.push(y2);
-            segment.push(x1);
-            segment.push(y1);
-          }
-          // something unique for segment2key...
-          segment.push(id2key(tile.id));
-          segment.push(i);
-          // add to datastructures
-          segments.push(segment);
-          segmentsMap.set(segment2key(segment),new TileSegment(tile.id,i));
+function buildSegments(segmentsMap, tiles, n2b){
+  // construct
+  // * segments = list of segments (Array of 4 coordinates + tile idkey + neighbor index)
+  //   for undefined neighbors
+  // * segmentsMap = segmentkey -> tile id, neighbors' index
+  var segments = [];
+  tiles.forEach(function(tile){
+    for(let i=0; i<tile.neighbors.length; i++){
+      if(tile.neighbors[i] == undefined){
+        // found an undefined neighbor
+        // caution: segment points need to be ordered (up to p_error)
+        //          so that [x,y,x',y']=[x',y',x,y].
+        //          smallest x first, and if x ~equal then smallest y first
+        //          
+        let segment = [];
+        let x1 = tile.bounds[n2b.get(tile.id[0])[i][0]];
+        let y1 = tile.bounds[n2b.get(tile.id[0])[i][1]];
+        let x2 = tile.bounds[n2b.get(tile.id[0])[i][2]];
+        let y2 = tile.bounds[n2b.get(tile.id[0])[i][3]];
+        if( x2-x1>=p_error || (Math.abs(x2-x1)<p_error && y2-y1>=p_error) ){
+          // normal order
+          segment.push(x1);
+          segment.push(y1);
+          segment.push(x2);
+          segment.push(y2);
         }
-      }
-    });
-    return segments;
-  }
-
-  function findNeighbors(tiles, tilesdict, n2b){
-    var segmentsMap = new Map();
-    var segments = buildSegments(segmentsMap, tiles, n2b);
-
-    // sort the list of segments lexicographicaly
-    // takes into account rounding errors (up to p_error)
-    segments.sort(function(s1,s2){
-      for(let i=0; i<s1.length-2; i++){ // -2 to exclude idkey and index
-        if(Math.abs(s1[i]-s2[i])>=p_error){return s1[i]-s2[i];}
-      }
-      return 0;
-    });
-    // check if consecutive elements are identical => new neighbors!
-    // (hypothesis: no three consecutive elements are identical)
-    var fn = 0;
-    for(let i=0; i<segments.length-1; i++){
-      // check if points are identical (up to p_error)
-      if(  distance(segments[i][0],segments[i][1],segments[i+1][0],segments[i+1][1])<p_error
-        && distance(segments[i][2],segments[i][3],segments[i+1][2],segments[i+1][3])<p_error){
-        // found two identical segments => set neighbors
-        fn++;
-        let ts1=segmentsMap.get(segment2key(segments[i]));
-        let ts2=segmentsMap.get(segment2key(segments[i+1]));
-        tilesdict.get(id2key(ts1.id)).neighbors[ts1.nindex] = ts2.id;
-        tilesdict.get(id2key(ts2.id)).neighbors[ts2.nindex] = ts1.id;
-        // i+1 already set
-        i++;
+        else{
+          // reverse order
+          segment.push(x2);
+          segment.push(y2);
+          segment.push(x1);
+          segment.push(y1);
+        }
+        // something unique for segment2key...
+        segment.push(id2key(tile.id));
+        segment.push(i);
+        // add to datastructures
+        segments.push(segment);
+        segmentsMap.set(segment2key(segment),new TileSegment(tile.id,i));
       }
     }
-    // done
-    return fn; // side effect
+  });
+  return segments;
+}
+
+function findNeighbors(tiles, tilesdict, n2b){
+  var segmentsMap = new Map();
+  var segments = buildSegments(segmentsMap, tiles, n2b);
+
+  // sort the list of segments lexicographicaly
+  // takes into account rounding errors (up to p_error)
+  segments.sort(function(s1,s2){
+    for(let i=0; i<s1.length-2; i++){ // -2 to exclude idkey and index
+      if(Math.abs(s1[i]-s2[i])>=p_error){return s1[i]-s2[i];}
+    }
+    return 0;
+  });
+  // check if consecutive elements are identical => new neighbors!
+  // (hypothesis: no three consecutive elements are identical)
+  var fn = 0;
+  for(let i=0; i<segments.length-1; i++){
+    // check if points are identical (up to p_error)
+    if(  distance(segments[i][0],segments[i][1],segments[i+1][0],segments[i+1][1])<p_error
+      && distance(segments[i][2],segments[i][3],segments[i+1][2],segments[i+1][3])<p_error){
+      // found two identical segments => set neighbors
+      fn++;
+      let ts1=segmentsMap.get(segment2key(segments[i]));
+      let ts2=segmentsMap.get(segment2key(segments[i+1]));
+      tilesdict.get(id2key(ts1.id)).neighbors[ts1.nindex] = ts2.id;
+      tilesdict.get(id2key(ts2.id)).neighbors[ts2.nindex] = ts1.id;
+      // i+1 already set
+      i++;
+    }
   }
+  // done
+  return fn; // side effect
+}
 
 // Default : tile sends one sand to each bound, limit = number of bounds
 // typeOfSand : 1 -> one sand to each neighbor
