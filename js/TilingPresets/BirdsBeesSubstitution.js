@@ -277,7 +277,7 @@ decorateBB.set('rien',0);
 //
 // [7.1] construct "Birds and Bees 1 by subst" tiling by substitution
 // 
-Tiling.BB1bysubst = function({iterations}={}){
+Tiling.BB1bysubst = function({iterations,neighborFunc}={}){
   // push base tiling
   var tiles = [];
   // use bird subsitution
@@ -316,6 +316,7 @@ Tiling.BB1bysubst = function({iterations}={}){
     "I am lazy", // myneighbors
     neighbors2boundsBB,
     decorateBB,
+    neighborFunc
   );
   // construct tiling
   return new Tiling(tiles);
