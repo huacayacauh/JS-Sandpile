@@ -318,7 +318,7 @@ Tiling.DiamondTriangle = function({iterations} = {}){
     tiles.push(new_TRIANGLE_1);
     tiles.push(new_TRIANGLE_2);
 
-    tiles.push(new_parallelogram_1);
+    //tiles.push(new_parallelogram_1);
     tiles.push(new_parallelogram_2);
     tiles.push(new_parallelogram_3);
     tiles.push(new_parallelogram_4);
