@@ -52,7 +52,15 @@
 		<div id="main controls" class="controlGroup">
 			<p class="groupTitle">Tiling selection</p>
 				<select id="TilingSelect" onchange="hideParams()">
+					<optgroup label="Nouveaux pavages">
+						<option value="AmmannChair">Ammann Chair</option>
+						<option value="elongatedTriangular">Elongated Triangular Tiling</option>
+						<option value="rhombille">Rhombille  Tiling</option>
+						<option value="SnubTrihexagonal">Snub Trihexagonal Tiling</option>
+						<option value="wanderer">Wanderer Substitution</option>
 					<optgroup label="Regular">
+						
+						
 						<option value="sqTiling">Square Tiling</option>
 						<option value="hexTiling">Hexagonal Tiling</option>
 						<option value="triTiling">Triangular Tiling</option>
@@ -140,7 +148,7 @@
 				<!-- control for the n-fold cut-and-project tilings -->
 				<span id="p_order" style="display:none;">
 				Order :
-					<input type="number" id="order" min="3" value="5" style="width=50px;" />
+					<input type="number" id="order" min="3" value="5" style="width: 50px;" />
 				<br></span>
 
 				<!-- control for the selection of crop method for cut-and-project tilings -->
@@ -493,5 +501,11 @@
     <script src="./js/Utils/Knotches.js"></script>
 
 	<script src="./js/app.js"></script>
+
+	<script src="./js/TilingPresets/WandererSubstitution.js"></script>	
+	<script src="./js/TilingPresets/Rhombille.js"></script>	
+	<script src="./js/TilingPresets/ElongatedTriangular.js"></script>
+	<script src="./js/TilingPresets/SnubTrihexagonal.js"></script>	
+	<script src="./js/TilingPresets/AmmannChair.js"></script>	
 
 </body> <!-- ############################################################ End. -->
