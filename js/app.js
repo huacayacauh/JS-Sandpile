@@ -500,7 +500,7 @@ function drawTiling(){
 	var kposi = document.getElementById("kposi").valueAsNumber;
 	var kposlist = document.getElementById("kposlist").value;
 	var subneighborhood = document.getElementById("subneighborhood").valueAsNumber;
-	var neighborFunc = document.getElementById("neighborFunc").valueAsNumber;
+	var neighborFunc = document.getElementById("neighborFunc").value;
         // the most important...
 	preset = document.getElementById("TilingSelect").value;
 
