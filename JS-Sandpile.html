@@ -101,7 +101,7 @@
 					<optgroup label="Substitution: Others">
 						<option value="A5bysubst">Ammann-Beenker</option>
 						<option value="BB1bysubst">Birds and Bees 1</option>
-						<option value="mriangleIncenter">Triangle Incenter</option>
+						<option value="TriangleIncenter">Triangle Incenter</option>
 						<option value="equithirdsSubstitution">Equithirds</option>
 						<option value="stampflisSubstitution">Stampfli's 12-fold 1</option>
 						<option value="A3bysubst">Ammann A3</option>
@@ -232,7 +232,11 @@
 				<!-- indicate which neighbors function to use -->
 				<span id="p_neighborFunc" style="display:none;">
 				Neighbor function :
-					<input type="number" id="neighborFunc" min="0" max="2" value="0" style="width=50px;" />
+				<select id="neighborFunc">
+					<option value=0> To each edge </option>
+					<option value=1> To each neighbor </option>
+					<option value=2> To each shared part </option>
+				</select>
 				<br></span>
 			</div>
 		</div> <!-- Main controls  -->
