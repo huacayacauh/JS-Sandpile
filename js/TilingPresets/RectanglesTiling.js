@@ -1,8 +1,8 @@
 Tiling.rectanglesTiling = function({width, height}={}){
 	var tils = [];
 
-	for(var j = 0; j < width; j++){ // -->
-		for(var i = 0; i < height; i++){ // |^
+	for(var j = 0; j < width; j++){
+		for(var i = 0; i < height; i++){
 			if ((j%4 == 0 && i%4 == 0) || (j%4 == 2 && i%4 == 2)){
 				tils.push(upLeftRectangle(j, i, width, height));
 			}
