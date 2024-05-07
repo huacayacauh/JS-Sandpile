@@ -23,7 +23,6 @@ function TRIANGLE(){
 
 }
 
-}
 function PARALLELOGRAMME(){
 	var id = ['PARALLELOGRAMME'];
 	var bounds = [];
@@ -260,7 +259,7 @@ Tiling.DiamondTriangle = function({iterations, neighborFunc} = {}){
 		iterations, 
 		new_tiles, 
 		3, 
-		subsitution, 
+		subsitutionDT, 
 		[], 
 		[], 
 		"I am lazy", 
