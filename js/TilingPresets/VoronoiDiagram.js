@@ -1789,11 +1789,10 @@ Tiling.voronoiDiagram = function({width,height,size}={}){
     frame.push(bbox.xl,bbox.yt);
 	
 	tils.push(new Tile([bbox.xl,bbox.xr,bbox.yt,bbox.yb], [], frame, 4));
-	var sites = [{x:30,y:30}, {x:10,y:10}, {x:0,y:0}];
 	// création des points
-	/*for (let i = 0; i < size; i++){
+	for (let i = 0; i < size; i++){
 		sites.push({x:Math.random() * (bbox.xr - bbox.xl) + bbox.xl,y:Math.random() * (bbox.yt - bbox.yb) + bbox.yb});
-	}*/
+	}
 	
 	sites.forEach((element) => tils.push(sqTile(element.x, element.y)));
     console.log(tils);
