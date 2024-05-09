@@ -1,4 +1,4 @@
-# JS-Sandpile
+# Tiling Machine
 
 The JS-Sandpiles app is a simple JavaScript implementation of the [Abelian sandpile model](https://en.wikipedia.org/wiki/Abelian_sandpile_model). The app contains a few tiling presets
 such as Square and Hexagonal grids, Penrose tilings P2 P3, and can extend to arbitrary graph (not yet implemented).  
