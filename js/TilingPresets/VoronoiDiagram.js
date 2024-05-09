@@ -1679,7 +1679,7 @@ VoronoiDiagram.prototype.recycle = function(diagram) {
 
 //Voronoi.prototype.compute = function(sites, bbox) {
 Tiling.voronoiDiagram = function({width,height,size}={}){
-    VoronoiDiagram.prototype.compute = function(sites, box){
+    VoronoiDiagram.prototype.compute = function(sites, bbox){
         // to measure execution time
         var startTime = new Date();
 
