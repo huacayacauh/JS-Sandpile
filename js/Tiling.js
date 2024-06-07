@@ -26,7 +26,11 @@ class Tile{
 		if(limit < 0)
 			this.sand = -1;
 		this.prevSand = 0; // "trick" variable to iterate the sand
-
+		
+		// ID of the puzzle piece that is occupying this (and possibly other Tiles)
+		this.puzzlePieceId = -1;
+		// ID of the block within this puzzlePiece.
+		this.puzzlePieceBlockId = -1;
 		this.bounds = bounds; // vertices of the polygon to be drawn
 		this.points = [];
 		
@@ -85,6 +89,33 @@ class Tile{
 
 // ################################################
 //
+// 	[ 1.9 ] 	Representation of any PuzzlePiece
+//
+//		The PuzzlePiece contains a list of Tiles
+// 		that together make up that piece.
+//
+// ################################################
+class PuzzlePiece{
+	constructor (id, width, height) {
+		this.id = id;
+		this.width = width;
+		this.height = height;
+		this.Blocks = Tiling.sqTiling({width,height})
+		this.location=-1;
+	}
+	
+	/*
+	// For non-rectangular tiles, pass a list of tile ids?
+	constructor(tiles)
+	{
+		// TODO
+		throw new Error("PuzzlePiece constructor not implemented for non-rectangular tiles.");
+	}
+	*/
+}
+
+// ################################################
+//
 // 	[ 2.0 ] 	Representation of any Tiling
 //			
 //		This class contains maily a list of
@@ -110,7 +141,10 @@ class Tiling{
 	//
 	// ------------------------------------------------
 	constructor(tiles, hide=false, recenter=false){
-		
+		// Temporarily hardcoding these values
+		this.numRows = 10;
+		this.numCols = 10;
+
 		this.tiles = tiles;
 		
 		this.hide = hide;
@@ -524,5 +558,44 @@ class Tiling{
                 console.log("done");
                 return burning;
         }
-}
 
+		checkPuzzlePiecePlaceable(piece, tileid)
+		{
+			return true;
+			//	tile = idloc[tileid];	
+			
+			for(var i =0;i<piece.height;i++){
+				for(var j =0;j<piece.width;j++){
+					const index = tileid+i*this.numRows+j;
+
+					if(this.tiles[index].puzzlePieceId == -1) //undefined or -1 ?
+						return false;
+					
+					
+				}
+			}
+			return true;
+		}
+
+		placePuzzlePiece(piece, tileid)
+		{
+			if (!this.checkPuzzlePiecePlaceable(piece, tileid))
+			{
+				throw Error("Not placeable");
+			}
+
+			var blocks = piece.Blocks.tiles;
+			for (var i=0; i<piece.height; i++){
+				for (var j=0; j<piece.width; j++){
+					var tile = this.tiles[tileid + i * this.numRows + j]
+					tile.puzzlePieceId = piece.id;
+					console.log(i, j)
+					tile.puzzlePieceBlockId = blocks[i*piece.width+j].id;
+					var color = new THREE.Color( 90/255, 156/255, 122/255 );
+					this.colorTile(tile.id, color)
+				}
+			} 
+			console.log("Placed piece at tile" + tileid);
+			// Loop over blocks and place them relative to the tileid's coordinates.
+		}
+}
