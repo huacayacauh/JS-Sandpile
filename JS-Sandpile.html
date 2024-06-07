@@ -124,12 +124,12 @@
 			<div id="paramHide">
 				<span id="p_width">
 				Width :
-					<input type="number" id="cW" min="0" value="100" style="width: 50px;" />
+					<input type="number" id="cW" min="0" value="10" style="width: 50px;" />
 				</span>
 
 				<span id="p_height">
 				&nbsp; &nbsp; Height :
-					<input type="number" id="cH" min="0" value="100" style="width: 50px;" />
+					<input type="number" id="cH" min="0" value="10" style="width: 50px;" />
 				<br></span>
 
 				<span id="p_size" style="display:none;">
@@ -458,7 +458,7 @@
     <script src="./js/Utils/Crop.js"></script>
 	<script src="./js/Utils/jszip.min.js"></script>
 	<script src="./js/Utils/FileSaver.min.js"></script>
-	<script src="./js/Utils/gpu-browser.min.js"></script>
+	<!--<script src="./js/Utils/gpu-browser.min.js"></script>-->
 
 	<script src="./js/Tiling.js"></script>
 
@@ -493,5 +493,12 @@
     <script src="./js/Utils/Knotches.js"></script>
 
 	<script src="./js/app.js"></script>
+
+	<script>
+		drawTiling();
+		zL = document.getElementById('zoomLevel');
+		zL.value = 2000;
+		set_zoom(zL);
+	</script>
 
 </body> <!-- ############################################################ End. -->
