@@ -9,6 +9,7 @@
 //		the interesting part of the app.
 //
 // ################################################
+
 class App{
 
 	constructor(){
@@ -704,12 +705,21 @@ function CanvasClick(event, force){
 					break;
 
 				default:
+					// What does this do?
 					currentTiling.lastChange = 0;
-					// currentTiling.add(lastTile, nbTimes);
-					var brush_t = zone(lastTile, document.getElementById("brushRange").value)
-					for(var k=0; k<brush_t.length; k++){
-						currentTiling.add(brush_t[k], nbTimes);
-					}
+
+					// dimensions of the puzzlePiece to create
+					pW = 2, pH = 3 // waiting for puzzlePiece creation UI to be implemented
+					if (currentTiling.puzzlePieces.length > 0)
+						nextPuzzlePieceId = currentTiling.puzzlePieces.at(-1).id + 1
+					else
+						nextPuzzlePieceId = 0;
+					// create a new PuzzlePiece
+					piece = new PuzzlePiece(nextPuzzlePieceId, pW, pH)
+
+					// place chosen PuzzlePiece at the selected tile.
+					console.log(`Attempting to place piece id ${nextPuzzlePieceId} on tile id ${lastTile}`)
+					currentTiling.placePuzzlePiece(piece, lastTile)
 					break;
 			}
 
