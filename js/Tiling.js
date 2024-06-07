@@ -146,6 +146,7 @@ class Tiling{
 		this.numCols = 10;
 
 		this.tiles = tiles;
+		this.puzzlePieces = [];
 		
 		this.hide = hide;
 		
@@ -561,41 +562,52 @@ class Tiling{
 
 		checkPuzzlePiecePlaceable(piece, tileid)
 		{
-			return true;
-			//	tile = idloc[tileid];	
+			const cur_row = tileid % this.numRows;
 			
+			const cur_col = Math.floor(tileid / this.numRows); 
+                    
+			// to check if the puzzlepiece doesn't break and some part goes to the next row
+			if(cur_row+piece.height >this.numRows|| cur_col +piece.width >this.numCols){
+				return false
+			}
 			for(var i =0;i<piece.height;i++){
 				for(var j =0;j<piece.width;j++){
-					const index = tileid+i*this.numRows+j;
-
-					if(this.tiles[index].puzzlePieceId == -1) //undefined or -1 ?
+					const index = tileid + i + this.numCols * j;
+					// to check index validity
+					if(index >= this.tiles.length || index<0){
 						return false;
-					
-					
+					}
+
+						// to check if its occupied
+					if(this.tiles[index].puzzlePieceId != -1) //undefined or -1 ?
+						return false;
 				}
 			}
 			return true;
 		}
 
-		placePuzzlePiece(piece, tileid)
-		{
+		placePuzzlePiece(piece, tileid, color)
+		{	
 			if (!this.checkPuzzlePiecePlaceable(piece, tileid))
 			{
 				throw Error("Not placeable");
 			}
 
+			piece.location = tileid
 			var blocks = piece.Blocks.tiles;
+			if (!color)
+				var color = new THREE.Color(Math.random(), Math.random(), Math.random());
+				piece.color = color
 			for (var i=0; i<piece.height; i++){
 				for (var j=0; j<piece.width; j++){
-					var tile = this.tiles[tileid + i * this.numRows + j]
+					const tile = this.tiles[tileid + i + this.numCols * j]
 					tile.puzzlePieceId = piece.id;
-					console.log(i, j)
-					tile.puzzlePieceBlockId = blocks[i*piece.width+j].id;
-					var color = new THREE.Color( 90/255, 156/255, 122/255 );
+					tile.puzzlePieceBlockId = blocks[i * piece.width + j].id;
+//					var color = new THREE.Color( 90/255, 156/255, 122/255 );
 					this.colorTile(tile.id, color)
 				}
 			} 
-			console.log("Placed piece at tile" + tileid);
+			this.puzzlePieces.push(piece)
 			// Loop over blocks and place them relative to the tileid's coordinates.
 		}
 }
