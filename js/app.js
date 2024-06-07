@@ -708,22 +708,8 @@ function CanvasClick(event, force){
 				default:
 					// What does this do?
 					currentTiling.lastChange = 0;
-         const val = document.querySelector('input[name="preset"]:checked');
-          if (!val)
-             throw Error("No puzzle piece selected")
-         const dims = val.value.split(',');
-         const pW = Number(dims[0]);
-         const pH = Number(dims[1]);
-					if (currentTiling.puzzlePieces.length > 0)
-						nextPuzzlePieceId = currentTiling.puzzlePieces.at(-1).id + 1
-					else
-						nextPuzzlePieceId = 0;
-					// create a new PuzzlePiece
-					piece = new PuzzlePiece(nextPuzzlePieceId, pW, pH)
-
-					// place chosen PuzzlePiece at the selected tile.
-					console.log(`Attempting to place piece id ${nextPuzzlePieceId} on tile id ${lastTile}`)
-					currentTiling.placePuzzlePiece(piece, lastTile)
+					console.log("Adding puzzle piece " + selectedPreset + " to tile id " + lastTile)
+					currentTiling.addSelectedPuzzlePiece(lastTile);
 					break;
 			}
 

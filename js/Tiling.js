@@ -617,4 +617,24 @@ class Tiling{
 			this.puzzlePieces.push(piece)
 			// Loop over blocks and place them relative to the tileid's coordinates.
 		}
+	
+		addSelectedPuzzlePiece(tileid, color)
+		{
+			// dimensions of the puzzlePiece to create
+			const val = document.querySelector('input[name="preset"]:checked');
+			if (!val)
+				throw Error("No puzzle piece selected")
+			const dims = val.value.split(',');
+			const pW = Number(dims[0]);
+			const pH = Number(dims[1]);
+			var nextPuzzlePieceId = 0;
+			if (currentTiling.puzzlePieces.length > 0)
+				nextPuzzlePieceId = currentTiling.puzzlePieces.at(-1).id + 1
+			// create a new PuzzlePiece
+			const piece = new PuzzlePiece(nextPuzzlePieceId, pW, pH)
+
+			// place chosen PuzzlePiece at the selected tile.
+			console.log(`Attempting to place piece id ${nextPuzzlePieceId} on tile id ${tileid}`)
+			currentTiling.placePuzzlePiece(piece, tileid)
+		}
 }
