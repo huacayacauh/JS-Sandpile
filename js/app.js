@@ -506,6 +506,7 @@ function drawTiling(){
 
         // prepare command and call the tiling generator
 	var command = "currentTiling = Tiling." + preset + "({height:cH, width:cW, iterations:nbIt, size:size, order:order, cropMethod:cropMethod, kwidth:kwidth, knotchA:knotchA, knotchB:knotchB, lineplace:lineplace, linespace:linespace, kposi:kposi, kposlist:kposlist, subneighborhood:subneighborhood})";
+		console.log(command);
         console.log("BEGIN construct a new Tiling");
 	eval(command);
         console.log("END construct a new Tiling");
@@ -709,7 +710,8 @@ function CanvasClick(event, force){
 					currentTiling.lastChange = 0;
 
 					// dimensions of the puzzlePiece to create
-					pW = 2, pH = 3 // waiting for puzzlePiece creation UI to be implemented
+					pW = 2 //presets[selectedPreset][0]
+					pH = 3 // presets[selectedPreset][1];
 					if (currentTiling.puzzlePieces.length > 0)
 						nextPuzzlePieceId = currentTiling.puzzlePieces.at(-1).id + 1
 					else
@@ -758,7 +760,30 @@ function zone(index, size){
 	}
 }
 
+var presets = []
+var selectedPreset;
+function puzzlePieceCreate(){
+	var presetList = document.getElementById("presetList");
+	var width = Number(document.getElementById("pieceWidth").value);
+	var height = Number(document.getElementById("pieceHeight").value);
+	presets.push({width, height});
+	const li = document.createElement("LI");
+	// removing oninput="presetSelect(this)" temporary
+	const st = `<li>
+			<input type="radio"  style="display: none" name="preset" id="`+presets.length+`"  value="`+presets.length+`"/>
+			<label id="presetSelectID" for="`+presets.length+`" class="btn btn-default" style="margin-top:10px;display: table;width: -webkit-fill-available;" value="`+presets.length+`">`+width+` x `+height+`</button>
+				</li>`
+	li.innerHTML= st
+	li.addEventListener('click', presetSelect)
+	presetList.appendChild(li);
+} 
+function presetSelect(event) {
+    console.log(event);
+}
+/*function presetSelect(val){
+	console.log(val.target.htmlFor);
+	var selectedPreset = val.target.htmlFor-1;
+}*/
 var holdMouse = false;
 var lastTile = 0;
 var previousTile = -1;
-

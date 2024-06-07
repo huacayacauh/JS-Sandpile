@@ -215,6 +215,34 @@
 			</div>
 		</div> <!-- Main controls  -->
 
+		<!-- ############################################################ Puzzle Piece Creation-->
+		<div id="preset controls" class="controlGroup">
+			<p class="groupTitle">Create Puzzle Pieces</p>
+			<div id="maskMouseRepeat" style="display:inline;">
+			&nbsp;&nbsp;Width&nbsp;&nbsp;
+			<input type="number" id="pieceWidth" value="1" min="0" max="999999"style="width: 55px;" />
+			</div>
+			<div id="maskMouseRepeat" style="display:inline;">
+				&nbsp;&nbsp;Height&nbsp;&nbsp;
+				<input type="number" id="pieceHeight" value="1" min="0" max="999999"style="width: 55px;" />
+			</div>
+			<br>
+			<button id="puzzlePieceCreate" onclick="puzzlePieceCreate()" class="btn btn-default" style="margin-top:10px;display: table;width: -webkit-fill-available;">Add</button>
+		</div> 
+		<!-- ############################################################ Puzzle Pieces-->
+		<div id="presets controls" class="controlGroup">
+			<p class="groupTitle">Presets</p>
+			<ul id="presetList" style="margin-left: 0; padding-left: 0">
+				<li>
+					<input type="radio" onclick="presetSelect()" style="display: none" name="preset" id="placeholderPreset1" />
+					<label id="presetSelectID" for="placeholderPreset1" class="btn btn-default" style="margin-top:10px;display: table;width: -webkit-fill-available;">Width x Height</button>
+				</li>
+				<li>
+					<input type="radio" onclick="presetSelect()" style="display: none" name="preset" id="placeholderPreset2"/>
+					<label id="presetSelectID" for="placeholderPreset2" class="btn btn-default" style="margin-top:10px;display: table;width: -webkit-fill-available;">Width x Height</button>
+				</li>
+			</ul>
+		</div>
 		<!-- ############################################################ Mouse Controls -->
 		<div id="mouse controls" class="controlGroup">
 			<p class="groupTitle">Mouse controls</p>

@@ -85,6 +85,12 @@ class Tile{
                 }
         }
 }
+// allpieces = [];
+// PuzzlePiece p = new PuzzlePiece(2,1);
+// allpieces.append(p);
+// p.place(locx, locy);
+// //
+// placepiece(p, locx, locy);
 
 
 // ################################################
@@ -102,6 +108,7 @@ class PuzzlePiece{
 		this.height = height;
 		this.Blocks = Tiling.sqTiling({width,height})
 		this.location=-1;
+		this.color;
 	}
 	
 	/*
