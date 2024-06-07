@@ -766,24 +766,29 @@ function puzzlePieceCreate(){
 	var presetList = document.getElementById("presetList");
 	var width = Number(document.getElementById("pieceWidth").value);
 	var height = Number(document.getElementById("pieceHeight").value);
+	if (width <= 0 || height <= 0)
+			throw Error("Puzzle piece dimensions cannot be non-positive.")
 	presets.push({width, height});
-	const li = document.createElement("LI");
-	// removing oninput="presetSelect(this)" temporary
-	const st = `<li>
-			<input type="radio"  style="display: none" name="preset" id="`+presets.length+`"  value="`+presets.length+`"/>
-			<label id="presetSelectID" for="`+presets.length+`" class="btn btn-default" style="margin-top:10px;display: table;width: -webkit-fill-available;" value="`+presets.length+`">`+width+` x `+height+`</button>
-				</li>`
-	li.innerHTML= st
-	li.addEventListener('click', presetSelect)
+	const li = document.createElement("li");
+	li.innerHTML = `<input type="radio" oninput="presetSelect(this)" style="display: none" name="preset" id="presetselector`+presets.length+`" value="`+width+`,`+height+`"/>
+					<label for="presetselector`+presets.length+`" class="preset btn btn-default" style="width: -webkit-fill-available;" value="`+presets.length+`">`
+					 + width + ` ⨉ ` + height +`
+					 </label>`
 	presetList.appendChild(li);
+	li.children[0].checked=true;
+	selectedPreset = presets.length;
 } 
-function presetSelect(event) {
-    console.log(event);
+
+function presetSelect(val) {
+	// nothing to do here
+	return;
+//	console.log(document.querySelector('input[name="preset"]:checked').value);
+//	val.checked = true;
+//	console.log(val.value.split(','));
+//	var presetList = document.getElementById("presetList");
+//	selectedPreset = val.value;
 }
-/*function presetSelect(val){
-	console.log(val.target.htmlFor);
-	var selectedPreset = val.target.htmlFor-1;
-}*/
+
 var holdMouse = false;
 var lastTile = 0;
 var previousTile = -1;
