@@ -149,3 +149,10 @@ input:checked + .slider:before {
   z-index: 1;
 }
 
+.presetSelect:checked ~ .presetSelectButton {
+  background-color: #999999;
+}
+
+.presetItem {
+  margin-bottom: 16px;
+}

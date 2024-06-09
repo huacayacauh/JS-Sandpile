@@ -710,8 +710,8 @@ function CanvasClick(event, force){
 					currentTiling.lastChange = 0;
 
 					// dimensions of the puzzlePiece to create
-					pW = 2 //presets[selectedPreset][0]
-					pH = 3 // presets[selectedPreset][1];
+					pW = presets[selectedPreset]["width"]
+					pH = presets[selectedPreset]["height"];
 					if (currentTiling.puzzlePieces.length > 0)
 						nextPuzzlePieceId = currentTiling.puzzlePieces.at(-1).id + 1
 					else
@@ -769,16 +769,17 @@ function puzzlePieceCreate(){
 	presets.push({width, height});
 	const li = document.createElement("LI");
 	// removing oninput="presetSelect(this)" temporary
-	const st = `<li>
-			<input type="radio"  style="display: inline" name="preset" id="preset`+(presets.length-1)+`"  value="`+(presets.length-1)+`"/>
-			<label id="presetSelectID" for="preset`+(presets.length-1)+`"  style="margin-top:10px;display: inline;width: -webkit-fill-available;" >`+width+` x `+height+`</button>
+	const st = `<li class="presetItem">
+			<input type="radio" class="presetSelect" style="display: none" name="preset" id="preset`+(presets.length-1)+`"  value="`+(presets.length-1)+`"/>
+			<label class="btn btn-default presetSelectButton" for="preset`+(presets.length-1)+`"  style="margin-top:10px;display: inline;width: -webkit-fill-available;" >`+width+` x `+height+`</button>
 				</li>`
 	li.innerHTML= st
 	li.querySelector('#preset'+(presets.length-1)).addEventListener('click', presetSelect)
 	presetList.appendChild(li);
 } 
 function presetSelect(event) {
-    console.log(event.target.value);
+	selectedPreset = event.target.value;
+	console.log(!selectedPreset)
 }
 /*function presetSelect(val){
 	console.log(val.target.htmlFor);
