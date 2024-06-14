@@ -708,10 +708,12 @@ function CanvasClick(event, force){
 				default:
 					// What does this do?
 					currentTiling.lastChange = 0;
-
-					// dimensions of the puzzlePiece to create
-					pW = 2 //presets[selectedPreset][0]
-					pH = 3 // presets[selectedPreset][1];
+         const val = document.querySelector('input[name="preset"]:checked');
+          if (!val)
+             throw Error("No puzzle piece selected")
+         const dims = val.value.split(',');
+         const pW = Number(dims[0]);
+         const pH = Number(dims[1]);
 					if (currentTiling.puzzlePieces.length > 0)
 						nextPuzzlePieceId = currentTiling.puzzlePieces.at(-1).id + 1
 					else
