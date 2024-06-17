@@ -149,8 +149,8 @@ class Tiling{
 	// ------------------------------------------------
 	constructor(tiles, hide=false, recenter=false){
 		// Temporarily hardcoding these values
-		this.numRows = 10;
-		this.numCols = 10;
+		this.numRows = document.getElementById("cW").value;;
+		this.numCols = document.getElementById("cH").value;;
 
 		this.tiles = tiles;
 		this.puzzlePieces = [];
@@ -569,12 +569,12 @@ class Tiling{
 
 		checkPuzzlePiecePlaceable(piece, tileid)
 		{
-			const cur_row = tileid % this.numRows;
+			const cur_col = tileid % this.numRows-1;
 			
-			const cur_col = Math.floor(tileid / this.numRows); 
+			const cur_row = Math.floor(tileid / this.numRows)-1; 
                     
 			// to check if the puzzlepiece doesn't break and some part goes to the next row
-			if(cur_row+piece.height >this.numRows|| cur_col +piece.width >this.numCols){
+			if(cur_row+piece.width >this.numRows|| cur_col +piece.height >this.numCols){
 				return false
 			}
 			for(var i =0;i<piece.height;i++){
