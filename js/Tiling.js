@@ -616,7 +616,25 @@ class Tiling{
 			} 
 			this.puzzlePieces.push(piece)
 			// Loop over blocks and place them relative to the tileid's coordinates.
-		}
+		}  
+
+		removePuzzlePiece(tileid)
+		{	
+			var toBeRemovedId = this.tiles[tileid].puzzlePieceId
+			var pieceToBeRemoved = this.puzzlePieces.find((piece)=> piece.id === toBeRemovedId);
+			var originTile = pieceToBeRemoved.location;
+			var color = new THREE.Color(1, 1, 1);
+			for (var i=0; i<pieceToBeRemoved.height; i++){
+				for (var j=0; j<pieceToBeRemoved.width; j++){
+					const tile = this.tiles[originTile + i + this.numCols * j]
+					tile.puzzlePieceId = -1;
+					tile.puzzlePieceBlockId = -1;
+//					var color = new THREE.Color( 90/255, 156/255, 122/255 );
+					this.colorTile(tile.id, color)
+				}
+			} 
+			//either delete the piece or store it in a separate array
+		}  
 	
 		addSelectedPuzzlePiece(tileid, color)
 		{

@@ -236,21 +236,18 @@
 			</ul>
 		</div>
 		<!-- ############################################################ Mouse Controls -->
-		<div style="display: none">
 		<div id="mouse controls" class="controlGroup">
 			<p class="groupTitle">Mouse controls</p>
-			<select id="mouseOperation">
-			  <option value="addOne">Add</option>
-			  <option value="rmOne">Remove</option>
-			  <option value="setOne">Set</option>
-			  <option value="select">Select</option>
+			<select id="mouseOperation" style="margin-top: 8px;height: 32px;display: table;width: -webkit-fill-available;">
+			  <option value="placeOne">Place Piece</option>
+			  <option value="rmOne">Remove Piece</option>
 			</select>
-			<div id="maskMouseRepeat" style="display:inline;">
-			&nbsp;&nbsp;times&nbsp;&nbsp;
-			<input type="number" id="mouseOperationRepeat" value="1" min="0" max="999999"style="width: 70px;" />
-			</div>
 			<br><br>
-			<div style="display:flex;">
+			<div id="maskMouseRepeat" style="display:none;">
+				&nbsp;&nbsp;times&nbsp;&nbsp;
+				<input type="number" id="mouseOperationRepeat" value="1" min="0" max="999999"style="width: 70px;" />
+				</div>
+			<div style="display:none;">
 			  Mouse radius :
 			  <input type="range" min="1" max="8" value="1" step="1" id="brushRange" style="width:150px;margin-left:10px;" list="steplist">
 			  <datalist id="steplist">
@@ -266,6 +263,7 @@
 			</div>
 		</div> <!-- Mouse controls -->
 
+		<div style="display: none">
 		<!-- ############################################################ Operations / Secondary Controls -->
 		<div id="secondary controls" class="controlGroup">
 			<p class="groupTitle">Sandpile operations</p>

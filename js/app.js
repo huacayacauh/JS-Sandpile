@@ -681,18 +681,14 @@ function CanvasClick(event, force){
 			switch(mouseTODO){
 				case "rmOne":
 					currentTiling.lastChange = 0;
-					var brush_t = zone(lastTile, document.getElementById("brushRange").value)
-					for(var k=0; k<brush_t.length; k++){
-						currentTiling.remove(brush_t[k], nbTimes);
-					}
+					console.log("Removing puzzle piece from tile id " + lastTile)
+					currentTiling.removePuzzlePiece(lastTile);
 					break;
 				
-				case "setOne":
+				case "placeOne":
 					currentTiling.lastChange = 0;
-					var brush_t = zone(lastTile, document.getElementById("brushRange").value)
-					for(var k=0; k<brush_t.length; k++){
-						currentTiling.set(brush_t[k], nbTimes);
-					}
+					console.log("Adding puzzle piece " + selectedPreset + " to tile id " + lastTile)
+					currentTiling.addSelectedPuzzlePiece(lastTile);
 					break;
 
 				case "select":
@@ -764,7 +760,7 @@ function puzzlePieceCreate(){
 					 </label>`
 	presetList.appendChild(li);
 	li.children[0].checked=true;
-	selectedPreset = presets.length;
+	selectedPreset = presets.length;//this is not right, if we are accessing the information about the preset from the html directly do we even need this?
 } 
 
 function presetSelect(val) {
