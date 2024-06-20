@@ -569,12 +569,12 @@ class Tiling{
 
 		checkPuzzlePiecePlaceable(piece, tileid)
 		{
-			const cur_col = tileid % this.numRows-1;
+			const cur_row = tileid % this.numRows;
 			
-			const cur_row = Math.floor(tileid / this.numRows)-1; 
+			const cur_col = Math.floor(tileid / this.numRows); 
                     
 			// to check if the puzzlepiece doesn't break and some part goes to the next row
-			if(cur_row+piece.width >this.numRows|| cur_col +piece.height >this.numCols){
+			if(cur_col+piece.width >this.numRows|| cur_row +piece.height >this.numCols){
 				return false
 			}
 			for(var i =0;i<piece.height;i++){
@@ -621,6 +621,8 @@ class Tiling{
 		removePuzzlePiece(tileid)
 		{	
 			var toBeRemovedId = this.tiles[tileid].puzzlePieceId
+			if (toBeRemovedId===-1)
+				throw Error("No puzzle piece at location")
 			var pieceToBeRemoved = this.puzzlePieces.find((piece)=> piece.id === toBeRemovedId);
 			var originTile = pieceToBeRemoved.location;
 			var color = new THREE.Color(1, 1, 1);

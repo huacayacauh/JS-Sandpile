@@ -681,7 +681,12 @@ function CanvasClick(event, force){
 			switch(mouseTODO){
 				case "rmOne":
 					currentTiling.lastChange = 0;
-					console.log("Removing puzzle piece from tile id " + lastTile)
+					//var brush_t = zone(lastTile, document.getElementById("brushRange").value)
+					//for(var k=0; k<brush_t.length; k++){
+					//	currentTiling.removePuzzlePiece(brush_t[k]);
+					//}
+
+					console.log("Removing puzzle piece from tile id " + lastTile);
 					currentTiling.removePuzzlePiece(lastTile);
 					break;
 				
