@@ -577,9 +577,9 @@ class Tiling{
 			if(cur_col+piece.width >this.numCols|| cur_row +piece.height >this.numRows){
 				return false
 			}
-			for(var i =0;i<piece.height;i++){
-				for(var j =0;j<piece.width;j++){
-					const index = tileid + i + this.numCols * j;
+			for(var i =0;i<piece.width;i++){
+				for(var j =0;j<piece.height;j++){
+					const index = tileid + i*this.numRows +  j;
 					// to check index validity
 					if(index >= this.tiles.length || index<0){
 						return false;
@@ -609,7 +609,6 @@ class Tiling{
 				for (var j=0; j<piece.height; j++){
 					const tile = this.tiles[tileid + i*this.numRows +  j]
 					tile.puzzlePieceId = piece.id;
-					console.log(i*piece.width + j)
 					tile.puzzlePieceBlockId = blocks[i * piece.height + j].id;
 //					var color = new THREE.Color( 90/255, 156/255, 122/255 );
 					this.colorTile(tile.id, color)
