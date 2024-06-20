@@ -149,8 +149,8 @@ class Tiling{
 	// ------------------------------------------------
 	constructor(tiles, hide=false, recenter=false){
 		// Temporarily hardcoding these values
-		this.numRows = document.getElementById("cW").value;;
-		this.numCols = document.getElementById("cH").value;;
+		this.numRows = document.getElementById("cH").value;;
+		this.numCols = document.getElementById("cW").value;;
 
 		this.tiles = tiles;
 		this.puzzlePieces = [];
@@ -574,7 +574,7 @@ class Tiling{
 			const cur_col = Math.floor(tileid / this.numRows); 
                     
 			// to check if the puzzlepiece doesn't break and some part goes to the next row
-			if(cur_col+piece.width >this.numRows|| cur_row +piece.height >this.numCols){
+			if(cur_col+piece.width >this.numCols|| cur_row +piece.height >this.numRows){
 				return false
 			}
 			for(var i =0;i<piece.height;i++){
@@ -605,11 +605,12 @@ class Tiling{
 			if (!color)
 				var color = new THREE.Color(Math.random(), Math.random(), Math.random());
 				piece.color = color
-			for (var i=0; i<piece.height; i++){
-				for (var j=0; j<piece.width; j++){
-					const tile = this.tiles[tileid + i + this.numCols * j]
+			for (var i=0; i<piece.width; i++){
+				for (var j=0; j<piece.height; j++){
+					const tile = this.tiles[tileid + i*this.numRows +  j]
 					tile.puzzlePieceId = piece.id;
-					tile.puzzlePieceBlockId = blocks[i * piece.width + j].id;
+					console.log(i*piece.width + j)
+					tile.puzzlePieceBlockId = blocks[i * piece.height + j].id;
 //					var color = new THREE.Color( 90/255, 156/255, 122/255 );
 					this.colorTile(tile.id, color)
 				}
@@ -626,9 +627,9 @@ class Tiling{
 			var pieceToBeRemoved = this.puzzlePieces.find((piece)=> piece.id === toBeRemovedId);
 			var originTile = pieceToBeRemoved.location;
 			var color = new THREE.Color(1, 1, 1);
-			for (var i=0; i<pieceToBeRemoved.height; i++){
-				for (var j=0; j<pieceToBeRemoved.width; j++){
-					const tile = this.tiles[originTile + i + this.numCols * j]
+			for (var i=0; i<pieceToBeRemoved.width; i++){
+				for (var j=0; j<pieceToBeRemoved.height; j++){
+					const tile = this.tiles[originTile + i*this.numRows + j]
 					tile.puzzlePieceId = -1;
 					tile.puzzlePieceBlockId = -1;
 //					var color = new THREE.Color( 90/255, 156/255, 122/255 );
