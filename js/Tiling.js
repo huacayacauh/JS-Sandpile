@@ -149,8 +149,8 @@ class Tiling{
 	// ------------------------------------------------
 	constructor(tiles, hide=false, recenter=false){
 		// Temporarily hardcoding these values
-		this.numRows = 10;
-		this.numCols = 10;
+		this.numRows = document.getElementById("cH").value;;
+		this.numCols = document.getElementById("cW").value;;
 
 		this.tiles = tiles;
 		this.puzzlePieces = [];
@@ -574,12 +574,12 @@ class Tiling{
 			const cur_col = Math.floor(tileid / this.numRows); 
                     
 			// to check if the puzzlepiece doesn't break and some part goes to the next row
-			if(cur_row+piece.height >this.numRows|| cur_col +piece.width >this.numCols){
+			if(cur_col+piece.width >this.numCols|| cur_row +piece.height >this.numRows){
 				return false
 			}
-			for(var i =0;i<piece.height;i++){
-				for(var j =0;j<piece.width;j++){
-					const index = tileid + i + this.numCols * j;
+			for(var i =0;i<piece.width;i++){
+				for(var j =0;j<piece.height;j++){
+					const index = tileid + i*this.numRows +  j;
 					// to check index validity
 					if(index >= this.tiles.length || index<0){
 						return false;
@@ -605,16 +605,56 @@ class Tiling{
 			if (!color)
 				var color = new THREE.Color(Math.random(), Math.random(), Math.random());
 				piece.color = color
-			for (var i=0; i<piece.height; i++){
-				for (var j=0; j<piece.width; j++){
-					const tile = this.tiles[tileid + i + this.numCols * j]
+			for (var i=0; i<piece.width; i++){
+				for (var j=0; j<piece.height; j++){
+					const tile = this.tiles[tileid + i*this.numRows +  j]
 					tile.puzzlePieceId = piece.id;
-					tile.puzzlePieceBlockId = blocks[i * piece.width + j].id;
+					tile.puzzlePieceBlockId = blocks[i * piece.height + j].id;
 //					var color = new THREE.Color( 90/255, 156/255, 122/255 );
 					this.colorTile(tile.id, color)
 				}
 			} 
 			this.puzzlePieces.push(piece)
 			// Loop over blocks and place them relative to the tileid's coordinates.
+		}  
+
+		removePuzzlePiece(tileid)
+		{	
+			var toBeRemovedId = this.tiles[tileid].puzzlePieceId
+			if (toBeRemovedId===-1)
+				throw Error("No puzzle piece at location")
+			var pieceToBeRemoved = this.puzzlePieces.find((piece)=> piece.id === toBeRemovedId);
+			var originTile = pieceToBeRemoved.location;
+			var color = new THREE.Color(1, 1, 1);
+			for (var i=0; i<pieceToBeRemoved.width; i++){
+				for (var j=0; j<pieceToBeRemoved.height; j++){
+					const tile = this.tiles[originTile + i*this.numRows + j]
+					tile.puzzlePieceId = -1;
+					tile.puzzlePieceBlockId = -1;
+//					var color = new THREE.Color( 90/255, 156/255, 122/255 );
+					this.colorTile(tile.id, color)
+				}
+			} 
+			//either delete the piece or store it in a separate array
+		}  
+	
+		addSelectedPuzzlePiece(tileid, color)
+		{
+			// dimensions of the puzzlePiece to create
+			const val = document.querySelector('input[name="preset"]:checked');
+			if (!val)
+				throw Error("No puzzle piece selected")
+			const dims = val.value.split(',');
+			const pW = Number(dims[0]);
+			const pH = Number(dims[1]);
+			var nextPuzzlePieceId = 0;
+			if (currentTiling.puzzlePieces.length > 0)
+				nextPuzzlePieceId = currentTiling.puzzlePieces.at(-1).id + 1
+			// create a new PuzzlePiece
+			const piece = new PuzzlePiece(nextPuzzlePieceId, pW, pH)
+
+			// place chosen PuzzlePiece at the selected tile.
+			console.log(`Attempting to place piece id ${nextPuzzlePieceId} on tile id ${tileid}`)
+			currentTiling.placePuzzlePiece(piece, tileid)
 		}
 }

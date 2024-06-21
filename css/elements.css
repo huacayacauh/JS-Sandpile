@@ -124,6 +124,12 @@ input:checked + .slider:before {
   transform: translateX(13px);
 }
 
+li input:checked + label{
+  box-shadow: inset 1px 2px 5px #777;
+  transform: translateY(1px);
+  background: #e5e5e5;
+}
+
 /* Rounded sliders */
 .slider.round {
   border-radius: 17px;
