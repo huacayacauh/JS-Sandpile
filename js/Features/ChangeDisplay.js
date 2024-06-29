@@ -188,6 +188,7 @@ btn.onclick = function() {
 		var lava_array = ["#cccccc", "#888888", "#444444", "#553333", "#772222", "#aa1111", "#ff1100", "#ff8800", "#eeee00"];
 		var blue_array = ["#000055", "#000088", "#0022aa", "#0044ff", "#0099ff", "#00ccff", "#00ffff", "#aaffff", "#ffffff"];
 		var green_array = ["#ffffff", "#ffffcc", "#ddffaa", "#aaff77", "#66ff33", "#33cc33", "#009933"];
+		var finnish_array = ["#ffffff", "#66a9ff", "#0062e0", "#002f6c", "#ff1a1a"];
 		
 		var selected_array;
 		
@@ -214,6 +215,10 @@ btn.onclick = function() {
 			
 			case "green":
 			selected_array = green_array;
+			break;
+			
+			case "finnish":
+			selected_array = finnish_array;
 			break;
 			
 			default:
@@ -276,6 +281,10 @@ btn.onclick = function() {
 	p6.innerHTML = "Lime green";
 	preset_choice.appendChild(p6);
 	
+	var p7 = document.createElement("option");
+	p6.value = "finnish";
+	p6.innerHTML = "Finnish";
+	preset_choice.appendChild(p7);
 	
 	// We append the controls created to the modal and display it on screen
 	
