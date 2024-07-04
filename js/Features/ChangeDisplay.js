@@ -355,7 +355,7 @@ function hideParams(){
         func_str = func_str.substring(0,func_str.search("{}"));
         
 	// display required arguments on the panel
-	var params = ["height", "width", "iterations", "size", "order", "cropMethod", "kwidth", "knotchA", "knotchB", "lineplace", "linespace", "kposi", "kposlist", "subneighborhood"];
+	var params = ["height", "width", "iterations", "size", "order", "cropMethod", "kwidth", "knotchA", "knotchB", "knotchN", "lineplace", "linespace", "kposi", "kposlist", "subneighborhood"];
 	for(var i=0; i<params.length; i++){
 		if(func_str.includes(params[i])){
 			document.getElementById("p_" + params[i]).style="display:contents";

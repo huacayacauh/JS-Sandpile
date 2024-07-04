@@ -64,7 +64,6 @@
 						<option value="nfold_simple">n-fold</option>
 						<option value="GoldenOctogonalCutandproject">Golden octogonal (random shift)</option>
 						<option value="RauzyCutandproject">Rauzy (random shift)</option>
-						<option value="P0splitP3">Penrose P0 (triangles)</option>
 					</optgroup>
 					<optgroup label="Substitution: Penrose P2 (kite-dart)">
 						<option value="P2sunbysubst">Sun</option>
@@ -81,7 +80,9 @@
 						<option value="P3sunbysubstNeighNoThinThin">Sun with no-thin-thin neighborhood</option>
 						<option value="P3lasercut">Laser-cut (adds knotches+engravings)</option>
 					</optgroup>
-					<optgroup label="Substitution: Penrose P0 (from Robinson triangles)">
+					<optgroup label="Substitution: Penrose P0 (triangles)">
+						<option value="P0splitP3">from Sun P3 (rhombus) split</option>
+						<option value="P0splitP3lasercut">Laser-cut from Sun P3 (rhombus) split (pairs to be glued)</option>
 						<option value="penrose0">Half-kite</option>
 						<option value="HKKDPenrose">Half-kite P2 (kite-dart)</option>
 						<option value="HDKDPenrose">Half-dart P2 (kite-dart)</option>
@@ -176,6 +177,14 @@
 					<select id="knotchB">
 						<option value="trapezoid"> trapezoid </option>
 						<option value="claw"> claw </option>
+				  	    <option value="none"> none </option>
+					</select>
+				<br></span>
+
+				<span id="p_knotchN" style="display:none;">
+				Knotch type N :
+					<select id="knotchN">
+						<option value="teeth"> teeth </option>
 				  	    <option value="none"> none </option>
 					</select>
 				<br></span>
