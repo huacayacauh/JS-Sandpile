@@ -363,6 +363,13 @@ function hideParams(){
 			document.getElementById("p_" + params[i]).style="display:none";
 		}
 	}
+        // best knotch width for Penrose P0
+        if(func.includes("P0splitP3lasercut")){
+		document.getElementById("kwidth").value="0.06";
+        }
+        else{
+		document.getElementById("kwidth").value="0.2";
+        }
 		
 }
 

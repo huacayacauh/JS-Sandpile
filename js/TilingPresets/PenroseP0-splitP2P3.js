@@ -68,18 +68,13 @@ function P3split(tiles){
 // by side effect on the Array of Tile
 function P0fn(tiles){
   console.log("* find neighbors (using findNeighbors from SubstitutionAPI)");
-  // TODO FIXME
-  console.log("[CAUTION] P0fn not implemented yet : no neighbors");
-  /*
   resetAllNeighbors(tiles);
   let tilesdict = new Map(tiles.map(i => [id2key(i.id), i]));
   let neighbors2bounds = new Map();
-  for(let t of combinations(Array.from(Array(5).keys()),2)){
-    neighbors2bounds.set(id2key(t),default_neighbors2bounds(3));
-  }
+  neighbors2bounds.set('fat',default_neighbors2bounds(3));
+  neighbors2bounds.set('thin',default_neighbors2bounds(3));
   let fn=findNeighbors(tiles,tilesdict,neighbors2bounds);
   console.log("  found "+fn);
-  */
 }
 
 // decorate P0 tiles
@@ -200,7 +195,6 @@ Tiling.P0splitP3lasercut = function({width,height,iterations,knotchN,kwidth}={})
   P0fn(tiles);
   // add knotches+engravings
   console.log("laser cut: add knotches kwidth="+kwidth+" knotchN="+knotchN);
-  if(knotchN=="teeth"){
   tiles.forEach(tile => {
     let Ax=0;
     let Ay=0;
@@ -222,7 +216,13 @@ Tiling.P0splitP3lasercut = function({width,height,iterations,knotchN,kwidth}={})
         By=tile.bounds[1];
         Cx=tile.bounds[2];
         Cy=tile.bounds[3];
-        newbounds = P0knotches_fat1([Ax,Ay,Bx,By,Cx,Cy],kwidth);
+        switch(knotchN){
+          case "teeth":
+            newbounds = P0knotches_fat1([Ax,Ay,Bx,By,Cx,Cy],kwidth);
+            break;
+          default:
+            break;
+        }
         break;
       case "fat2":
         tile.sand = 4; // deco
@@ -232,7 +232,13 @@ Tiling.P0splitP3lasercut = function({width,height,iterations,knotchN,kwidth}={})
         By=tile.bounds[5];
         Cx=tile.bounds[2];
         Cy=tile.bounds[3];
-        newbounds = P0knotches_fat2([Ax,Ay,Bx,By,Cx,Cy],kwidth);
+        switch(knotchN){
+          case "teeth":
+            newbounds = P0knotches_fat2([Ax,Ay,Bx,By,Cx,Cy],kwidth);
+            break;
+          default:
+            break;
+        }
         break;
       case "thin1": // kevin: is my thin2
         tile.sand = 7; // deco
@@ -242,7 +248,13 @@ Tiling.P0splitP3lasercut = function({width,height,iterations,knotchN,kwidth}={})
         By=tile.bounds[5];
         Cx=tile.bounds[2];
         Cy=tile.bounds[3];
-        newbounds = P0knotches_thin2([Ax,Ay,Bx,By,Cx,Cy],kwidth);
+        switch(knotchN){
+          case "teeth":
+            newbounds = P0knotches_thin2([Ax,Ay,Bx,By,Cx,Cy],kwidth);
+            break;
+          default:
+            break;
+        }
         break;
       case "thin2": // kevin: is my thin1
         tile.sand = 8; // deco
@@ -252,7 +264,13 @@ Tiling.P0splitP3lasercut = function({width,height,iterations,knotchN,kwidth}={})
         By=tile.bounds[1];
         Cx=tile.bounds[2];
         Cy=tile.bounds[3];
-        newbounds = P0knotches_thin1([Ax,Ay,Bx,By,Cx,Cy],kwidth);
+        switch(knotchN){
+          case "teeth":
+            newbounds = P0knotches_thin1([Ax,Ay,Bx,By,Cx,Cy],kwidth);
+            break;
+          default:
+            break;
+        }
         break;
     /*
      * PREVIOUSLY from cut and project :
@@ -377,7 +395,6 @@ Tiling.P0splitP3lasercut = function({width,height,iterations,knotchN,kwidth}={})
     // update tile.bounds
     tile.bounds=newbounds;
   });
-  }
   // done: construct tiling
   console.log("done");
   return new Tiling(tiles);
