@@ -198,9 +198,19 @@ function tilingToSvgLaserCut(sandpile){
         segment.push(y1);
       }
       // remove segments for rounded corners
-      //TODO
+      // (these segments are unique hence exact, and also in the same order in tile.bounds and roundedCorners)
+      // TODO: optimize search...
+      let roundedcorner=false;
+      roundedCorners.forEach(rc => {
+        if(rc[0]==x1 && rc[1]==y1 && rc[2]==x2 && rc[3]==y2){
+          roundedcorner=true;
+          return;
+        }
+      });
       // add to list of segments
-      segments.push(segment);
+      if(!roundedcorner){
+        segments.push(segment);
+      }
     }
   });
   // sort the list of segments lexicographicaly
@@ -237,7 +247,7 @@ function tilingToSvgLaserCut(sandpile){
   // 1. tile segments
 
   // begin svg
-  svg += '<g stroke="black" stroke-width=".1">\n';
+  svg += '<g stroke="black" stroke-width=".1" fill="none">\n';
   
   // segments
   segments.forEach(seg => {
@@ -245,7 +255,15 @@ function tilingToSvgLaserCut(sandpile){
   });
 
   // rounded corners
-  // TODO
+  roundedCorners.forEach(rc => {
+    let Ax=rc[0];
+    let Ay=rc[1];
+    let Bx=rc[2];
+    let By=rc[3];
+    let angle=rc[4];
+    let radius=distance(Ax,Ay,Bx,By)/(2*Math.cos(angle/2));
+    svg += '<path d="M '+((Ax-x_min)*factor).toFixed(3)+' '+((Ay-y_min)*factor).toFixed(3)+' A '+(radius*factor).toFixed(3)+' '+(radius*factor).toFixed(3)+' 0 0 0 '+((Bx-x_min)*factor).toFixed(3)+' '+((By-y_min)*factor).toFixed(3)+'"/>\n';
+  });
 
   svg += "</g>\n";
 

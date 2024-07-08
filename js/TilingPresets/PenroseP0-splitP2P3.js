@@ -340,6 +340,7 @@ function P0knotches_thin2(bounds,kwidth,roundedcorners){
 // generate P0 from P3 sun substitution
 Tiling.P0splitP3lasercut = function({width,height,iterations,knotchN,kwidth,roundedcorners}={}){
   console.log("Generating Penrose P0 from P3 sun substitution...");
+  roundedCorners = []; // clear roundedCorners
   // generate P3 tiles
   tiles = P3tiles(iterations);
   // crop to rectangle now on P3, in order to have pairs of triangles to be glued together
