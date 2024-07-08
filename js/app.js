@@ -486,6 +486,7 @@ function drawTiling(){
 	selectedTile = null;
 	engravingArcs = [];
 	engravingLines = [];
+        roundedCorners = [];
 	
         // get buttons
 	cW = document.getElementById("cW").value;
