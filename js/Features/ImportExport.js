@@ -197,6 +197,8 @@ function tilingToSvgLaserCut(sandpile){
         segment.push(x1);
         segment.push(y1);
       }
+      // remove segments for rounded corners
+      //TODO
       // add to list of segments
       segments.push(segment);
     }
@@ -236,9 +238,15 @@ function tilingToSvgLaserCut(sandpile){
 
   // begin svg
   svg += '<g stroke="black" stroke-width=".1">\n';
+  
+  // segments
   segments.forEach(seg => {
     svg += '<line x1="'+((seg[0] - x_min)*factor).toFixed(3)+'" y1="'+((seg[1] - y_min)*factor).toFixed(3)+'" x2="'+((seg[2] - x_min)*factor).toFixed(3)+'" y2="'+((seg[3] - y_min)*factor).toFixed(3)+'"/>\n';
   });
+
+  // rounded corners
+  // TODO
+
   svg += "</g>\n";
 
   // 2. engravings from engravingArcs and engravingLines

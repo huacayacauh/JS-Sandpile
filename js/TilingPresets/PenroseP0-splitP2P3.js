@@ -105,7 +105,8 @@ Tiling.P0splitP3 = function({iterations}={}){
 }
 
 // return new bounds for the tile (fat1,fat2,thin1,thin2), with knotches
-function P0knotches_fat1(bounds,kwidth){
+// point are given CLOCKWISE
+function P0knotches_fat1(bounds,kwidth,roundedcorners){
   newbounds = [];
   let Ax=bounds[0];
   let Ay=bounds[1];
@@ -119,14 +120,52 @@ function P0knotches_fat1(bounds,kwidth){
   let AAx=AA[0], AAy=AA[1];
   let BBx=BB[0], BBy=BB[1];
   // push new bounds with knotches
-  newbounds.push(...knotchArrowM(1,Ax,Ay,Cx,Cy,kwidth));
-  newbounds.push(...knotchArrowM(3,Cx,Cy,Bx,By,kwidth));
+  let kside=[];
+  kside=knotchArrowM(1,Ax,Ay,Cx,Cy,kwidth);
+  if(roundedcorners>0){
+    let CAR=scalePoint(Cx,Cy,Ax,Ay,1-roundedcorners);
+    let CARx=CAR[0], CARy=CAR[1];
+    let CBR=scalePoint(Cx,Cy,Bx,By,1-roundedcorners);
+    let CBRx=CBR[0], CBRy=CBR[1];
+    let l=kside.length;
+    kside[l-2]=CARx;
+    kside[l-1]=CARy;
+    kside.push(CBRx,CBRy);
+    // segment CAR--CBR will be converted to svg arc
+    roundedCorners.push([CARx,CARy,CBRx,CBRy,3*Math.PI/5]);
+  }
+  newbounds.push(...kside);
+  kside=knotchArrowM(3,Cx,Cy,Bx,By,kwidth);
+  if(roundedcorners>0){
+    let BCR=scalePoint(Bx,By,Cx,Cy,1-roundedcorners);
+    let BCRx=BCR[0], BCRy=BCR[1];
+    let BAR=scalePoint(Bx,By,Ax,Ay,1-roundedcorners/phi);
+    let BARx=BAR[0], BARy=BAR[1];
+    let l=kside.length;
+    kside[l-2]=BCRx;
+    kside[l-1]=BCRy;
+    kside.push(BARx,BARy);
+    // segment BCR--BAR will be converted to svg arc
+    roundedCorners.push([BCRx,BCRy,BARx,BARy,Math.PI/5]);
+  }
+  newbounds.push(...kside);
   newbounds.push(BBx,BBy);
   newbounds.push(...knotchArrowF(4,BBx,BBy,AAx,AAy,kwidth));
-  newbounds.push(Ax,Ay);
+  if(roundedcorners>0){
+    let ABR=scalePoint(Ax,Ay,Bx,By,1-roundedcorners/phi);
+    let ABRx=ABR[0], ABRy=ABR[1];
+    let ACR=scalePoint(Ax,Ay,Cx,Cy,1-roundedcorners);
+    let ACRx=ACR[0], ACRy=ACR[1];
+    newbounds.push(ABRx,ABRy,ACRx,ACRy);
+    // segment ABR--ACR will be converted to svg arc
+    roundedCorners.push([ABRx,ABRy,ACRx,ACRy,Math.PI/5]);
+  }
+  else{
+    newbounds.push(Ax,Ay);
+  }
   return newbounds;
 }
-function P0knotches_fat2(bounds,kwidth){
+function P0knotches_fat2(bounds,kwidth,roundedcorners){
   newbounds = [];
   let Ax=bounds[0];
   let Ay=bounds[1];
@@ -140,14 +179,52 @@ function P0knotches_fat2(bounds,kwidth){
   let AAx=AA[0], AAy=AA[1];
   let BBx=BB[0], BBy=BB[1];
   // push new bounds with knotches
+  let kside=[];
   newbounds.push(AAx,AAy);
   newbounds.push(...knotchArrowM(4,AAx,AAy,BBx,BBy,kwidth));
-  newbounds.push(Bx,By);
-  newbounds.push(...knotchArrowF(3,Bx,By,Cx,Cy,kwidth));
-  newbounds.push(...knotchArrowF(1,Cx,Cy,Ax,Ay,kwidth));
+  if(roundedcorners>0){
+    let BAR=scalePoint(Bx,By,Ax,Ay,1-roundedcorners/phi);
+    let BARx=BAR[0], BARy=BAR[1];
+    let BCR=scalePoint(Bx,By,Cx,Cy,1-roundedcorners);
+    let BCRx=BCR[0], BCRy=BCR[1];
+    newbounds.push(BARx,BARy,BCRx,BCRy);
+    // segment BAR--BCR will be converted to svg arc
+    roundedCorners.push([BARx,BARy,BCRx,BCRy,Math.PI/5]);
+  }
+  else{
+    newbounds.push(Bx,By);
+  }
+  kside=knotchArrowF(3,Bx,By,Cx,Cy,kwidth);
+  if(roundedcorners>0){
+    let CBR=scalePoint(Cx,Cy,Bx,By,1-roundedcorners);
+    let CBRx=CBR[0], CBRy=CBR[1];
+    let CAR=scalePoint(Cx,Cy,Ax,Ay,1-roundedcorners);
+    let CARx=CAR[0], CARy=CAR[1];
+    let l=kside.length;
+    kside[l-2]=CBRx;
+    kside[l-1]=CBRy;
+    kside.push(CARx,CARy);
+    // segment CBR--CAR will be converted to svg arc
+    roundedCorners.push([CBRx,CBRy,CARx,CARy,3*Math.PI/5]);
+  }
+  newbounds.push(...kside);
+  kside=knotchArrowF(1,Cx,Cy,Ax,Ay,kwidth);
+  if(roundedcorners>0){
+    let ACR=scalePoint(Ax,Ay,Cx,Cy,1-roundedcorners);
+    let ACRx=ACR[0], ACRy=ACR[1];
+    let ABR=scalePoint(Ax,Ay,Bx,By,1-roundedcorners/phi);
+    let ABRx=ABR[0], ABRy=ABR[1];
+    let l=kside.length;
+    kside[l-2]=ACRx;
+    kside[l-1]=ACRy;
+    kside.push(ABRx,ABRy);
+    // segment ACR--ABR will be converted to svg arc
+    roundedCorners.push([ACRx,ACRy,ABRx,ABRy,Math.PI/5]);
+  }
+  newbounds.push(...kside);
   return newbounds;
 }
-function P0knotches_thin1(bounds,kwidth){
+function P0knotches_thin1(bounds,kwidth,roundedcorners){
   newbounds = [];
   let Ax=bounds[0];
   let Ay=bounds[1];
@@ -158,12 +235,52 @@ function P0knotches_thin1(bounds,kwidth){
   // short side (A--B) ratio
   let kwidthshort=kwidth*phi;
   // push new bounds with knotches
-  newbounds.push(...knotchArrowF(3,Ax,Ay,Cx,Cy,kwidth));
-  newbounds.push(...knotchArrowM(1,Cx,Cy,Bx,By,kwidth));
-  newbounds.push(...knotchArrowF(2,Bx,By,Ax,Ay,kwidthshort));
+  let kside=[];
+  kside=knotchArrowF(3,Ax,Ay,Cx,Cy,kwidth);
+  if(roundedcorners>0){
+    let CAR=scalePoint(Cx,Cy,Ax,Ay,1-roundedcorners);
+    let CARx=CAR[0], CARy=CAR[1];
+    let CBR=scalePoint(Cx,Cy,Bx,By,1-roundedcorners);
+    let CBRx=CBR[0], CBRy=CBR[1];
+    let l=kside.length;
+    kside[l-2]=CARx;
+    kside[l-1]=CARy;
+    kside.push(CBRx,CBRy);
+    // segment CAR--CBR will be converted to svg arc
+    roundedCorners.push([CARx,CARy,CBRx,CBRy,Math.PI/5]);
+  }
+  newbounds.push(...kside);
+  kside=knotchArrowM(1,Cx,Cy,Bx,By,kwidth);
+  if(roundedcorners>0){
+    let BCR=scalePoint(Bx,By,Cx,Cy,1-roundedcorners);
+    let BCRx=BCR[0], BCRy=BCR[1];
+    let BAR=scalePoint(Bx,By,Ax,Ay,1-roundedcorners/(phi-1));
+    let BARx=BAR[0], BARy=BAR[1];
+    let l=kside.length;
+    kside[l-2]=BCRx;
+    kside[l-1]=BCRy;
+    kside.push(BARx,BARy);
+    // segment BCR--BAR will be converted to svg arc
+    roundedCorners.push([BCRx,BCRy,BARx,BARy,2*Math.PI/5]);
+  }
+  newbounds.push(...kside);
+  kside=knotchArrowF(2,Bx,By,Ax,Ay,kwidthshort);
+  if(roundedcorners>0){
+    let ABR=scalePoint(Ax,Ay,Bx,By,1-roundedcorners/(phi-1));
+    let ABRx=ABR[0], ABRy=ABR[1];
+    let ACR=scalePoint(Ax,Ay,Cx,Cy,1-roundedcorners);
+    let ACRx=ACR[0], ACRy=ACR[1];
+    let l=kside.length;
+    kside[l-2]=ABRx;
+    kside[l-1]=ABRy;
+    kside.push(ACRx,ACRy);
+    // segment ABR--ACR will be converted to svg arc
+    roundedCorners.push([ABRx,ABRy,ACRx,ACRy,2*Math.PI/5]);
+  }
+  newbounds.push(...kside);
   return newbounds;
 }
-function P0knotches_thin2(bounds,kwidth){
+function P0knotches_thin2(bounds,kwidth,roundedcorners){
   newbounds = [];
   let Ax=bounds[0];
   let Ay=bounds[1];
@@ -174,14 +291,54 @@ function P0knotches_thin2(bounds,kwidth){
   // short side (A--B) ratio
   let kwidthshort=kwidth*phi;
   // push new bounds with knotches
-  newbounds.push(...knotchArrowM(2,Ax,Ay,Bx,By,kwidthshort));
-  newbounds.push(...knotchArrowF(1,Bx,By,Cx,Cy,kwidth));
-  newbounds.push(...knotchArrowM(3,Cx,Cy,Ax,Ay,kwidth));
+  let kside=[];
+  kside=knotchArrowM(2,Ax,Ay,Bx,By,kwidthshort);
+  if(roundedcorners>0){
+    let BAR=scalePoint(Bx,By,Ax,Ay,1-roundedcorners/(phi-1));
+    let BARx=BAR[0], BARy=BAR[1];
+    let BCR=scalePoint(Bx,By,Cx,Cy,1-roundedcorners);
+    let BCRx=BCR[0], BCRy=BCR[1];
+    let l=kside.length;
+    kside[l-2]=BARx;
+    kside[l-1]=BARy;
+    kside.push(BCRx,BCRy);
+    // segment BAR--BCR will be converted to svg arc
+    roundedCorners.push([BARx,BARy,BCRx,BCRy,2*Math.PI/5]);
+  }
+  newbounds.push(...kside);
+  kside=knotchArrowF(1,Bx,By,Cx,Cy,kwidth);
+  if(roundedcorners>0){
+    let CBR=scalePoint(Cx,Cy,Bx,By,1-roundedcorners);
+    let CBRx=CBR[0], CBRy=CBR[1];
+    let CAR=scalePoint(Cx,Cy,Ax,Ay,1-roundedcorners);
+    let CARx=CAR[0], CARy=CAR[1];
+    let l=kside.length;
+    kside[l-2]=CBRx;
+    kside[l-1]=CBRy;
+    kside.push(CARx,CARy);
+    // segment CBR--CAR will be converted to svg arc
+    roundedCorners.push([CBRx,CBRy,CARx,CARy,Math.PI/5]);
+  }
+  newbounds.push(...kside);
+  kside=knotchArrowM(3,Cx,Cy,Ax,Ay,kwidth);
+  if(roundedcorners>0){
+    let ACR=scalePoint(Ax,Ay,Cx,Cy,1-roundedcorners);
+    let ACRx=ACR[0], ACRy=ACR[1];
+    let ABR=scalePoint(Ax,Ay,Bx,By,1-roundedcorners/(phi-1));
+    let ABRx=ABR[0], ABRy=ABR[1];
+    let l=kside.length;
+    kside[l-2]=ACRx;
+    kside[l-1]=ACRy;
+    kside.push(ABRx,ABRy);
+    // segment ACR--ABR will be converted to svg arc
+    roundedCorners.push([ACRx,ACRy,ABRx,ABRy,2*Math.PI/5]);
+  }
+  newbounds.push(...kside);
   return newbounds;
 }
 
 // generate P0 from P3 sun substitution
-Tiling.P0splitP3lasercut = function({width,height,iterations,knotchN,kwidth}={}){
+Tiling.P0splitP3lasercut = function({width,height,iterations,knotchN,kwidth,roundedcorners}={}){
   console.log("Generating Penrose P0 from P3 sun substitution...");
   // generate P3 tiles
   tiles = P3tiles(iterations);
@@ -218,7 +375,7 @@ Tiling.P0splitP3lasercut = function({width,height,iterations,knotchN,kwidth}={})
         Cy=tile.bounds[3];
         switch(knotchN){
           case "teeth":
-            newbounds = P0knotches_fat1([Ax,Ay,Bx,By,Cx,Cy],kwidth);
+            newbounds = P0knotches_fat1([Ax,Ay,Bx,By,Cx,Cy],kwidth,roundedcorners);
             break;
           default:
             break;
@@ -234,7 +391,7 @@ Tiling.P0splitP3lasercut = function({width,height,iterations,knotchN,kwidth}={})
         Cy=tile.bounds[3];
         switch(knotchN){
           case "teeth":
-            newbounds = P0knotches_fat2([Ax,Ay,Bx,By,Cx,Cy],kwidth);
+            newbounds = P0knotches_fat2([Ax,Ay,Bx,By,Cx,Cy],kwidth,roundedcorners);
             break;
           default:
             break;
@@ -250,7 +407,7 @@ Tiling.P0splitP3lasercut = function({width,height,iterations,knotchN,kwidth}={})
         Cy=tile.bounds[3];
         switch(knotchN){
           case "teeth":
-            newbounds = P0knotches_thin2([Ax,Ay,Bx,By,Cx,Cy],kwidth);
+            newbounds = P0knotches_thin2([Ax,Ay,Bx,By,Cx,Cy],kwidth,roundedcorners);
             break;
           default:
             break;
@@ -266,7 +423,7 @@ Tiling.P0splitP3lasercut = function({width,height,iterations,knotchN,kwidth}={})
         Cy=tile.bounds[3];
         switch(knotchN){
           case "teeth":
-            newbounds = P0knotches_thin1([Ax,Ay,Bx,By,Cx,Cy],kwidth);
+            newbounds = P0knotches_thin1([Ax,Ay,Bx,By,Cx,Cy],kwidth,roundedcorners);
             break;
           default:
             break;

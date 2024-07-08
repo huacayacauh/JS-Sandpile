@@ -109,6 +109,8 @@ var check_copy = true; // Copy the tiling once in a while to see if it is stable
 var engravingArcs = []; // Array of [center-x, center-y, radius, start-angle-x, start-angle-y, end-angle-x, end-angle-y] where start and end bounds definiting the angle are given counterclockwise
 var engravingLines = []; // Array of [start-x, start-y, end-x, end-y]
 
+var roundedCorners = []; // Array of [Ax,Ay,Bx,By,angle] where (Ax,Ay)--(Bx,By) is a segment to be replaced with a rounded corner (CLOCKWISE), and angle is the original tile angle
+
 // ---------------------- Routines
 
 setInterval(colorSelected, 200); //		[ 4.2 ]
@@ -500,12 +502,13 @@ function drawTiling(){
 	var linespace = document.getElementById("linespace").valueAsNumber;
 	var kposi = document.getElementById("kposi").valueAsNumber;
 	var kposlist = document.getElementById("kposlist").value;
+        var roundedcorners = document.getElementById("roundedcorners").value;
 	var subneighborhood = document.getElementById("subneighborhood").valueAsNumber;
         // the most important...
 	preset = document.getElementById("TilingSelect").value;
 
         // prepare command and call the tiling generator
-	var command = "currentTiling = Tiling." + preset + "({height:cH, width:cW, iterations:nbIt, size:size, order:order, cropMethod:cropMethod, kwidth:kwidth, knotchA:knotchA, knotchB:knotchB, knotchN:knotchN, lineplace:lineplace, linespace:linespace, kposi:kposi, kposlist:kposlist, subneighborhood:subneighborhood})";
+	var command = "currentTiling = Tiling." + preset + "({height:cH, width:cW, iterations:nbIt, size:size, order:order, cropMethod:cropMethod, kwidth:kwidth, knotchA:knotchA, knotchB:knotchB, knotchN:knotchN, lineplace:lineplace, linespace:linespace, kposi:kposi, kposlist:kposlist, roundedcorners:roundedcorners, subneighborhood:subneighborhood})";
         console.log("BEGIN construct a new Tiling");
 	eval(command);
         console.log("END construct a new Tiling");

@@ -3,7 +3,7 @@
 
 // [1.0] geometric transformations of points
 
-// [1.1] scale point A towards point B by factor f (homothecy)
+// [1.1] scale point A towards point B by factor f (homothecy, f=1 no move, f=0 full move A to B)
 //       return the new coordinates for point A
 function scalePoint(xA, yA, xB, yB, f){
   return [ xB+(xA-xB)*f, yB+(yA-yB)*f ];
