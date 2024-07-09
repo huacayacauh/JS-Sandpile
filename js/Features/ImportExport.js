@@ -107,7 +107,10 @@ function tilingToSvg(sandpile){
     }
 
     // start generate svg as String
-    var svg = ['<?xml version="1.0" standalone="no"?> \n<svg width="' + ((x_max - x_min)*2).toFixed(3) + '" height="' + ((y_max-y_min)*2).toFixed(3) + '" version="1.1" xmlns="http://www.w3.org/2000/svg">\n'];
+    let factor = 10; // scaling factor
+    console.log("* generate svg string with scaling factor "+factor);
+
+    var svg = ['<?xml version="1.0" standalone="no"?> \n<svg width="' + ((x_max - x_min)*factor).toFixed(3) + '" height="' + ((y_max-y_min)*factor).toFixed(3) + '" version="1.1" xmlns="http://www.w3.org/2000/svg">\n'];
 
     if(wireFrameEnabled)
     	svg += '<g stroke="black" stroke-width=".1">\n';
@@ -118,7 +121,7 @@ function tilingToSvg(sandpile){
         var tile = sandpile.tiles[i];
 	var poly = '<polygon points="';
 	for(var j=0; j<tile.bounds.length; j+=2){
-	    poly += " " + ((tile.bounds[j] - x_min)*2).toFixed(3) + " " + ((tile.bounds[j+1] - y_min)*2).toFixed(3);
+	    poly += " " + ((tile.bounds[j] - x_min)*factor).toFixed(3) + " " + ((tile.bounds[j+1] - y_min)*factor).toFixed(3);
 	}
 	poly += '" fill="#'+tile.svg_color+'"/>\n';
 	svg += poly;
