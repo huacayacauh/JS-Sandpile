@@ -226,12 +226,23 @@
 
 				<!-- indicate which neighbors function to use -->
 				<span id="p_neighborFunc" style="display:none;">
-				Neighbor function :
-				<select id="neighborFunc">
-					<option title="One grain to each edge" value=0> To each edge </option>
-					<option title="One grain to each neighbor and edge in the void" value=1> To each neighbor </option>
-					<option title="One grain to each shared edge part and edge in the void" value=2> To each shared part </option>
+				<!-- Neighbor function : --> <!-- TODO Remove commented part-->
+				<!-- <select id="neighborFunc"> -->
+				<!-- 	<option title="Multineighbour : ON ; Neighborhood condition : full edge in common" value=0> Full edge only, multi-neighbour allowed </option> -->
+				<!-- 	<option title="NoMultiNeighbour ; Neighborhood condition : partial edge in common" value=1> To each neighbor </option> -->
+				<!-- 	<option title="Multinexghbour : On ; Neighorhood condition : partial edge in common" value=2> To each shared part </option> -->
+				<!-- </select><br /> -->
+				Neighbor multiplicity : <label class="switch" style="margin-top:5px">
+				                        <input type="checkbox" id="neighborMultiplicity" checked = "true">
+							<span class="slider round"></span>
+				</label> <br />
+				<!-- When Neighbor Multiplicity is ON tiles can be multiply neighbbor, that is if t1 and t2 share n edges, then when t1 toples it gives n grains of sand to t2.
+				     When Neighbor Multiplicity is OFF tiles can be neighbor only once, that is if t1 and t2 share n \geq 1 edges, then when t1 topples it gives only 1 grain of sand to t2-->
+				Neighbor condition : <select id="neighborCondition">
+				  <option value="fullEdge"> Full edge only </option>
+				  <option value="partialEdge"> Partial edge </option>
 				</select>
+				<!-- FIXME propagate modifications to app.js SubstitutionAPI.js et TilingPreset/AmmannA3.js -->
 				<br></span>
 			</div>
 		</div> <!-- Main controls  -->

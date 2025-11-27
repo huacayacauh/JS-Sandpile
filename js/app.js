@@ -500,12 +500,13 @@ function drawTiling(){
 	var kposi = document.getElementById("kposi").valueAsNumber;
 	var kposlist = document.getElementById("kposlist").value;
 	var subneighborhood = document.getElementById("subneighborhood").valueAsNumber;
-	var neighborFunc = document.getElementById("neighborFunc").value;
+        var neighborMultiplicity = document.getElementById("neighborMultiplicity").checked;
+        var neighborCondition = document.getElementById("neighborCondition").value;
         // the most important...
 	preset = document.getElementById("TilingSelect").value;
 
         // prepare command and call the tiling generator
-	var command = "currentTiling = Tiling." + preset + "({height:cH, width:cW, iterations:nbIt, size:size, order:order, cropMethod:cropMethod, kwidth:kwidth, knotchA:knotchA, knotchB:knotchB, lineplace:lineplace, linespace:linespace, kposi:kposi, kposlist:kposlist, subneighborhood:subneighborhood, neighborFunc:neighborFunc})";
+        var command = "currentTiling = Tiling." + preset + "({height:cH, width:cW, iterations:nbIt, size:size, order:order, cropMethod:cropMethod, kwidth:kwidth, knotchA:knotchA, knotchB:knotchB, lineplace:lineplace, linespace:linespace, kposi:kposi, kposlist:kposlist, subneighborhood:subneighborhood, neighborMultiplicity:neighborMultiplicity, neighborCondition:neighborCondition})";
         console.log("BEGIN construct a new Tiling");
 	eval(command);
         console.log("END construct a new Tiling");

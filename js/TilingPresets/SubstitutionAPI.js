@@ -458,10 +458,11 @@ function buildSegments(segmentsMap, tiles, n2b){
   return segments;
 }
 
-function findNeighbors(tiles, tilesdict, n2b){
+function findNeighbors(tiles, tilesdict, n2b, neighborMultiplicity){
+    //
+    // n2b = neighbour-to-bounds
   var segmentsMap = new Map();
   var segments = buildSegments(segmentsMap, tiles, n2b);
-
   // sort the list of segments lexicographicaly
   // takes into account rounding errors (up to p_error)
   segments.sort(function(s1,s2){
@@ -479,8 +480,17 @@ function findNeighbors(tiles, tilesdict, n2b){
       && distance(segments[i][2],segments[i][3],segments[i+1][2],segments[i+1][3])<p_error){
       // found two identical segments => set neighbors
       fn++;
-      let ts1=segmentsMap.get(segment2key(segments[i]));
-      let ts2=segmentsMap.get(segment2key(segments[i+1]));
+      let ts1 = segmentsMap.get(segment2key(segments[i]));
+      let ts2 = segmentsMap.get(segment2key(segments[i+1]));
+      let t1 = tilesdict.get(id2key(ts1.id))
+      let t2 = tilesdict.get(id2key(ts2.id))
+      if (!neighborMultiplicity) {
+	  let alreadyNeighbor = tilesdict.get(id2key(ts1.id)).neighbors.includes(ts2.id);
+	  if(alreadyNeighbor) {
+	      t1.neighbors[ts1.nindex] = t1.neighbors[ts1.nindex] == undefined ? -1 : t1.neighbors[ts1.nindex]; // setting t1.neighbors[ts1.nindex] to -1 if it is undefined
+              t2.neighbors[ts2.nindex] = t2.neighbors[ts2.nindex] == undefined ? -1 : t2.neighbors[ts2.nindex];
+	      continue;}  // if t1 and t2 are already neighbors, skip to next iteration
+      }
       tilesdict.get(id2key(ts1.id)).neighbors[ts1.nindex] = ts2.id;
       tilesdict.get(id2key(ts2.id)).neighbors[ts2.nindex] = ts1.id;
       // i+1 already set
@@ -491,10 +501,8 @@ function findNeighbors(tiles, tilesdict, n2b){
   return fn; // side effect
 }
 
-// Default : tile sends one sand to each bound, limit = number of bounds
-// typeOfSand : 1 -> one sand to each neighbor
-//              2 -> one sand for each shared bound
-function findNeighborsModified(tiles, tilesdict, n2b, typeOfSand){
+// Finding Neighbors in the case where neighborhood condition is 'partialEdge'
+function findNeighborsPartialEdge(tiles, tilesdict, n2b, neighborMultiplicity){
   var segmentsMap = new Map();
   var segments = buildSegments(segmentsMap, tiles, n2b);
 
@@ -546,8 +554,6 @@ function findNeighborsModified(tiles, tilesdict, n2b, typeOfSand){
     else
       slopesMap.set(slope, [[segments[i]]]);   
   }
-
-
   // Inside each subarray A, create the neighbor link between A[0] and A[j] (j between 1 and A.length - 1) if
   // A.length > 1, if this link does not exist already.
   // For the moment, as the tile's number of neighbors is given at the beginning, and
@@ -568,7 +574,7 @@ function findNeighborsModified(tiles, tilesdict, n2b, typeOfSand){
           let neighb2 = tilesdict.get(id2key(ts2.id)).neighbors;
 
           let notAlreadyNeighbor = !tilesdict.get(id2key(ts1.id)).neighbors.includes(ts2.id);
-          if(notAlreadyNeighbor || typeOfSand == 2){
+          if(notAlreadyNeighbor || neighborMultiplicity){
             if(neighb1[ts1.nindex] == undefined)
               neighb1[ts1.nindex] = ts2.id;
             else
@@ -588,10 +594,10 @@ function findNeighborsModified(tiles, tilesdict, n2b, typeOfSand){
     }
   }
 
-  // 1 : limit = number of empty bounds (undefined) + number of neighbors (x not in {-1, undefined}).
-  // 2 : limit = number of empty bounds (undefined) + number of connections.
+ // if neighborMultiplicity : number of neighbors
+ // if !neighborMultiplicity : number of neighbors (x not in {-1, undefined}).
   for (let tile of tilesdict.values()){
-    tile.limit = typeOfSand == 1 ? tile.neighbors.filter(x => x !== -1).length : tile.neighbors.length;
+      tile.limit = neighborMultiplicity ? tile.neighbors.length : tile.neighbors.filter(x => x !== -1).length ;
   }
   // done
   return fn; // side effect
@@ -653,7 +659,7 @@ function resetAllNeighbors(tiles){
 //
 // }
 // 
-function substitute(iterations,tiles,ratio,mysubstitution,mydupinfos,mydupinfosoriented,myneighbors,findNeighbors_option=false,mydecoration_option=false,findNeighbors_type=0){
+function substitute(iterations,tiles,ratio,mysubstitution,mydupinfos,mydupinfosoriented,myneighbors,findNeighbors_option=false,mydecoration_option=false,findNeighborCondition="fullEdge", findNeighborMultiplicity=true){
   // lazy? discover base neighbors
   if(typeof(myneighbors)=="string"){
     // check that findNeighbors_option is set
@@ -661,23 +667,21 @@ function substitute(iterations,tiles,ratio,mysubstitution,mydupinfos,mydupinfoso
       console.log("error: please provide some neighbors2bounds according to your dupinfos/dupinfosoriented, even if you are lazy.");
       return tiles;
     }
-    // check that findNeighbors_type is set
-    if(findNeighbors_type != 0 && findNeighbors_type != 1 && findNeighbors_type != 2){
-      console.log("error : please provide an integer value for the sand spreading "
-      + "\n(0 -> neighbors for same bounds, \n1 -> one sand for each share bound, \n2 -> one sand for each neighbor).");
-      return tiles;
-    }
-    let lazyInfo = findNeighbors_type == 0 ? "(neighbors for same bounds)" : findNeighbors_type == 1 ? "(one sand for each neighbor)" : "(one sand for each shared bound)";
-    console.log("lazy: compute base neighbors " + lazyInfo);
-    // reset then find neighbors
+    console.log("lazy: compute base neighbors ");
+    // reset then find neighbors_type
     resetAllNeighbors(tiles);
     let tilesdict = new Map(tiles.map(i => [id2key(i.id), i]));
     let fn = 0;
-    if (findNeighbors_type == 0)
-      fn = findNeighbors(tiles, tilesdict, findNeighbors_option);
-    else if (findNeighbors_type == 1 || findNeighbors_type == 2)
-      fn = findNeighborsModified(tiles,tilesdict,findNeighbors_option,findNeighbors_type);
-    console.log("  found "+fn);
+      if (findNeighborCondition == "fullEdge") {
+	  fn = findNeighbors(tiles, tilesdict, findNeighbors_option, findNeighborMultiplicity);
+      }
+      else if (findNeighborCondition == "partialEdge") {
+      fn = findNeighborsPartialEdge(tiles,tilesdict,findNeighbors_option,findNeighborMultiplicity ); 
+      }
+      else {
+	  console.log("unknown Neighborhood Condition");
+      }
+      console.log("  found "+fn);
   }
   // scale the base tiling all at once
   tiles.forEach(tile => tile.scale(0,0,ratio**iterations));
@@ -711,10 +715,12 @@ function substitute(iterations,tiles,ratio,mysubstitution,mydupinfos,mydupinfoso
     if(findNeighbors_option != false){
       console.log("* compute neighbors (global)");
       let fn = 0;
-      if (findNeighbors_type == 0)
-        fn = findNeighbors(newtiles, newtilesdict, findNeighbors_option);
-      else if (findNeighbors_type == 1 || findNeighbors_type == 2)
-        fn = findNeighborsModified(newtiles, newtilesdict,findNeighbors_option,findNeighbors_type);
+      if (findNeighborCondition == "fullEdge")
+          fn = findNeighbors(newtiles, newtilesdict, findNeighbors_option, findNeighborMultiplicity);
+      else if (findNeighborCondition == "partialEdge")
+        fn = findNeighborsPartialEdge(newtiles, newtilesdict,findNeighbors_option,findNeighborMultiplicity);
+      else
+	console.log('unknown Neighborhood Condition');
       console.log("  found "+fn);
     }
     // update tiles

@@ -728,7 +728,8 @@ decorateA3.set('ten270',2);
 //
 // [7.1] construct "Ammann A3 by subst" tiling by substitution
 // 
-Tiling.A3bysubst = function({iterations,neighborFunc}={}){
+Tiling.A3bysubst = function({iterations,neighborMultiplicity,neighborCondition}={}){
+  // neighborFunc
   var tiles = [];
   var mySix0 = six0.myclone();
   var mySix90 = six90.myclone();
@@ -757,7 +758,8 @@ Tiling.A3bysubst = function({iterations,neighborFunc}={}){
     "I am lazy", // myneighbors
     neighbors2boundsA3,
     decorateA3,
-    neighborFunc // which function to use
+    neighborCondition, // neighborhood condition is "fullEdge" or "partialEdge"
+    neighborMultiplicity // neighborhood multiplicity (bool)
   );
   // construct tiling
   return new Tiling(tiles);
