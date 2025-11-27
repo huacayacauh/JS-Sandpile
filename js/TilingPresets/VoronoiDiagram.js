@@ -133,17 +133,19 @@ TODO: Let the user close the Voronoi cells, do not do it automatically. Not only
 
 // ---------------------------------------------------------------------------
 
-function VoronoiDiagram() {
-    this.vertices = null;
-    this.edges = null;
-    this.cells = null;
-    this.toRecycle = null;
-    this.beachsectionJunkyard = [];
-    this.circleEventJunkyard = [];
-    this.vertexJunkyard = [];
-    this.edgeJunkyard = [];
-    this.cellJunkyard = [];
-    }
+class VoronoiDiagram {
+    constructor(){
+        this.vertices = null;
+        this.edges = null;
+        this.cells = null;
+        this.toRecycle = null;
+        this.beachsectionJunkyard = [];
+        this.circleEventJunkyard = [];
+        this.vertexJunkyard = [];
+        this.edgeJunkyard = [];
+        this.cellJunkyard = [];
+    } 
+}
 
 // ---------------------------------------------------------------------------
 
@@ -1677,16 +1679,101 @@ VoronoiDiagram.prototype.recycle = function(diagram) {
 
 //Voronoi.prototype.compute = function(sites, bbox) {
 Tiling.voronoiDiagram = function({width,height,size}={}){
-    // to measure execution time
-    var startTime = new Date();
+    VoronoiDiagram.prototype.compute = function(sites, bbox){
+        // to measure execution time
+        var startTime = new Date();
 
-    // init internal state
-    //this.reset();
-    
+        // init internal state
+        this.reset();
+
+        // any diagram data available for recycling?
+        // I do that here so that this is included in execution time
+        if ( this.toRecycle ) {
+            this.vertexJunkyard = this.vertexJunkyard.concat(this.toRecycle.vertices);
+            this.edgeJunkyard = this.edgeJunkyard.concat(this.toRecycle.edges);
+            this.cellJunkyard = this.cellJunkyard.concat(this.toRecycle.cells);
+            this.toRecycle = null;
+            }
+
+        // Initialize site event queue
+        var siteEvents = sites.slice(0);
+        siteEvents.sort(function(a,b){
+            var r = b.y - a.y;
+            if (r) {return r;}
+            return b.x - a.x;
+            });
+
+        // process queue
+        var site = siteEvents.pop(),
+            siteid = 0,
+            xsitex, // to avoid duplicate sites
+            xsitey,
+            cells = this.cells,
+            circle;
+
+        // main loop
+        for (;;) {
+            // we need to figure whether we handle a site or circle event
+            // for this we find out if there is a site event and it is
+            // 'earlier' than the circle event
+            circle = this.firstCircleEvent;
+
+            // add beach section
+            if (site && (!circle || site.y < circle.y || (site.y === circle.y && site.x < circle.x))) {
+                // only if site is not a duplicate
+                if (site.x !== xsitex || site.y !== xsitey) {
+                    // first create cell for new site
+                    cells[siteid] = this.createCell(site);
+                    site.voronoiId = siteid++;
+                    // then create a beachsection for that site
+                    this.addBeachsection(site);
+                    // remember last site coords to detect duplicate
+                    xsitey = site.y;
+                    xsitex = site.x;
+                    }
+                site = siteEvents.pop();
+                }
+
+            // remove beach section
+            else if (circle) {
+                this.removeBeachsection(circle.arc);
+                }
+
+            // all done, quit
+            else {
+                break;
+                }
+            }
+
+        // wrapping-up:
+        //   connect dangling edges to bounding box
+        //   cut edges as per bounding box
+        //   discard edges completely outside bounding box
+        //   discard edges which are point-like
+        this.clipEdges(bbox);
+
+        //   add missing edges in  to close opened cells
+        this.closeCells(bbox);
+
+        // to measure execution time
+        var stopTime = new Date();
+
+        // prepare return values
+        var diagram = new this.Diagram();
+        diagram.cells = this.cells;
+        diagram.edges = this.edges;
+        diagram.vertices = this.vertices;
+        diagram.execTime = stopTime.getTime()-startTime.getTime();
+
+        // clean up
+        this.reset();
+
+        return diagram;
+    }
+   
     // xl, xr means x left, x right
     // yt, yb means y top, y bottom
     var bbox = {xl:-width/2, xr:width/2, yt:height/2, yb:-height/2};	// Cadre dimensions
-    var voronoi = new VoronoiDiagram();
     // pass an object which exhibits xl, xr, yt, yb properties. The bounding
     // box will be used to connect unbound edges, and to close open cells
 
@@ -1702,104 +1789,20 @@ Tiling.voronoiDiagram = function({width,height,size}={}){
     frame.push(bbox.xl,bbox.yt);
 	
 	tils.push(new Tile([bbox.xl,bbox.xr,bbox.yt,bbox.yb], [], frame, 4));
-	
 	// création des points
 	for (let i = 0; i < size; i++){
 		sites.push({x:Math.random() * (bbox.xr - bbox.xl) + bbox.xl,y:Math.random() * (bbox.yt - bbox.yb) + bbox.yb});
 	}
-	console.log(sites);
 	
 	sites.forEach((element) => tils.push(sqTile(element.x, element.y)));
+
     console.log(tils);
-    
-    return new Tiling(tils);
-
-
-
-
-    // any diagram data available for recycling?
-    // I do that here so that this is included in execution time
-    if ( this.toRecycle ) {
-        this.vertexJunkyard = this.vertexJunkyard.concat(this.toRecycle.vertices);
-        this.edgeJunkyard = this.edgeJunkyard.concat(this.toRecycle.edges);
-        this.cellJunkyard = this.cellJunkyard.concat(this.toRecycle.cells);
-        this.toRecycle = null;
-        }
-
-    // Initialize site event queue
-    var siteEvents = sites.slice(0);
-    siteEvents.sort(function(a,b){
-        var r = b.y - a.y;
-        if (r) {return r;}
-        return b.x - a.x;
-        });
-
-    // process queue
-    var site = siteEvents.pop(),
-        siteid = 0,
-        xsitex, // to avoid duplicate sites
-        xsitey,
-        cells = this.cells,
-        circle;
-
-    // main loop
-    for (;;) {
-        // we need to figure whether we handle a site or circle event
-        // for this we find out if there is a site event and it is
-        // 'earlier' than the circle event
-        circle = this.firstCircleEvent;
-
-        // add beach section
-        if (site && (!circle || site.y < circle.y || (site.y === circle.y && site.x < circle.x))) {
-            // only if site is not a duplicate
-            if (site.x !== xsitex || site.y !== xsitey) {
-                // first create cell for new site
-                cells[siteid] = this.createCell(site);
-                site.voronoiId = siteid++;
-                // then create a beachsection for that site
-                this.addBeachsection(site);
-                // remember last site coords to detect duplicate
-                xsitey = site.y;
-                xsitex = site.x;
-                }
-            site = siteEvents.pop();
-            }
-
-        // remove beach section
-        else if (circle) {
-            this.removeBeachsection(circle.arc);
-            }
-
-        // all done, quit
-        else {
-            break;
-            }
-        }
-
-    // wrapping-up:
-    //   connect dangling edges to bounding box
-    //   cut edges as per bounding box
-    //   discard edges completely outside bounding box
-    //   discard edges which are point-like
-    this.clipEdges(bbox);
-
-    //   add missing edges in  to close opened cells
-    this.closeCells(bbox);
-
-    // to measure execution time
-    var stopTime = new Date();
-
-    // prepare return values
-    var diagram = new this.Diagram();
-    diagram.cells = this.cells;
-    diagram.edges = this.edges;
-    diagram.vertices = this.vertices;
-    diagram.execTime = stopTime.getTime()-startTime.getTime();
-
-    // clean up
-    this.reset();
-	console.log(edges);
-    //return diagram;
+    var voronoi = new VoronoiDiagram();
+    var diagram = voronoi.compute(sites, bbox);
+    console.log(diagram.vertices);
+    for (var i = 1 ; i < diagram.vertices.length ; i+=2){
+        tils.push(new Tile(['line'+i],[],[diagram.vertices[i-1].x, diagram.vertices[i-1].y, diagram.vertices[i].x, diagram.vertices[i].y],4))
+    }
     return new Tiling(tils);
     };
 

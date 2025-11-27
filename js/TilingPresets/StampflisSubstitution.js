@@ -1,3 +1,6 @@
+// This code is part of JS-Sandpile (https://github.com/huacayacauh/JS-Sandpile/)
+// CC-BY Coline Besson
+
 // Stampfli's 12-fold 1
 // substitution described at
 // https://tilings.math.uni-bielefeld.de/substitution/stampflis-12-fold-1/
@@ -115,7 +118,6 @@ Tile.prototype.los2equi = function(){
 	this.limit = 3;
 }
   
-
 //
 // [2] define substitution P2
 //
@@ -772,13 +774,13 @@ function substitutionSt(tile){
       
 
     default:
-      // all tiles should be equi or iso
-      console.log("caution: undefined tile type for substitutionP2, id="+tile.id);
+      // all tiles should be square, triangle or rhombus
+      console.log("caution: undefined tile type for substitutionSt, id="+tile.id);
   }
 }
 
 //
-// [3] defined duplicated tile informations P2
+// [3] defined duplicated tile informations St
 //
 
 var duplicatedSt = [];
@@ -923,6 +925,7 @@ Tiling.stampflisSubstitution = function({iterations}={}){
     var mycar = car.myclone();
     mycar.id.push(0);
     tiles.push(mycar);
+    
     // call the substitution
     tiles = substitute(
       iterations,

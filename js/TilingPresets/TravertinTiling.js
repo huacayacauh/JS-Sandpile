@@ -1,10 +1,8 @@
 Tiling.travertinTiling = function({width, height}={}){
-	// Creates a Tiling corresponding to a square Tiling of dimensions width, height
-	
 	var tils = [];
 	
-	for(var j = 0; j < width; j++){ // -->
-		for(var i = 0; i < height; i++){ // |^
+	for(var j = 0; j < width; j++){
+		for(var i = 0; i < height; i++){
 			if (j%6 == 0 && i%6 == 2){
 				tils.push(smallSquare1(j, i, width, height));
 			}
@@ -49,8 +47,6 @@ Tiling.travertinTiling = function({width, height}={}){
 
 
 function smallSquare1(x, y, width, height){
-	// Creates the Tile in position x, y of a square Tiling
-
 	var id = [x, y];
 	
 	var neighbors = [];
