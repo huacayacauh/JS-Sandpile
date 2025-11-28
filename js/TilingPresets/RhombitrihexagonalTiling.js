@@ -129,31 +129,12 @@ function rhombiDownTriangle(xHalf, xHalfSqrt3, yHalf, yHalfSqrt3){
 }
 
 Tiling.rhombTriHex = function({size} = {}){
-  
-    
     var tiles = [];
-
-    // Default shapes
-    tiles.push(rhombiHexagon(0, 0, 0, 0));
-    //tiles.push(rhombiSideSquare(-1, -1,  0, 0));
-    tiles.push(rhombiSideSquare(1, 1,  0, 0));
-
-    tiles.push(rhombiLeftSquare(0, 0, 2, 0));
-    //tiles.push(rhombiLeftSquare(1, 1, -1, -1));
-
-    tiles.push(rhombiRightSquare(0, 0, 2, 0));
-    //tiles.push(rhombiRightSquare(-1, -1, -1, -1));
-
-    //tiles.push(rhombiUpTriangle(-2, -1, 1, 0));
-    tiles.push(rhombiUpTriangle(0, 1, 1, 0));
-    //tiles.push(rhombiUpTriangle(-1, 0, -2, -1));
-
-    //tiles.push(rhombiDownTriangle(-2, -1, -1, 0));
-    //tiles.push(rhombiDownTriangle(0, 1, -1, 0));
-    tiles.push(rhombiDownTriangle(-1, 0, 2, 1));
-
-    for (let j = 1 - size  ; j < size ; j++){
-	for (let i = 1  - size  ; i < size; i++){
+    // simplified generation method
+    var offset = size - 1 ;
+    for (let j = 1 - size  ; j < size; j++){
+	for (let i = 1 - size ; i < size; i++){
+	    console.log('debugging rhombitrihexagonal ', i,j)
 	    tiles.push(rhombiHexagon(2*i-j,2*i-j,3*j,j));
 	    tiles.push(rhombiSideSquare(2*i-j+1, 2*i-j+1,3*j,j));
 	    tiles.push(rhombiLeftSquare(2*i-j,2*i-j,3*j+2,j));
@@ -161,8 +142,21 @@ Tiling.rhombTriHex = function({size} = {}){
 	    tiles.push(rhombiUpTriangle(2*i-j,2*i-j+1,3*j+1,j));
 	    tiles.push(rhombiDownTriangle(2*i-j-1,2*i-j,3*j+2,j+1));
 	}}
-    
-
+    // // Old generation method
+    // // Default shapes
+    // tiles.push(rhombiHexagon(0, 0, 0, 0));
+    // tiles.push(rhombiSideSquare(-1, -1,  0, 0));
+    // tiles.push(rhombiSideSquare(1, 1,  0, 0));
+    // tiles.push(rhombiLeftSquare(0, 0, 2, 0));
+    // tiles.push(rhombiLeftSquare(1, 1, -1, -1));
+    // tiles.push(rhombiRightSquare(0, 0, 2, 0));
+    // tiles.push(rhombiRightSquare(-1, -1, -1, -1));
+    // tiles.push(rhombiUpTriangle(-2, -1, 1, 0));
+    // tiles.push(rhombiUpTriangle(0, 1, 1, 0));
+    // tiles.push(rhombiUpTriangle(-1, 0, -2, -1));
+    // tiles.push(rhombiDownTriangle(-2, -1, -1, 0));
+    // tiles.push(rhombiDownTriangle(0, 1, -1, 0));
+    // tiles.push(rhombiDownTriangle(-1, 0, 2, 1));
     // for (let i = 1 ; i <= size ; i++){
     //     tiles.push(rhombiHexagon(-i, -i, 3*i, i)); // up left hexagon
     //     tiles.push(rhombiUpTriangle(-(i + 2), -(i + 1), 3*i + 1, i)); // left of up left Zhexagon
