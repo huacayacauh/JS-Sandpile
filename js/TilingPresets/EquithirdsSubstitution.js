@@ -16,14 +16,14 @@ var sqrt3 = Math.sqrt(3);
 // [1] define tile types Eq
 //
 
-// equi
+// equi : equilateral triangle
 var bounds = [];
 bounds.push(-0.5,-0.5*(sqrt3/3)); // left
 bounds.push(0.5,-0.5*(sqrt3/3)); // right
 bounds.push(0,sqrt3/3); // up
 var equi = new Tile(['equi'],[],bounds,3);
 
-// iso
+// iso : isoceles triangle
 var bounds = [];
 bounds.push(-(sqrt3/2),-0.5/2);
 bounds.push((sqrt3/2),-0.5/2);
@@ -62,75 +62,61 @@ Tile.prototype.iso2equi = function(){
 function substitutionEq(tile){
   switch(tile.id[0]){
     case 'equi':
-      //
       // -------------------------------
-      // equi substitution -> 3 iso
+      // substitution σ : equi -> 3 iso
       // -------------------------------
-      //
       var newtiles = [];
-
-	  // new iso 1 (bas)
-	  var newiso1 = tile.myclone();
-	  newiso1.equi2iso();
-	  newiso1.id.push('iso1');
-	  newiso1.scale(tile.bounds[0],tile.bounds[1],1/(sqrt3));
+      // new iso 1 (down)
+      var newiso1 = tile.myclone();
+      newiso1.equi2iso();
+      newiso1.id.push('iso1');
+      newiso1.scale(tile.bounds[0],tile.bounds[1],1/(sqrt3));
       newtiles.push(newiso1);
-
-	  // new iso 2 (droit)
-	  var newiso2 = tile.myclone();
-	  newiso2.equi2iso();
-	  newiso2.id.push('iso2');
-	  newiso2.scale(tile.bounds[0],tile.bounds[1],1/(sqrt3));
-	  newiso2.rotate(tile.bounds[0],tile.bounds[1],2*Math.PI/3);
+      // new iso 2 (right)
+      var newiso2 = tile.myclone();
+      newiso2.equi2iso();
+      newiso2.id.push('iso2');
+      newiso2.scale(tile.bounds[0],tile.bounds[1],1/(sqrt3));
+      newiso2.rotate(tile.bounds[0],tile.bounds[1],2*Math.PI/3);
       newiso2.shift(newiso1.bounds[2]-newiso1.bounds[0],newiso1.bounds[3]-newiso1.bounds[1]);
       newtiles.push(newiso2);
-
-	  // new iso 3 (left)
-	  var newiso3 = tile.myclone();
-	  newiso3.equi2iso();
-	  newiso3.id.push('iso3');
-	  newiso3.scale(tile.bounds[0],tile.bounds[1],1/(sqrt3));
-	  newiso3.rotate(tile.bounds[0],tile.bounds[1],-2*Math.PI/3);
+      // new iso 3 (left)
+      var newiso3 = tile.myclone();
+      newiso3.equi2iso();
+      newiso3.id.push('iso3');
+      newiso3.scale(tile.bounds[0],tile.bounds[1],1/(sqrt3));
+      newiso3.rotate(tile.bounds[0],tile.bounds[1],-2*Math.PI/3);
       newiso3.shift(newiso3.bounds[0]-newiso3.bounds[2],newiso3.bounds[1]-newiso3.bounds[3]);
       newtiles.push(newiso3);
-
-      // done
       return newtiles;
       break;
 
     case 'iso':
-      //
       // -------------------------------
-      // iso substitution -> 2 iso, 1 equi
+      // substitution σ : iso -> 2 iso, 1 equi
       // -------------------------------
-      //
-      var newtiles = [];
-      
-	  // new iso 1 (left)
-	  var newiso4 = tile.myclone();
-	  newiso4.id.push('iso4');
-	  newiso4.scale(tile.bounds[0],tile.bounds[1],1/(sqrt3));
-	  newiso4.rotate(tile.bounds[0],tile.bounds[1],((7*Math.PI)/6));
-	  newiso4.shift(newiso4.bounds[0]-newiso4.bounds[2],newiso4.bounds[1]-newiso4.bounds[3]);
+      var newtiles = [];     
+      // new iso 1 (left)
+      var newiso4 = tile.myclone();
+      newiso4.id.push('iso4');
+      newiso4.scale(tile.bounds[0],tile.bounds[1],1/(sqrt3));
+      newiso4.rotate(tile.bounds[0],tile.bounds[1],((7*Math.PI)/6));
+      newiso4.shift(newiso4.bounds[0]-newiso4.bounds[2],newiso4.bounds[1]-newiso4.bounds[3]);
       newtiles.push(newiso4);
-
-	  // new iso 2 (droit) 
-	  var newiso5 = tile.myclone();
-	  newiso5.id.push('iso5');
-	  newiso5.scale(tile.bounds[0],tile.bounds[1],1/(sqrt3));
-	  newiso5.rotate(tile.bounds[0],tile.bounds[1],(5*Math.PI)/6);
+      // new iso 2 (right) 
+      var newiso5 = tile.myclone();
+      newiso5.id.push('iso5');
+      newiso5.scale(tile.bounds[0],tile.bounds[1],1/(sqrt3));
+      newiso5.rotate(tile.bounds[0],tile.bounds[1],(5*Math.PI)/6);
       newiso5.shift((newiso5.bounds[0]-newiso5.bounds[4])*3,(newiso5.bounds[1]-newiso5.bounds[5])*3);
       newtiles.push(newiso5);
-
-	  // new equi 1 (bas)
-	  var newequi1 = tile.myclone();
-	  newequi1.iso2equi();
-	  newequi1.id.push('equi1');
-	  newequi1.scale(tile.bounds[0],tile.bounds[1],1/(sqrt3));
+      // new equi 1 (down)
+      var newequi1 = tile.myclone();
+      newequi1.iso2equi();
+      newequi1.id.push('equi1');
+      newequi1.scale(tile.bounds[0],tile.bounds[1],1/(sqrt3));
       newequi1.shift(newequi1.bounds[2]-newequi1.bounds[0],newequi1.bounds[3]-newequi1.bounds[1]);
       newtiles.push(newequi1);
-
-      // done
       return newtiles;
       break;
 
@@ -171,7 +157,7 @@ decorateEq.set('iso',1);
 // [7.1] construct "Equithirds" tiling by substitution
 // 
 Tiling.equithirdsSubstitution = function({iterations}={}){
-	var tiles = [];
+    var tiles = [];
     var myequi = equi.myclone();
     myequi.id.push(0);
     tiles.push(myequi);
