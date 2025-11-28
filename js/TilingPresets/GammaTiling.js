@@ -1,3 +1,6 @@
+// Gamma tiling
+// Periodic tiling by a single tile (up to isometry) shaped like a Γ 
+// 
 Tiling.gammaTiling = function({width, height}={}){
 	
 	var tils = [];
@@ -15,17 +18,13 @@ Tiling.gammaTiling = function({width, height}={}){
 
 
 function upGamma(x, y, width, height){
-	var id = [x, y];
-	
+	var id = [x, y];	
 	var neighbors = [];
-	
 	neighbors.push([x, y+2]);
 	neighbors.push([x, y-2]);
 	neighbors.push([x+1, y]);
 	neighbors.push([x+1, y-2]);
 	neighbors.push([x-2, y]);
-
-
 	var bounds = [];
 	bounds.push(x - width/2, y - height/2);
 	bounds.push(x - width/2, y+2 - height/2);
@@ -33,21 +32,17 @@ function upGamma(x, y, width, height){
 	bounds.push(x+1 - width/2, y+1 - height/2);
 	bounds.push(x+2 - width/2, y+1 - height/2);
 	bounds.push(x+2 - width/2, y - height/2);
-				
 	return new Tile(id, neighbors, bounds, 5);
 }
 
 function downGamma(x, y, width, height){
-	var id = [x, y];
-	
+	var id = [x, y];	
 	var neighbors = [];
-
 	neighbors.push([x+2, y]);
 	neighbors.push([x, y+2]);
 	neighbors.push([x, y-2]);
 	neighbors.push([x-1, y+2]);
 	neighbors.push([x-1, y]);
-	
 	var bounds = [];
 	bounds.push(x+1 - width/2, y - height/2);
 	bounds.push(x+1 - width/2, y+1 - height/2);
@@ -55,6 +50,5 @@ function downGamma(x, y, width, height){
 	bounds.push(x - width/2, y+2 - height/2);
 	bounds.push(x+2 - width/2, y+2 - height/2);
 	bounds.push(x+2 - width/2, y - height/2);
-				
 	return new Tile(id, neighbors, bounds, 5);
 }
