@@ -107,7 +107,10 @@ function tilingToSvg(sandpile){
     }
 
     // start generate svg as String
-    var svg = ['<?xml version="1.0" standalone="no"?> \n<svg width="' + ((x_max - x_min)*2).toFixed(3) + '" height="' + ((y_max-y_min)*2).toFixed(3) + '" version="1.1" xmlns="http://www.w3.org/2000/svg">\n'];
+    let factor = 10; // scaling factor
+    console.log("* generate svg string with scaling factor "+factor);
+
+    var svg = ['<?xml version="1.0" standalone="no"?> \n<svg width="' + ((x_max - x_min)*factor).toFixed(3) + '" height="' + ((y_max-y_min)*factor).toFixed(3) + '" version="1.1" xmlns="http://www.w3.org/2000/svg">\n'];
 
     if(wireFrameEnabled)
     	svg += '<g stroke="black" stroke-width=".1">\n';
@@ -118,7 +121,7 @@ function tilingToSvg(sandpile){
         var tile = sandpile.tiles[i];
 	var poly = '<polygon points="';
 	for(var j=0; j<tile.bounds.length; j+=2){
-	    poly += " " + ((tile.bounds[j] - x_min)*2).toFixed(3) + " " + ((tile.bounds[j+1] - y_min)*2).toFixed(3);
+	    poly += " " + ((tile.bounds[j] - x_min)*factor).toFixed(3) + " " + ((tile.bounds[j+1] - y_min)*factor).toFixed(3);
 	}
 	poly += '" fill="#'+tile.svg_color+'"/>\n';
 	svg += poly;
@@ -142,6 +145,7 @@ function tilingToSvg(sandpile){
 
 // Laser Cut : returns a svg file of tile bounds as lines (instead of polygons), with engravings
 function tilingToSvgLaserCut(sandpile){
+  console.log("export to svg for laser cut");
 
   /*
    * get svg width and height
@@ -168,7 +172,7 @@ function tilingToSvgLaserCut(sandpile){
    * create a list of tile segments and remove doublons
    * (order the list then check for consecutive identical segments: code taken from findNeighbors...)
    */
-  let p_error=0.01; // rounding errors in bounds coordinates
+  let p_error=0.0001; // rounding errors in bounds coordinates
 
   let segments = [];
   sandpile.tiles.forEach(function(tile){
@@ -196,8 +200,20 @@ function tilingToSvgLaserCut(sandpile){
         segment.push(x1);
         segment.push(y1);
       }
+      // remove segments for rounded corners
+      // (these segments are unique hence exact, and also in the same order in tile.bounds and roundedCorners)
+      // TODO: optimize search...
+      let roundedcorner=false;
+      roundedCorners.forEach(rc => {
+        if(rc[0]==x1 && rc[1]==y1 && rc[2]==x2 && rc[3]==y2){
+          roundedcorner=true;
+          return;
+        }
+      });
       // add to list of segments
-      segments.push(segment);
+      if(!roundedcorner){
+        segments.push(segment);
+      }
     }
   });
   // sort the list of segments lexicographicaly
@@ -210,30 +226,48 @@ function tilingToSvgLaserCut(sandpile){
   });
   // check if consecutive elements are identical => destroy one!
   // (hypothesis: no three consecutive elements are identical)
+  let dupsegcounter=0;
   for(let i=0; i<segments.length-1; i++){
     // compare i to i+1: check if points are identical (up to p_error)
     if(  distance(segments[i][0],segments[i][1],segments[i+1][0],segments[i+1][1])<p_error
       && distance(segments[i][2],segments[i][3],segments[i+1][2],segments[i+1][3])<p_error){
       // found two identical segments => destroy second
       segments.splice(i+1,1);
+      dupsegcounter++;
     }
   }
   // done removing segment doublons in Array segments
+  console.log("* removed "+dupsegcounter+" duplicated segments");
 
   /*
   /* start generate svg as String
    */
-  let factor = 10; // scaling factor
+  let factor = 100; // scaling factor
+  console.log("* generate svg string with scaling factor "+factor);
 
-  var svg = ['<?xml version="1.0" standalone="no"?> \n<svg width="' + ((x_max - x_min)*10).toFixed(3) + '" height="' + ((y_max-y_min)*10).toFixed(3) + '" version="1.1" xmlns="http://www.w3.org/2000/svg">\n'];
+  var svg = ['<?xml version="1.0" standalone="no"?> \n<svg width="' + ((x_max - x_min)*factor).toFixed(3) + '" height="' + ((y_max-y_min)*factor).toFixed(3) + '" version="1.1" xmlns="http://www.w3.org/2000/svg">\n'];
 
   // 1. tile segments
 
   // begin svg
-  svg += '<g stroke="black" stroke-width=".1">\n';
+  svg += '<g stroke="black" stroke-width=".1" fill="none">\n';
+  
+  // segments
   segments.forEach(seg => {
-    svg += '<line x1="'+((seg[0] - x_min)*10).toFixed(3)+'" y1="'+((seg[1] - y_min)*10).toFixed(3)+'" x2="'+((seg[2] - x_min)*10).toFixed(3)+'" y2="'+((seg[3] - y_min)*10).toFixed(3)+'"/>\n';
+    svg += '<line x1="'+((seg[0] - x_min)*factor).toFixed(3)+'" y1="'+((seg[1] - y_min)*factor).toFixed(3)+'" x2="'+((seg[2] - x_min)*factor).toFixed(3)+'" y2="'+((seg[3] - y_min)*factor).toFixed(3)+'"/>\n';
   });
+
+  // rounded corners
+  roundedCorners.forEach(rc => {
+    let Ax=rc[0];
+    let Ay=rc[1];
+    let Bx=rc[2];
+    let By=rc[3];
+    let angle=rc[4];
+    let radius=distance(Ax,Ay,Bx,By)/(2*Math.cos(angle/2));
+    svg += '<path d="M '+((Ax-x_min)*factor).toFixed(3)+' '+((Ay-y_min)*factor).toFixed(3)+' A '+(radius*factor).toFixed(3)+' '+(radius*factor).toFixed(3)+' 0 0 0 '+((Bx-x_min)*factor).toFixed(3)+' '+((By-y_min)*factor).toFixed(3)+'"/>\n';
+  });
+
   svg += "</g>\n";
 
   // 2. engravings from engravingArcs and engravingLines
@@ -241,7 +275,7 @@ function tilingToSvgLaserCut(sandpile){
   // lines
   svg += '<g stroke="blue" stroke-width=".1">\n';
   engravingLines.forEach(seg => {
-    svg += '<line x1="'+((seg[0] - x_min)*10).toFixed(3)+'" y1="'+((seg[1] - y_min)*10).toFixed(3)+'" x2="'+((seg[2] - x_min)*10).toFixed(3)+'" y2="'+((seg[3] - y_min)*10).toFixed(3)+'"/>\n';
+    svg += '<line x1="'+((seg[0] - x_min)*factor).toFixed(3)+'" y1="'+((seg[1] - y_min)*factor).toFixed(3)+'" x2="'+((seg[2] - x_min)*factor).toFixed(3)+'" y2="'+((seg[3] - y_min)*factor).toFixed(3)+'"/>\n';
   });
   svg += "</g>\n";
   // arcs
@@ -260,7 +294,7 @@ function tilingToSvgLaserCut(sandpile){
     let angle = Math.atan2(BBy-y,BBx-x) - Math.atan2(AAy-y,AAx-x);
     if(angle < 0){ angle += 2*Math.PI; };
     let largeArcFlag = angle <= Math.PI ? "0" : "1";
-    svg += '<path d="M '+((AAx - x_min)*10).toFixed(3)+' '+((AAy - y_min)*10).toFixed(3)+' A '+(10*r).toFixed(3)+' '+(10*r).toFixed(3)+' 0 '+largeArcFlag+' 1 '+((BBx - x_min)*10).toFixed(3)+' '+((BBy - y_min)*10).toFixed(3)+'"/>\n';
+    svg += '<path d="M '+((AAx - x_min)*factor).toFixed(3)+' '+((AAy - y_min)*factor).toFixed(3)+' A '+(factor*r).toFixed(3)+' '+(factor*r).toFixed(3)+' 0 '+largeArcFlag+' 1 '+((BBx - x_min)*factor).toFixed(3)+' '+((BBy - y_min)*factor).toFixed(3)+'"/>\n';
   });
   svg += "</g>\n";
 
@@ -270,6 +304,7 @@ function tilingToSvgLaserCut(sandpile){
   /*
    * create file
    */
+  console.log("* create file from svg string");
   var data = new Blob([svg], {type: 'text/plain'});
 
   // If we are replacing a previously generated file we need to

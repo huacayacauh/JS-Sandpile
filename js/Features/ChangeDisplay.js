@@ -188,6 +188,7 @@ btn.onclick = function() {
 		var lava_array = ["#cccccc", "#888888", "#444444", "#553333", "#772222", "#aa1111", "#ff1100", "#ff8800", "#eeee00"];
 		var blue_array = ["#000055", "#000088", "#0022aa", "#0044ff", "#0099ff", "#00ccff", "#00ffff", "#aaffff", "#ffffff"];
 		var green_array = ["#ffffff", "#ffffcc", "#ddffaa", "#aaff77", "#66ff33", "#33cc33", "#009933"];
+		var finnish_array = ["#ffffff", "#66a9ff", "#0062e0", "#002f6c", "#ff1a1a"];
 		
 		var selected_array;
 		
@@ -214,6 +215,10 @@ btn.onclick = function() {
 			
 			case "green":
 			selected_array = green_array;
+			break;
+			
+			case "finnish":
+			selected_array = finnish_array;
 			break;
 			
 			default:
@@ -276,6 +281,10 @@ btn.onclick = function() {
 	p6.innerHTML = "Lime green";
 	preset_choice.appendChild(p6);
 	
+	var p7 = document.createElement("option");
+	p6.value = "finnish";
+	p6.innerHTML = "Finnish";
+	preset_choice.appendChild(p7);
 	
 	// We append the controls created to the modal and display it on screen
 	
@@ -332,11 +341,21 @@ function toSphere(){
 // ################################################
 
 function hideParams(){
+        // get arguments of tiling generation function
 	var func = document.getElementById("TilingSelect").value;
 	func = "Tiling." + func +".toString()";
-	var func_str = eval(func);
-	
-	var params = ["height", "width", "iterations", "size", "order", "cropMethod", "kwidth", "knotchA", "knotchB", "lineplace", "linespace", "kposi", "kposlist", "subneighborhood", "neighborFunc"];
+	var func_str = eval(func);	
+        // adapted from: https://www.geeksforgeeks.org/how-to-get-the-javascript-function-parameter-names-values-dynamically/
+        // remove comments of the form /* ... */
+        // removing comments of the form //
+        // isolate function arguments
+        func_str = func_str.replace(/\/\*[\s\S]*?\*\//g, '')
+          .replace(/\/\/(.)*/g, '')
+          .trim();
+        func_str = func_str.substring(0,func_str.search("{}"));
+        
+	// display required arguments on the panel
+    var params = ["height", "width", "iterations", "size", "order", "cropMethod", "kwidth", "knotchA", "knotchB", "knotchN", "lineplace", "linespace", "kposi", "kposlist", "roundedcorners", "subneighborhood", "neighborFunc"];
 	for(var i=0; i<params.length; i++){
 		if(func_str.includes(params[i])){
 			document.getElementById("p_" + params[i]).style="display:contents";
@@ -344,6 +363,13 @@ function hideParams(){
 			document.getElementById("p_" + params[i]).style="display:none";
 		}
 	}
+        // best knotch width for Penrose P0
+        if(func.includes("P0splitP3lasercut")){
+		document.getElementById("kwidth").value="0.06";
+        }
+        else{
+		document.getElementById("kwidth").value="0.2";
+        }
 		
 }
 

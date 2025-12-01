@@ -87,7 +87,9 @@
 						<option value="P3sunbysubstNeighNoThinThin">Sun with no-thin-thin neighborhood</option>
 						<option value="P3lasercut">Laser-cut (adds knotches+engravings)</option>
 					</optgroup>
-					<optgroup label="Substitution: Penrose P0 (from Robinson triangles)">
+					<optgroup label="Substitution: Penrose P0 (triangles)">
+						<option value="P0splitP3">from Sun P3 (rhombus) split</option>
+						<option value="P0splitP3lasercut">Laser-cut from Sun P3 (rhombus) split (pairs to be glued)</option>
 						<option value="penrose0">Half-kite</option>
 						<option value="HKKDPenrose">Half-kite P2 (kite-dart)</option>
 						<option value="HDKDPenrose">Half-dart P2 (kite-dart)</option>
@@ -106,7 +108,8 @@
 						<option value="stampflisSubstitution">Stampfli's 12-fold 1</option>
 						<option value="A3bysubst">Ammann A3</option>
 						<option value="DiamondTriangle">Diamond Triangle</option>
-					</optgroup>
+						<option value="Chairsubst">Chair</option>
+			</optgroup>
 					<optgroup label="Symmetry Free">
 						<option value="sqD2">D2 Square</option>
 						<option value="sqD4">D4 Square</option>
@@ -189,6 +192,14 @@
 					</select>
 				<br></span>
 
+				<span id="p_knotchN" style="display:none;">
+				Knotch type N :
+					<select id="knotchN">
+						<option value="teeth"> teeth </option>
+				  	    <option value="none"> none </option>
+					</select>
+				<br></span>
+
 				<span id="p_kwidth" style="display:none;">
 				Knotch width [0,1]:
 					<input type="number" step=0.01 style="width: 50px;" id="kwidth" min="0" max="1" value="0.2"/>
@@ -217,6 +228,11 @@
 					<input type="number" step=0.01 style="width: 50px;" id="linespace" min="0" max="1" value="0.04"/>
 				<br></span>
 
+				<span id="p_roundedcorners" style="display:none;">
+				Rounded corners [0,1]:
+					<input type="number" step=0.01 style="width: 50px;" id="roundedcorners" min="0" max="1" value="0.05"/>
+				<br></span>
+
 				<!-- control for the Moore subneighborhoods -->
 				<span id="p_subneighborhood" style="display:none;">
 				Sub-neighborhood :
@@ -225,12 +241,6 @@
 
 				<!-- indicate which neighbors function to use -->
 				<span id="p_neighborFunc" style="display:none;">
-				<!-- Neighbor function : --> <!-- TODO Remove commented part-->
-				<!-- <select id="neighborFunc"> -->
-				<!-- 	<option title="Multineighbour : ON ; Neighborhood condition : full edge in common" value=0> Full edge only, multi-neighbour allowed </option> -->
-				<!-- 	<option title="NoMultiNeighbour ; Neighborhood condition : partial edge in common" value=1> To each neighbor </option> -->
-				<!-- 	<option title="Multinexghbour : On ; Neighorhood condition : partial edge in common" value=2> To each shared part </option> -->
-				<!-- </select><br /> -->
 				Neighbor multiplicity : <label class="switch" style="margin-top:5px">
 				                        <input type="checkbox" id="neighborMultiplicity" checked = "true">
 							<span class="slider round"></span>
@@ -241,7 +251,6 @@
 				  <option value="fullEdge"> Full edge only </option>
 				  <option value="partialEdge"> Partial edge </option>
 				</select>
-				<!-- FIXME propagate modifications to app.js SubstitutionAPI.js et TilingPreset/AmmannA3.js -->
 				<br></span>
 			</div>
 		</div> <!-- Main controls  -->
@@ -458,6 +467,7 @@
           <a href="https://creativecommons.org/licenses/by/4.0/">CC-BY</a><br />
           Valentin Darrigo<br />
           Jeremy Fersula<br />
+	  Victor Lutfalla<br />
           Kevin Perrot<br />
           See the <a href="https://github.com/huacayacauh/JS-Sandpile/wiki">wiki</a>
           and <a href="https://github.com/huacayacauh/JS-Sandpile/">code</a> on github
@@ -483,10 +493,10 @@
 	<script src="./js/Utils/OrthographicTrackballControls.js"></script>
 	<script src="./js/Utils/bootstrap.min.js"></script>
 	<script src="./js/Utils/earcut.js"></script>
-    <script src="./js/Utils/Geometry.js"></script>
-    <script src="./js/Utils/Matrix.js"></script>
-    <script src="./js/Utils/Combinatorics.js"></script>
-    <script src="./js/Utils/Crop.js"></script>
+	<script src="./js/Utils/Geometry.js"></script>
+	<script src="./js/Utils/Matrix.js"></script>
+	<script src="./js/Utils/Combinatorics.js"></script>
+	<script src="./js/Utils/Crop.js"></script>
 	<script src="./js/Utils/jszip.min.js"></script>
 	<script src="./js/Utils/FileSaver.min.js"></script>
 	<script src="./js/Utils/gpu-browser.min.js"></script>
@@ -508,22 +518,20 @@
 	<script src="./js/TilingPresets/PrismPentagonalTiling.js"></script>
 	<script src="./js/TilingPresets/GammaTiling.js"></script>
 	<script src="./js/TilingPresets/TravertinTiling.js"></script>
-	<script src="./js/TilingPresets/TruncatedSquareTiling.js"></script>
 	<script src="./js/TilingPresets/RhombitrihexagonalTiling.js"></script>
-
-    <script src="./js/TilingPresets/SubstitutionAPI.js"></script>
-    <script src="./js/TilingPresets/PenroseP2Substitution.js"></script>
-    <script src="./js/TilingPresets/PenroseP3Substitution.js"></script>
-    <script src="./js/TilingPresets/AmmannBeenkerA5Substitution.js"></script>
-    <script src="./js/TilingPresets/BirdsBeesSubstitution.js"></script>
-    <script src="./js/TilingPresets/TriangleSubstitution.js"></script>
+	<script src="./js/TilingPresets/PenroseP0-splitP2P3.js"></script>
+	<script src="./js/TilingPresets/SubstitutionAPI.js"></script>
+	<script src="./js/TilingPresets/PenroseP2Substitution.js"></script>
+	<script src="./js/TilingPresets/PenroseP3Substitution.js"></script>
+	<script src="./js/TilingPresets/AmmannBeenkerA5Substitution.js"></script>
+	<script src="./js/TilingPresets/BirdsBeesSubstitution.js"></script>
+	<script src="./js/TilingPresets/TriangleSubstitution.js"></script>
 	<script src="./js/TilingPresets/EquithirdsSubstitution.js"></script>
 	<script src="./js/TilingPresets/StampflisSubstitution.js"></script>
 	<script src="./js/TilingPresets/DiamondTriangleSubstitution.js"></script>
 	<script src="./js/TilingPresets/AmmannA3Substitution.js"></script>
-	<script src="./js/TilingPresets/BowtieHexagonSubstitution.js"></script>
-
-    <script src="./js/TilingPresets/CutAndProjectViaMultigrid.js"></script>
+	<script src="./js/TilingPresets/Chair.js"></script>
+	<script src="./js/TilingPresets/CutAndProjectViaMultigrid.js"></script>
 
 	<script src="./js/TilingPresets/MooreSubsets.js"></script>
 
@@ -535,8 +543,7 @@
 	<script src="./js/Features/Harmonics.js"></script>
 	<script src="./js/Features/Roundness.js"></script>
 	<script src="./js/Features/Batch_processings.js"></script>
-
-    <script src="./js/Utils/Knotches.js"></script>
+	<script src="./js/Utils/Knotches.js"></script>
 
 	<script src="./js/app.js"></script>
 

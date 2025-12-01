@@ -109,6 +109,8 @@ var check_copy = true; // Copy the tiling once in a while to see if it is stable
 var engravingArcs = []; // Array of [center-x, center-y, radius, start-angle-x, start-angle-y, end-angle-x, end-angle-y] where start and end bounds definiting the angle are given counterclockwise
 var engravingLines = []; // Array of [start-x, start-y, end-x, end-y]
 
+var roundedCorners = []; // Array of [Ax,Ay,Bx,By,angle] where (Ax,Ay)--(Bx,By) is a segment to be replaced with a rounded corner (CLOCKWISE), and angle is the original tile angle
+
 // ---------------------- Routines
 
 setInterval(colorSelected, 200); //		[ 4.2 ]
@@ -484,6 +486,7 @@ function drawTiling(){
 	selectedTile = null;
 	engravingArcs = [];
 	engravingLines = [];
+        roundedCorners = [];
 	
         // get buttons
 	cW = document.getElementById("cW").value;
@@ -495,10 +498,12 @@ function drawTiling(){
 	var kwidth = document.getElementById("kwidth").valueAsNumber;
 	var knotchA = document.getElementById("knotchA").value;
 	var knotchB = document.getElementById("knotchB").value;
+	var knotchN = document.getElementById("knotchN").value;
 	var lineplace = document.getElementById("lineplace").valueAsNumber;
 	var linespace = document.getElementById("linespace").valueAsNumber;
 	var kposi = document.getElementById("kposi").valueAsNumber;
 	var kposlist = document.getElementById("kposlist").value;
+        var roundedcorners = document.getElementById("roundedcorners").value;
 	var subneighborhood = document.getElementById("subneighborhood").valueAsNumber;
         var neighborMultiplicity = document.getElementById("neighborMultiplicity").checked;
         var neighborCondition = document.getElementById("neighborCondition").value;
@@ -506,7 +511,7 @@ function drawTiling(){
 	preset = document.getElementById("TilingSelect").value;
 
         // prepare command and call the tiling generator
-        var command = "currentTiling = Tiling." + preset + "({height:cH, width:cW, iterations:nbIt, size:size, order:order, cropMethod:cropMethod, kwidth:kwidth, knotchA:knotchA, knotchB:knotchB, lineplace:lineplace, linespace:linespace, kposi:kposi, kposlist:kposlist, subneighborhood:subneighborhood, neighborMultiplicity:neighborMultiplicity, neighborCondition:neighborCondition})";
+	var command = "currentTiling = Tiling." + preset + "({height:cH, width:cW, iterations:nbIt, size:size, order:order, cropMethod:cropMethod, kwidth:kwidth, knotchA:knotchA, knotchB:knotchB, knotchN:knotchN, lineplace:lineplace, linespace:linespace, kposi:kposi, kposlist:kposlist, roundedcorners:roundedcorners, subneighborhood:subneighborhood, neighborMultiplicity:neighborMultiplicity, neighborCondition:neighborCondition})";
         console.log("BEGIN construct a new Tiling");
 	eval(command);
         console.log("END construct a new Tiling");

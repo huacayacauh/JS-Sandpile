@@ -1,6 +1,8 @@
 // This code is part of JS-Sandpile (https://github.com/huacayacauh/JS-Sandpile/)
 // CC-BY Valentin Darrigo, Jeremy Fersula, Kevin Perrot
 
+var sqrttwo = 1.41421
+
 // create a knotch from ("x","y") to ("xx","yy")
 // centered at fraction "place" of the segment
 // of width "width" (again a fraction of the segment)
@@ -86,3 +88,76 @@ function knotchTrapezoid(x,y,xx,yy){
   bounds.push(...A,...B,...C,...D,...E,...F);
   return bounds;
 }
+
+// arrow knotch with "n" in {1,2,3,4} teeth:
+// * male = left side along (x,y)--(xx,yy)
+// * female = right side along (x,y)--(xx,yy)
+function knotchArrowM(n,x,y,xx,yy,width){
+  let bounds = [];
+  let A=[x,y];
+  let Z=[xx,yy];
+  let P=[]; // list of points
+  // compute P: the bounds along the (x,y)--(xx,yy) segment
+  for(let i=n; i>0; i--){
+    P.push(scalePoint(...A,...Z,1/2+(i-1+1/2)*width));
+  }
+  for(let i=1; i<=n; i++){
+    P.push(scalePoint(...A,...Z,1/2-(i-1+1/2)*width));
+  }
+  // push first bound
+  bounds.push(...P[0]);
+  // first half-trapeze
+  let BB=scalePoint(...A,...Z,1/2+(n-1+1/2+Math.sqrt(5/4))*width);
+  let B=rotatePoint(...BB,...P[0],-Math.atan(2));
+  bounds.push(...B);
+  // U shapes for n>1
+  for(let i=0; i<n-1; i++){
+    let X=rotatePoint(...P[2+2*i],...P[1+2*i],Math.PI/2);
+    let Y=rotatePoint(...P[1+2*i],...P[2+2*i],-Math.PI/2)
+    bounds.push(...X,...P[1+2*i],...P[2+2*i],...Y);
+  }
+  // last half-trapeze
+  let CC=scalePoint(...A,...Z,1/2-(n-1+1/2+Math.sqrt(5/4))*width);
+  let C=rotatePoint(...CC,...P[2*n-1],Math.atan(2));
+  bounds.push(...C);
+  // push last bound
+  bounds.push(...P[2*n-1]);
+  // push end bound
+  bounds.push(...Z);
+  return bounds;
+}
+function knotchArrowF(n,x,y,xx,yy,width){
+  let bounds = [];
+  let A=[x,y];
+  let Z=[xx,yy];
+  let P=[]; // list of points
+  // compute P: the bounds along the (x,y)--(xx,yy) segment
+  for(let i=n; i>0; i--){
+    P.push(scalePoint(...A,...Z,1/2+(i-1+1/2)*width));
+  }
+  for(let i=1; i<=n; i++){
+    P.push(scalePoint(...A,...Z,1/2-(i-1+1/2)*width));
+  }
+  // push first bound
+  bounds.push(...P[0]);
+  // first half-trapeze
+  let BB=scalePoint(...A,...Z,1/2+(n-1+1/2+Math.sqrt(5/4))*width);
+  let B=rotatePoint(...BB,...P[0],Math.atan(2));
+  bounds.push(...B);
+  // U shapes for n>1
+  for(let i=0; i<n-1; i++){
+    let X=rotatePoint(...P[2+2*i],...P[1+2*i],-Math.PI/2);
+    let Y=rotatePoint(...P[1+2*i],...P[2+2*i],Math.PI/2)
+    bounds.push(...X,...P[1+2*i],...P[2+2*i],...Y);
+  }
+  // last half-trapeze
+  let CC=scalePoint(...A,...Z,1/2-(n-1+1/2+Math.sqrt(5/4))*width);
+  let C=rotatePoint(...CC,...P[2*n-1],-Math.atan(2));
+  bounds.push(...C);
+  // push last bound
+  bounds.push(...P[2*n-1]);
+  // push end bound
+  bounds.push(...Z);
+  return bounds;
+}
+
