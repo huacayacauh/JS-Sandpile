@@ -459,7 +459,6 @@ function buildSegments(segmentsMap, tiles, n2b){
 }
 
 function findNeighbors(tiles, tilesdict, n2b, neighborMultiplicity){
-    //
     // n2b = neighbour-to-bounds
   var segmentsMap = new Map();
   var segments = buildSegments(segmentsMap, tiles, n2b);
@@ -505,7 +504,6 @@ function findNeighbors(tiles, tilesdict, n2b, neighborMultiplicity){
 function findNeighborsPartialEdge(tiles, tilesdict, n2b, neighborMultiplicity){
   var segmentsMap = new Map();
   var segments = buildSegments(segmentsMap, tiles, n2b);
-
   // Map of all segments' slopes
   // {
   //    slope1 => [[sgmt1, sgmt2], [segmt3], ...],
@@ -515,13 +513,11 @@ function findNeighborsPartialEdge(tiles, tilesdict, n2b, neighborMultiplicity){
   // Each value V contains every segments with the same slope, divided in subarrays A (like equivalence classes).
   // Each A contains, at least, one segment A[0] and A[j] (j between 1 to A.length - 1) is a neighbor of
   // A[0]. 
-
   var slopesMap = new Map();
   if (segments.length >= 1){
     let slope = segmentSlope(segments[0]);
     slopesMap.set(slope, [[segments[0]]]);
   }
-
   // Search for a similar key to the given slope.
   // Return key (real number or POSITIVE_INFINITY), NEGATIVE_INFINITY otherwise.
   function similarSlope(slope){
@@ -532,8 +528,6 @@ function findNeighborsPartialEdge(tiles, tilesdict, n2b, neighborMultiplicity){
     }
     return Number.NEGATIVE_INFINITY;
   }
-
-
   // For each new segment E, check if its slope already exists.
   // If so, search for segments which could be neighbors (comparizon with the first segment of each subarray A, 
   //    add E in A if so) and add a new subarray with E at the end.
@@ -602,6 +596,7 @@ function findNeighborsPartialEdge(tiles, tilesdict, n2b, neighborMultiplicity){
   // done
   return fn; // side effect
 }
+
 
 // 
 // [6.4] set undefined neighbors for lazy user, by side effet
