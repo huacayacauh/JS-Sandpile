@@ -315,7 +315,7 @@ Tiling.BB1bysubst = function({iterations}={}){
     [], // no duplicated tiles
     "I am lazy", // myneighbors
     neighbors2boundsBB,
-    decorateBB,
+    decorateBB
   );
   // construct tiling
   return new Tiling(tiles);

@@ -56,6 +56,13 @@
 						<option value="sqTiling">Square Tiling</option>
 						<option value="hexTiling">Hexagonal Tiling</option>
 						<option value="triTiling">Triangular Tiling</option>
+						<option value="diamondTiling">Diamond Tiling</option>
+						<option value="rectanglesTiling">Rectangles Tiling</option>
+						<option value="crossTiling">Cross Tiling</option>
+						<option value="prismPentTiling">Prismatic Pentagonal Tiling</option>
+						<option value="gammaTiling">Gamma Tiling</option>
+						<option value="travertinTiling">Travertin Tiling</option>
+						<option value="rhombTriHex">Rhombitrihexagonal Tiling</option>
 					</optgroup>
 					<optgroup label="Cut and Project (via Mutligrid)">
 						<option value="PenroseCutandproject">Penrose P3 (rhombus)</option>
@@ -97,8 +104,12 @@
 						<option value="A5bysubst">Ammann-Beenker</option>
 						<option value="BB1bysubst">Birds and Bees 1</option>
 						<option value="TriangleIncenter">Triangle Incenter</option>
+						<option value="equithirdsSubstitution">Equithirds</option>
+						<option value="stampflisSubstitution">Stampfli's 12-fold 1</option>
+						<option value="A3bysubst">Ammann A3</option>
+						<option value="DiamondTriangle">Diamond Triangle</option>
 						<option value="Chairsubst">Chair</option>
-					</optgroup>
+			</optgroup>
 					<optgroup label="Symmetry Free">
 						<option value="sqD2">D2 Square</option>
 						<option value="sqD4">D4 Square</option>
@@ -111,7 +122,6 @@
 						<option value="cairoPenta">Cairo Pentagonal</option>
 						<option value="mooreSubset">Moore Subset</option>
 					</optgroup>
-
 				</select>
 
 				<!--<form id="postCustom" enctype="multipart/form-data" action="/upload/image" method="post">
@@ -227,6 +237,22 @@
 				<span id="p_subneighborhood" style="display:none;">
 				Sub-neighborhood :
 					<input type="number" id="subneighborhood" min="1" max="255" value="39" style="width=50px;" />
+				<br></span>
+
+				<span id="p_neighborMultiplicity" style="display:none;">
+				  Neighbor multiplicity : <label class="switch" style="margin-top:5px">
+				                        <input type="checkbox" id="neighborMultiplicity" checked = "true">
+							<span class="slider round"></span>
+				  </label>
+				  <br></span>
+				<!-- indicate which neighbors function to use -->
+				<span id="p_neighborCondition" style="display:none;">
+				<!-- When Neighbor Multiplicity is ON tiles can be multiply neighbbor, that is if t1 and t2 share n edges, then when t1 toples it gives n grains of sand to t2.
+				     When Neighbor Multiplicity is OFF tiles can be neighbor only once, that is if t1 and t2 share n \geq 1 edges, then when t1 topples it gives only 1 grain of sand to t2-->
+				Neighbor condition : <select id="neighborCondition">
+				  <option value="fullEdge"> Full edge only </option>
+				  <option value="partialEdge"> Partial edge </option>
+				</select>
 				<br></span>
 			</div>
 		</div> <!-- Main controls  -->
@@ -469,10 +495,10 @@
 	<script src="./js/Utils/OrthographicTrackballControls.js"></script>
 	<script src="./js/Utils/bootstrap.min.js"></script>
 	<script src="./js/Utils/earcut.js"></script>
-    <script src="./js/Utils/Geometry.js"></script>
-    <script src="./js/Utils/Matrix.js"></script>
-    <script src="./js/Utils/Combinatorics.js"></script>
-    <script src="./js/Utils/Crop.js"></script>
+	<script src="./js/Utils/Geometry.js"></script>
+	<script src="./js/Utils/Matrix.js"></script>
+	<script src="./js/Utils/Combinatorics.js"></script>
+	<script src="./js/Utils/Crop.js"></script>
 	<script src="./js/Utils/jszip.min.js"></script>
 	<script src="./js/Utils/FileSaver.min.js"></script>
 	<script src="./js/Utils/gpu-browser.min.js"></script>
@@ -488,19 +514,30 @@
 	<script src="./js/TilingPresets/TruncSquare.js"></script>
 	<script src="./js/TilingPresets/CairoPentagonal.js"></script>
 	<script src="./js/TilingPresets/PenroseP0.js"></script>
+	<script src="./js/TilingPresets/DiamondTiling.js"></script>
+	<script src="./js/TilingPresets/RectanglesTiling.js"></script>
+	<script src="./js/TilingPresets/CrossTiling.js"></script>
+	<script src="./js/TilingPresets/PrismPentagonalTiling.js"></script>
+	<script src="./js/TilingPresets/GammaTiling.js"></script>
+	<script src="./js/TilingPresets/TravertinTiling.js"></script>
+	<script src="./js/TilingPresets/RhombitrihexagonalTiling.js"></script>
 	<script src="./js/TilingPresets/PenroseP0-splitP2P3.js"></script>
-
-    <script src="./js/TilingPresets/SubstitutionAPI.js"></script>
-    <script src="./js/TilingPresets/PenroseP2Substitution.js"></script>
-    <script src="./js/TilingPresets/PenroseP3Substitution.js"></script>
-    <script src="./js/TilingPresets/AmmannBeenkerA5Substitution.js"></script>
-    <script src="./js/TilingPresets/BirdsBeesSubstitution.js"></script>
-    <script src="./js/TilingPresets/TriangleSubstitution.js"></script>
-    <script src="./js/TilingPresets/Chair.js"></script>
-
-    <script src="./js/TilingPresets/CutAndProjectViaMultigrid.js"></script>
+	<script src="./js/TilingPresets/SubstitutionAPI.js"></script>
+	<script src="./js/TilingPresets/PenroseP2Substitution.js"></script>
+	<script src="./js/TilingPresets/PenroseP3Substitution.js"></script>
+	<script src="./js/TilingPresets/AmmannBeenkerA5Substitution.js"></script>
+	<script src="./js/TilingPresets/BirdsBeesSubstitution.js"></script>
+	<script src="./js/TilingPresets/TriangleSubstitution.js"></script>
+	<script src="./js/TilingPresets/EquithirdsSubstitution.js"></script>
+	<script src="./js/TilingPresets/StampflisSubstitution.js"></script>
+	<script src="./js/TilingPresets/DiamondTriangleSubstitution.js"></script>
+	<script src="./js/TilingPresets/AmmannA3Substitution.js"></script>
+	<script src="./js/TilingPresets/Chair.js"></script>
+	<script src="./js/TilingPresets/CutAndProjectViaMultigrid.js"></script>
 
 	<script src="./js/TilingPresets/MooreSubsets.js"></script>
+
+	<script src="./js/TilingPresets/VoronoiDiagram.js"></script>
 
 	<script src="./js/Features/ChangeDisplay.js"></script>
 	<script src="./js/Features/ImportExport.js"></script>
@@ -508,9 +545,10 @@
 	<script src="./js/Features/Harmonics.js"></script>
 	<script src="./js/Features/Roundness.js"></script>
 	<script src="./js/Features/Batch_processings.js"></script>
-
-    <script src="./js/Utils/Knotches.js"></script>
+	<script src="./js/Utils/Knotches.js"></script>
 
 	<script src="./js/app.js"></script>
+	<script>hideParams();</script>
 
 </body> <!-- ############################################################ End. -->
+

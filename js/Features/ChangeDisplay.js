@@ -341,36 +341,39 @@ function toSphere(){
 // ################################################
 
 function hideParams(){
-        // get arguments of tiling generation function
-	var func = document.getElementById("TilingSelect").value;
-	func = "Tiling." + func +".toString()";
-	var func_str = eval(func);
-        // adapted from: https://www.geeksforgeeks.org/how-to-get-the-javascript-function-parameter-names-values-dynamically/
-        // remove comments of the form /* ... */
-        // removing comments of the form //
-        // isolate function arguments
-        func_str = func_str.replace(/\/\*[\s\S]*?\*\//g, '')
-          .replace(/\/\/(.)*/g, '')
-          .trim();
-        func_str = func_str.substring(0,func_str.search("{}"));
-        
-	// display required arguments on the panel
-	var params = ["height", "width", "iterations", "size", "order", "cropMethod", "kwidth", "knotchA", "knotchB", "knotchN", "lineplace", "linespace", "kposi", "kposlist", "roundedcorners", "subneighborhood"];
-	for(var i=0; i<params.length; i++){
-		if(func_str.includes(params[i])){
-			document.getElementById("p_" + params[i]).style="display:contents";
-		} else {
-			document.getElementById("p_" + params[i]).style="display:none";
-		}
+    // get arguments of tiling generation function
+    var func = document.getElementById("TilingSelect").value;
+    func = "Tiling." + func +".toString()";
+    var func_str = eval(func);	
+    // adapted from: https://www.geeksforgeeks.org/how-to-get-the-javascript-function-parameter-names-values-dynamically/
+    // remove comments of the form /* ... */
+    // removing comments of the form //
+    // isolate function arguments
+    func_str = func_str.replace(/\/\*[\s\S]*?\*\//g, '')
+        .replace(/\/\/(.)*/g, '')
+        .trim();
+    func_str = func_str.substring(0,func_str.search("{}"));
+    // display required arguments on the panel
+    var params = ["height", "width", "iterations", "size", "order",
+		  "cropMethod", "kwidth", "knotchA", "knotchB", "knotchN",
+		  "lineplace", "linespace", "kposi", "kposlist", "roundedcorners",
+		  "subneighborhood", "neighborCondition", "neighborMultiplicity"];
+    for(var i=0; i<params.length; i++){
+
+	if(func_str.includes(params[i])){
+	    document.getElementById("p_" + params[i]).style="display:contents";
+	} else {
+	    document.getElementById("p_" + params[i]).style="display:none";
 	}
-        // best knotch width for Penrose P0
-        if(func.includes("P0splitP3lasercut")){
-		document.getElementById("kwidth").value="0.06";
-        }
-        else{
-		document.getElementById("kwidth").value="0.2";
-        }
-		
+    }
+    // best knotch width for Penrose P0
+    if(func.includes("P0splitP3lasercut")){
+	document.getElementById("kwidth").value="0.06";
+    }
+    else{
+	document.getElementById("kwidth").value="0.2";
+    }
+    
 }
 
 // Prevents wireFrameToggle from being automatcally set to true
