@@ -729,7 +729,6 @@ decorateA3.set('ten270',2);
 // [7.1] construct "Ammann A3 by subst" tiling by substitution
 // 
 Tiling.A3bysubst = function({iterations,neighborMultiplicity,neighborCondition}={}){
-  // neighborFunc
   var tiles = [];
   var mySix0 = six0.myclone();
   var mySix90 = six90.myclone();

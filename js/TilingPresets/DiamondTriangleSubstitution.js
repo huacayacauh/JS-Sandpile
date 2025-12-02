@@ -228,7 +228,6 @@ decorateDT.set('dparallelogram',1);
 // [7.1] construct "Diamond triangle by subst" tiling by substitution
 // 
 Tiling.DiamondTriangle = function({iterations, neighborMultiplicity, neighborCondition} = {}){
-        // neighborFunc // NOTE this comment is used by hideParams(), do not remove
 	var new_tiles = [];
 	let tile_2 = dtriangle.myclone();
 	tile_2.shift(-1, -Math.sqrt(3)/3)

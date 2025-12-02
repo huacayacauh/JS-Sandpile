@@ -239,12 +239,14 @@
 					<input type="number" id="subneighborhood" min="1" max="255" value="39" style="width=50px;" />
 				<br></span>
 
-				<!-- indicate which neighbors function to use -->
-				<span id="p_neighborFunc" style="display:none;">
-				Neighbor multiplicity : <label class="switch" style="margin-top:5px">
+				<span id="p_neighborMultiplicity" style="display:none;">
+				  Neighbor multiplicity : <label class="switch" style="margin-top:5px">
 				                        <input type="checkbox" id="neighborMultiplicity" checked = "true">
 							<span class="slider round"></span>
-				</label> <br />
+				  </label>
+				  <br></span>
+				<!-- indicate which neighbors function to use -->
+				<span id="p_neighborCondition" style="display:none;">
 				<!-- When Neighbor Multiplicity is ON tiles can be multiply neighbbor, that is if t1 and t2 share n edges, then when t1 toples it gives n grains of sand to t2.
 				     When Neighbor Multiplicity is OFF tiles can be neighbor only once, that is if t1 and t2 share n \geq 1 edges, then when t1 topples it gives only 1 grain of sand to t2-->
 				Neighbor condition : <select id="neighborCondition">
@@ -546,6 +548,7 @@
 	<script src="./js/Utils/Knotches.js"></script>
 
 	<script src="./js/app.js"></script>
+	<script>hideParams();</script>
 
 </body> <!-- ############################################################ End. -->
 
