@@ -3,7 +3,7 @@
 
 // [1] tuile de base
 var bounds = [0,0,2,0,2,1,1,1,1,2,0,2];
-var chair = new Tile(['chair'],[],bounds,4); // TODO 4 ou 5...
+var chair = new Tile(['chair'],[],bounds,8); // TODO 4 ou 5...
 
 // [2] define tile substitution for Chair
 function substitutionChair(tile){
@@ -34,36 +34,37 @@ function substitutionChair(tile){
 var duplicatedChair = [];
 
 // [4] neighborhood Chair : TODO empty
-
-function neighborsChair(tiles,tilesdict,newtiles,newtilesdict,newdup){};
+// "I am lazy" => default SubstitutionAPI neighbors
 
 // [6]
 
 var neighbors2boundsChair = new Map();
-neighbors2boundsChair.set('chair',default_neighbors2bounds(4));
+neighbors2boundsChair.set('chair',default_neighbors2bounds(6));
 
 var decorateChair = new Map();
 decorateChair.set('chair',0);
 
 // [7]
 
-Tiling.Chairsubst = function({iterations}={}){
-  var tiles = [];
-  // initial tile
-  var mychair = chair.myclone();
-  tiles.push(mychair);
-  // call the substitution
-  tiles = substitute(
-    iterations,
-    tiles,
-    2,
-    substitutionChair,
-    duplicatedChair,
-    duplicatedChair,
-    neighborsChair,
-    neighbors2boundsChair,
-    decorateChair
-  );
-  return new Tiling(tiles);
+Tiling.Chairsubst = function({iterations,neighborMultiplicity,neighborCondition}={}){
+    var tiles = [];
+    // initial tile
+    var mychair = chair.myclone();
+    tiles.push(mychair);
+    // call the substitution
+    tiles = substitute(
+	iterations,
+	tiles,
+	2,
+	substitutionChair,
+	duplicatedChair,
+	duplicatedChair,
+	"I am lazy", 
+	neighbors2boundsChair,
+	decorateChair,
+	neighborCondition,// neighborhood condition is "fullEdge" or "partialEdge"
+	neighborMultiplicity // neighborhood multiplicity (bool)
+    );
+    return new Tiling(tiles);
 }
 
