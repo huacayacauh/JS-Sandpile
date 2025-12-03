@@ -27,6 +27,19 @@ function rotatePoint(xA, yA, xB, yB, a){
            sina*xA + cosa*yA + yB - sina*xB - cosa*yB ];
 }
 
+// [1.4] reflect point A with respect with the line going through point B with direction vector C
+function reflectPoint(xA, yA, xB, yB, xC, yC){
+    // based on Householder equation https://en.wikipedia.org/wiki/Householder_transformation
+    // formula reflect(A,B,C) = A - 2<(A-B)|iC> / <C|C> iC where iC = (-yC, xC) is the orthonogal vector to C, and <C|C> is the squared norm of C
+    // compute the squared norm of C, and householder coefficient  2<(A-B)|iC> / <C|C>
+    var nC2 = (xC*xC + yC*yC); // square of the norm of C
+    var houseCoeff= 2*((yA-yB)*xC -(xA - xB)*yC)/nC2;// the coefficient in the Householder equation
+    return [xA + houseCoeff*yC, yA - houseCoeff*xC];	 
+}
+
+
+
+
 // compute the Euclidean distance between two points
 function distance(xA, yA, xB, yB){
   return Math.sqrt((xA-xB)*(xA-xB)+(yA-yB)*(yA-yB));
