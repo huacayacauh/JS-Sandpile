@@ -3,7 +3,7 @@
 
 // [1] tuile de base
 var bounds = [0,0,2,0,2,1,1,1,1,2,0,2];
-var chair = new Tile(['chair'],[],bounds,8); // TODO 4 ou 5...
+var chair = new Tile(['chair'],[],bounds,6); 
 
 // [2] define tile substitution for Chair
 function substitutionChair(tile){
@@ -33,7 +33,7 @@ function substitutionChair(tile){
 
 var duplicatedChair = [];
 
-// [4] neighborhood Chair : TODO empty
+// [4] neighborhood Chair 
 // "I am lazy" => default SubstitutionAPI neighbors
 
 // [6]

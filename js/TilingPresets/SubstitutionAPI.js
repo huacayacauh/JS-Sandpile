@@ -710,17 +710,21 @@ function substitute(iterations,tiles,ratio,mysubstitution,mydupinfos,mydupinfoso
     if(findNeighbors_option != false){
       console.log("* compute neighbors (global)");
       let fn = 0;
-      if (findNeighborCondition == "fullEdge")
-          fn = findNeighbors(newtiles, newtilesdict, findNeighbors_option, findNeighborMultiplicity);
-      else if (findNeighborCondition == "partialEdge")
-        fn = findNeighborsPartialEdge(newtiles, newtilesdict,findNeighbors_option,findNeighborMultiplicity);
+	if (findNeighborCondition == "fullEdge"){
+	    console.log("* compute neighbors with fullEdge condition");
+            fn = findNeighbors(newtiles, newtilesdict, findNeighbors_option, findNeighborMultiplicity);
+	}
+	else if (findNeighborCondition == "partialEdge"){
+	    console.log("* compute neighbors with partialEdge condition");
+            fn = findNeighborsPartialEdge(newtiles, newtilesdict,findNeighbors_option,findNeighborMultiplicity);
+	}
       else
 	console.log('unknown Neighborhood Condition');
       console.log("  found "+fn);
     }
     // update tiles
     tiles = newtiles;
-      console.log("* done");
+    console.log("* done");
   }
   // decorate tiles
   if(mydecoration_option != false){
